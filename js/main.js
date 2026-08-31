@@ -363,8 +363,17 @@
         type: 'iframe',
         callbacks: {
             beforeOpen: function() {
+                var url = this.st.el.attr('href');
+                if (url && url.indexOf('.mp4') !== -1) {
+                    this.st.iframe.markup = '<div class="mfp-iframe-scaler"><div class="mfp-close"></div><video class="mfp-iframe" autoplay controls playsinline style="object-fit: contain; background: #000;"></video></div>';
+                } else {
+                    this.st.iframe.markup = '<div class="mfp-iframe-scaler"><div class="mfp-close"></div><iframe class="mfp-iframe" frameborder="0" allowfullscreen></iframe></div>';
+                }
+                
                 if (this.st.el.hasClass('vertical-video')) {
                     this.st.mainClass = 'mfp-vertical-video';
+                } else {
+                    this.st.mainClass = '';
                 }
             }
         }
