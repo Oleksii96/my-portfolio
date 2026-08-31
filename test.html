@@ -17,16 +17,22 @@
         }
         
         .header {
-            position: absolute; /* ЗМІНЕНО НА ABSOLUTE ДЛЯ ТЕСТУ */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 60px;
+            /* Додаємо відступ для гарантії, що він не під панеллю */
+            margin-top: 50px; 
             background: rgba(255, 0, 0, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 100;
+            /* Хак для примусової відмальовки в iOS Chrome */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            will-change: transform;
         }
 
         .content {
@@ -49,7 +55,7 @@
 <body>
 
     <div class="header">
-        АБСОЛЮТНА ШАПКА (TEST V4)
+        ФІКСОВАНА ШАПКА (TEST V5)
     </div>
 
     <div class="content">
