@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preloader Prototype V4 (HUD HUD & Scramble)</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: #020205; color: #fff;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Orbitron', sans-serif; overflow: hidden;
+        }
+
+        /* Matrix Rain Canvas */
+        #matrixCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.15; }
+
+        /* The Main HUD Area */
+        .hud-wrapper {
+            position: relative;
+            width: 350px; height: 350px;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 50;
+        }
+
+        /* Concentric Rotating Rings (JARVIS style) */
+        .hud-circle { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; box-sizing: border-box; }
+        
+        .circle-1 { border: 2px dashed rgba(0, 255, 204, 0.4); animation: rotate-right 25s linear infinite; }
+        .circle-2 { border: 4px dotted rgba(255, 0, 60, 0.3); transform: scale(1.1); animation: rotate-left 20s linear infinite; }
+        .circle-3 { 
+            border-top: 3px solid #00ffcc; border-bottom: 3px solid #00ffcc; 
+            border-left: 3px solid transparent; border-right: 3px solid transparent; 
+            transform: scale(1.2); animation: rotate-right 10s linear infinite; 
+            box-shadow: 0 0 15px rgba(0,255,204,0.2) inset, 0 0 15px rgba(0,255,204,0.2);
+        }
+        .circle-4 {
+            width: 130%; height: 130%; top: -15%; left: -15%;
+            border: 1px solid rgba(255,255,255,0.05);
+            background: radial-gradient(circle, transparent 50%, rgba(0,255,204,0.03) 100%);
+        }
+
+        @keyframes rotate-right { 100% { transform: rotate(360deg); } }
+        @keyframes rotate-left { 100% { transform: scale(1.1) rotate(-360deg); } }
+        @keyframes rotate-right-scale { 100% { transform: scale(1.2) rotate(360deg); } }
+
+        /* SVG Progress Ring */
+        .progress-ring-svg { position: absolute; top: 0; left: 0; transform: rotate(-90deg); z-index: 10; width: 350px; height: 350px; }
+        .ring-track { fill: transparent; stroke: rgba(255,255,255,0.05); stroke-width: 4; }
+        .ring-fill { 
+            fill: transparent; stroke: #00ffcc; stroke-width: 8; 
+            stroke-dasharray: 1068; stroke-dashoffset: 1068; 
+            transition: stroke-dashoffset 0.1s linear; 
+            filter: drop-shadow(0 0 10px #00ffcc);
+        }
+
+        /* Center Content */
+        .center-content { position: relative; z-index: 20; text-align: center; }
+        
+        .percentage {
+            font-size: 70px; font-weight: 900; color: #fff;
+            text-shadow: 0 0 20px rgba(0, 255, 204, 0.8);
+            letter-spacing: 2px; margin: 0;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .ai-status {
+            font-size: 11px; color: #ff003c; letter-spacing: 4px;
+            text-transform: uppercase; margin-top: 10px;
+            animation: blink 1s infinite; font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Rapid Console Output */
+        .rapid-console {
+            position: absolute; bottom: -80px; left: -50px; right: -50px;
+            font-family: 'Share Tech Mono', monospace; font-size: 11px;
+            color: rgba(0,255,204,0.7); text-align: center;
+            height: 40px; overflow: hidden;
+            mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+        }
+        .console-line { margin: 2px 0; }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* Floating Elements */
+        .floating-element { position: absolute; color: rgba(255, 255, 255, 0.05); font-size: 60px; z-index: 5; }
+        .el-camera { top: 15%; left: 15%; animation: float1 6s infinite ease-in-out; }
+        .el-drone { top: 10%; right: 20%; font-size: 50px; animation: flyAround 15s infinite linear; }
+        .el-wand { bottom: 20%; left: 15%; font-size: 70px; color: rgba(255, 0, 255, 0.05); animation: float2 5s infinite ease-in-out reverse; }
+        .el-film { bottom: 15%; right: 20%; animation: float1 7s infinite ease-in-out, spin 10s infinite linear; }
+        
+        @keyframes float1 { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-30px) rotate(10deg); } }
+        @keyframes float2 { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(35px) rotate(-15deg); } }
+        @keyframes flyAround { 0% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(-100px, 150px) rotate(180deg); } 100% { transform: translate(0, 0) rotate(360deg); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Final Flash Overlay */
+        .flash-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 999; opacity: 0; pointer-events: none;
+            transition: opacity 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Matrix Code Background -->
+    <canvas id="matrixCanvas"></canvas>
+
+    <!-- Floating Background Icons -->
+    <i class="fa-solid fa-camera el-camera floating-element"></i>
+    <i class="fa-brands fa-space-awesome el-drone floating-element"></i>
+    <i class="fa-solid fa-wand-magic-sparkles el-wand floating-element"></i>
+    <i class="fa-solid fa-film el-film floating-element"></i>
+
+    <!-- Main HUD -->
+    <div class="hud-wrapper">
+        <div class="hud-circle circle-1"></div>
+        <div class="hud-circle circle-2"></div>
+        <div class="hud-circle circle-3"></div>
+        <div class="hud-circle circle-4"></div>
+        
+        <svg class="progress-ring-svg">
+            <!-- Radius is 170, Circumference is 2 * PI * 170 = ~1068 -->
+            <circle class="ring-track" cx="175" cy="175" r="170"></circle>
+            <circle class="ring-fill" id="ringFill" cx="175" cy="175" r="170"></circle>
+        </svg>
+
+        <div class="center-content">
+            <div class="percentage" id="perc">0%</div>
+            <div class="ai-status" id="aiStatus">UPLOADING NEURAL DATA</div>
+        </div>
+
+        <!-- Rapid Console logs -->
+        <div class="rapid-console" id="rapidConsole"></div>
+    </div>
+
+    <div class="flash-overlay" id="flashOverlay"></div>
+
+    <script>
+        // Matrix Rain Background
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const matrixChars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%""\'#&_(),.;:?!\\|{}<>[]^~';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        for(let x = 0; x < columns; x++) drops[x] = 1;
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(2, 2, 5, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ffcc';
+            ctx.font = fontSize + 'px monospace';
+            for(let i = 0; i < drops.length; i++) {
+                const text = matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 33);
+
+        // Scramble Text Effect Logic
+        const scrambleChars = '0123456789!@#$%^&*()';
+        function scrambleText(element, finalValue) {
+            let iterations = 0;
+            const interval = setInterval(() => {
+                element.innerText = finalValue.split('').map((char, index) => {
+                    if(index < iterations) return char;
+                    return scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+                }).join('');
+                
+                if(iterations >= finalValue.length) clearInterval(interval);
+                iterations += 1/3;
+            }, 30);
+        }
+
+        // Rapid Console Logic
+        const consoleEl = document.getElementById('rapidConsole');
+        const logs = [
+            "Compiling WebGL shaders...", "Analyzing video metadata...", "Applying heuristic filters...",
+            "Decrypting Cloudinary tokens...", "Establishing secure CDN link...", "Syncing keyframes...",
+            "Optimizing H.265 streams...", "Loading AI upscaler model...", "Injecting CSS variables..."
+        ];
+        function addLog() {
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            line.innerText = `> ${logs[Math.floor(Math.random() * logs.length)]} [OK]`;
+            consoleEl.prepend(line);
+            if(consoleEl.children.length > 3) consoleEl.removeChild(consoleEl.lastChild);
+        }
+        setInterval(addLog, 200); // Super fast logs
+
+        // Progress Logic
+        let current = 0;
+        const percEl = document.getElementById('perc');
+        const ringFill = document.getElementById('ringFill');
+        const aiStatus = document.getElementById('aiStatus');
+        const flashOverlay = document.getElementById('flashOverlay');
+        const circumference = 1068; // 2 * PI * 170
+
+        function updateProgress(percent) {
+            // Update Ring
+            const offset = circumference - (percent / 100) * circumference;
+            ringFill.style.strokeDashoffset = offset;
+            
+            // Scramble Text to new percent
+            scrambleText(percEl, Math.floor(percent) + "%");
+        }
+
+        function runSimulation() {
+            current = 0;
+            flashOverlay.style.opacity = 0;
+            updateProgress(0);
+            aiStatus.innerText = "UPLOADING NEURAL DATA";
+            aiStatus.style.color = "#ff003c";
+            
+            const sim = setInterval(() => {
+                current += Math.random() * 1.5;
+                if(current >= 100) {
+                    current = 100;
+                    clearInterval(sim);
+                    updateProgress(100);
+                    aiStatus.innerText = "READY TO LAUNCH";
+                    aiStatus.style.color = "#00ffcc";
+                    
+                    // Flash effect
+                    setTimeout(() => { flashOverlay.style.opacity = 1; }, 500);
+                    
+                    // Restart for demo
+                    setTimeout(runSimulation, 2500);
+                } else {
+                    updateProgress(current);
+                }
+            }, 80);
+        }
+        
+        runSimulation();
+    </script>
+</body>
+</html>

@@ -19,16 +19,130 @@
     window.scrollTo(0, 0);
 
     /*------------------
-        Preloader
+        Preloader V6
     --------------------*/
     var $percentage = $('#loader-percentage');
     var currentPercent = 0;
     
-    // Start animation immediately, update less frequently (100ms) to save CPU
+    // --- V6 UI Elements ---
+    const ringFill = document.getElementById('ringFill');
+    const bgText = document.getElementById('bgText');
+    const hudWrapper = document.getElementById('hudWrapper');
+    const c3 = document.getElementById('c3');
+    const icons = document.querySelectorAll('.floating-element');
+    const consoleEl = document.getElementById('rapidConsole');
+    const aiStatus = document.getElementById('aiStatus');
+    const circumference = 1068;
+    let matrixColor = '#00ffcc';
+
+    // Matrix Background
+    const canvas = document.getElementById('matrixCanvas');
+    if(canvas) {
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const matrixChars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%""\'#&_(),.;:?!\\|{}<>[]^~';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        for(let x = 0; x < columns; x++) drops[x] = 1;
+        setInterval(() => {
+            ctx.fillStyle = 'rgba(2, 2, 5, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = matrixColor;
+            ctx.font = fontSize + 'px monospace';
+            for(let i = 0; i < drops.length; i++) {
+                const text = matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }, 33);
+    }
+
+    // Console logs
+    if(consoleEl) {
+        const logs = [
+            "Compiling WebGL shaders...", "Analyzing video metadata...", "Applying heuristic filters...",
+            "Decrypting Cloudinary tokens...", "Establishing secure CDN link...", "Syncing keyframes...",
+            "Optimizing H.265 streams...", "Loading AI upscaler model...", "Injecting CSS variables..."
+        ];
+        setInterval(() => {
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            line.innerText = `> ${logs[Math.floor(Math.random() * logs.length)]} [OK]`;
+            consoleEl.prepend(line);
+            if(consoleEl.children.length > 3) consoleEl.removeChild(consoleEl.lastChild);
+        }, 200);
+    }
+
+    // Scramble logic
+    const scrambleChars = '0123456789!@#$%^&*()';
+    function scrambleStatus(finalValue) {
+        if(!aiStatus) return;
+        let iterations = 0;
+        const interval = setInterval(() => {
+            aiStatus.innerText = finalValue.split('').map((char, index) => {
+                if(index < iterations) return char;
+                return scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+            }).join('');
+            if(iterations >= finalValue.length) clearInterval(interval);
+            iterations += 1/2;
+        }, 30);
+    }
+
+    let activePhase = 0;
+    function setPhase(phase) {
+        if (activePhase === phase || !bgText) return;
+        activePhase = phase;
+        if (phase === 1) {
+            matrixColor = '#00ffcc'; bgText.innerText = 'DOWNLOADING MEDIA';
+            if(ringFill) { ringFill.style.stroke = '#00ffcc'; ringFill.style.filter = 'drop-shadow(0 0 10px #00ffcc)'; }
+            if($percentage.length) $percentage[0].style.textShadow = '0 0 20px rgba(0, 255, 204, 0.8)';
+            if(consoleEl) consoleEl.style.color = 'rgba(0,255,204,0.7)';
+            if(c3) { c3.style.borderColor = '#00ffcc transparent #00ffcc transparent'; c3.style.boxShadow = '0 0 15px rgba(0,255,204,0.2) inset, 0 0 15px rgba(0,255,204,0.2)'; }
+            if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1)' : 'scale(0.8)';
+            scrambleStatus("UPLOADING NEURAL DATA");
+        } else if (phase === 2) {
+            matrixColor = '#ffaa00'; bgText.innerText = 'PROCESSING AI';
+            bgText.style.transform = 'translate(-50%, -50%) scale(1.1)';
+            if(ringFill) { ringFill.style.stroke = '#ffaa00'; ringFill.style.filter = 'drop-shadow(0 0 15px #ffaa00)'; }
+            if($percentage.length) $percentage[0].style.textShadow = '0 0 25px rgba(255, 170, 0, 0.9)';
+            if(consoleEl) consoleEl.style.color = 'rgba(255, 170, 0, 0.7)';
+            if(c3) { c3.style.borderColor = '#ffaa00 transparent #ffaa00 transparent'; c3.style.boxShadow = '0 0 25px rgba(255, 170, 0, 0.4) inset, 0 0 25px rgba(255,170,0,0.4)'; }
+            if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1.1)' : 'scale(0.9)';
+            icons.forEach(i => i.style.color = 'rgba(255, 170, 0, 0.1)');
+            scrambleStatus("APPLYING VFX FILTERS");
+        } else if (phase === 3) {
+            matrixColor = '#ff003c'; bgText.innerText = 'CRITICAL LOAD';
+            bgText.style.transform = 'translate(-50%, -50%) scale(1.2)';
+            if(ringFill) { ringFill.style.stroke = '#ff003c'; ringFill.style.filter = 'drop-shadow(0 0 20px #ff003c)'; }
+            if($percentage.length) $percentage[0].style.textShadow = '0 0 30px rgba(255, 0, 60, 1)';
+            if(consoleEl) consoleEl.style.color = 'rgba(255, 0, 60, 0.7)';
+            if(c3) { c3.style.borderColor = '#ff003c transparent #ff003c transparent'; c3.style.boxShadow = '0 0 30px rgba(255, 0, 60, 0.6) inset, 0 0 30px rgba(255,0,60,0.6)'; }
+            if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1.2)' : 'scale(1)';
+            icons.forEach(i => i.style.color = 'rgba(255, 0, 60, 0.1)');
+            scrambleStatus("FINALIZING RENDER");
+        }
+    }
+
+    setPhase(1);
+
+    function updatePreloaderUI(pct) {
+        if(ringFill) {
+            const offset = circumference - (pct / 100) * circumference;
+            ringFill.style.strokeDashoffset = offset;
+        }
+        $percentage.text(Math.floor(pct) + '%');
+        
+        if (pct >= 33 && pct < 66) setPhase(2);
+        if (pct >= 66 && pct <= 100) setPhase(3);
+    }
+
+    // Start UI update loop
     var fakeInterval = setInterval(function() {
-        if (currentPercent < 99) {
-            currentPercent += (99 - currentPercent) * 0.1;
-            $percentage.text(Math.floor(currentPercent) + '%');
+        if (currentPercent < 98) {
+            currentPercent += (98 - currentPercent) * 0.15;
+            updatePreloaderUI(currentPercent);
         }
     }, 100);
 
@@ -36,28 +150,52 @@
         var $videos = $('video');
         var totalVideos = $videos.length;
         var fallbackTimeout;
+        let hasFlashed = false;
 
-        function hidePreloader() {
-            // First, fade out the small inner elements
-            $(".loader").fadeOut();
-            $percentage.fadeOut();
+        function triggerFlashAndHide() {
+            if(hasFlashed) return;
+            hasFlashed = true;
+            
+            // Reached ready - trigger 99% logic
+            currentPercent = 99;
+            updatePreloaderUI(99);
+            scrambleStatus("SYSTEM READY");
+            matrixColor = '#ffffff';
 
-            // Give the browser 400ms to rest and Masonry to calculate, 
-            // then fade out the massive black background
-            $("#preloder").delay(400).fadeOut(600, function() {
-                $('body').removeClass('no-scroll');
-            });
+            // Flash effect
+            let flash = document.createElement('div');
+            flash.style.position = 'fixed';
+            flash.style.top = 0; flash.style.left = 0;
+            flash.style.width = '100%'; flash.style.height = '100%';
+            flash.style.background = '#fff'; flash.style.zIndex = 9999999;
+            flash.style.opacity = 0; flash.style.pointerEvents = 'none';
+            flash.style.transition = 'opacity 0.3s ease-out';
+            document.body.appendChild(flash);
+            
+            setTimeout(() => { flash.style.opacity = 1; }, 100);
+
+            setTimeout(function() {
+                // Fade out inner UI first
+                if(hudWrapper) $(hudWrapper).fadeOut();
+                if(bgText) $(bgText).fadeOut();
+                $percentage.fadeOut();
+
+                // Fade out entire preloader smoothly
+                $("#preloder").delay(400).fadeOut(600, function() {
+                    $('body').removeClass('no-scroll');
+                    $(flash).fadeOut(1000, function() { $(flash).remove(); });
+                });
+            }, 600); // Wait 0.6s after flash starts to fade out the preloader
         }
 
         if (totalVideos === 0) {
             clearInterval(fakeInterval);
-            $percentage.text('100%');
-            hidePreloader();
+            triggerFlashAndHide();
         } else {
             var checkInterval = setInterval(function() {
                 var ready = 0;
                 $videos.each(function() {
-                    // readyState >= 3 means data is available for current and future frames
+                    // readyState >= 3: HAVE_FUTURE_DATA
                     if (this.readyState >= 3) {
                         ready++;
                     }
@@ -67,18 +205,16 @@
                     clearInterval(checkInterval);
                     clearInterval(fakeInterval);
                     clearTimeout(fallbackTimeout);
-                    $percentage.text('100%');
-                    hidePreloader();
+                    triggerFlashAndHide();
                 }
             }, 300);
 
-            // Fallback
+            // Fallback Timeout 
             fallbackTimeout = setTimeout(function() {
                 clearInterval(checkInterval);
                 clearInterval(fakeInterval);
-                $percentage.text('100%');
-                hidePreloader();
-            }, 7000);
+                triggerFlashAndHide();
+            }, 10000); // 10 seconds timeout is safer so users don't wait forever
         }
     });
 

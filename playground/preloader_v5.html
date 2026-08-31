@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preloader Prototype V5 (Phases & Legibility)</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: #050505; color: #fff;
+            font-family: 'Share Tech Mono', monospace; overflow: hidden;
+            transition: background-color 1s ease;
+        }
+
+        /* Massive, legible percentages */
+        .percentage-container {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 100; text-align: center;
+        }
+
+        .main-percentage {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 150px; font-weight: 900;
+            color: #ffffff;
+            text-shadow: 0px 10px 30px rgba(0,0,0,0.9), 0px 0px 20px rgba(255,255,255,0.2);
+            line-height: 1;
+            margin-bottom: 10px;
+            transition: color 1s ease, text-shadow 1s ease;
+        }
+
+        .phase-text {
+            font-size: 18px; letter-spacing: 5px;
+            text-transform: uppercase;
+            font-weight: bold;
+            text-shadow: 0px 2px 5px rgba(0,0,0,0.8);
+            transition: color 1s ease;
+        }
+
+        /* Visual Layers for different phases */
+        .visual-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; transition: opacity 1s ease;
+            display: flex; justify-content: center; align-items: center;
+            pointer-events: none;
+        }
+        .visual-layer.active { opacity: 1; }
+
+        /* PHASE 1: Connection (Radar) */
+        .radar {
+            width: 300px; height: 300px; border-radius: 50%;
+            border: 2px solid rgba(0, 136, 255, 0.3);
+            position: relative; overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 136, 255, 0.1) inset;
+        }
+        .radar::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 150px; height: 150px;
+            background: conic-gradient(from 0deg, transparent 70%, rgba(0, 136, 255, 0.8) 100%);
+            transform-origin: 0 0;
+            animation: radar-spin 2s linear infinite;
+        }
+        @keyframes radar-spin { 100% { transform: rotate(360deg); } }
+
+        /* PHASE 2: Download (Data Bars) */
+        .data-bars {
+            display: flex; gap: 10px; height: 300px; align-items: flex-end;
+            opacity: 0.3;
+        }
+        .bar {
+            width: 20px; background: #00ff88;
+            animation: eq 1s infinite alternate ease-in-out;
+        }
+        .bar:nth-child(1) { animation-duration: 0.7s; }
+        .bar:nth-child(2) { animation-duration: 1.2s; }
+        .bar:nth-child(3) { animation-duration: 0.9s; }
+        .bar:nth-child(4) { animation-duration: 1.5s; }
+        .bar:nth-child(5) { animation-duration: 0.8s; }
+        .bar:nth-child(6) { animation-duration: 1.1s; }
+        .bar:nth-child(7) { animation-duration: 1.3s; }
+        @keyframes eq { 0% { height: 10%; } 100% { height: 100%; } }
+
+        /* PHASE 3: Processing (Hexagons) */
+        .hex-container { position: relative; width: 350px; height: 350px; animation: spin-slow 15s linear infinite; }
+        .hex {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            border: 3px solid #ffaa00; opacity: 0.4;
+        }
+        .hex:nth-child(1) { transform: rotate(0deg); }
+        .hex:nth-child(2) { transform: rotate(30deg); }
+        .hex:nth-child(3) { transform: rotate(60deg); }
+        @keyframes spin-slow { 100% { transform: rotate(360deg); } }
+
+        /* PHASE 4: Critical (Glitch & Warning) */
+        .warning-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(45deg, rgba(255, 0, 51, 0.1), rgba(255, 0, 51, 0.1) 20px, transparent 20px, transparent 40px);
+            animation: move-bg 2s linear infinite;
+            opacity: 0.5;
+        }
+        @keyframes move-bg { 100% { background-position: 56px 0; } }
+        
+        .glitch-ring {
+            width: 320px; height: 320px; border-radius: 50%;
+            border: 10px dashed #ff0033;
+            animation: rotate-right 5s linear infinite, heavy-glitch 0.2s infinite;
+        }
+        @keyframes heavy-glitch { 
+            0% { transform: translate(0) scale(1); opacity: 1; } 
+            50% { transform: translate(-10px, 10px) scale(1.05); opacity: 0.8; } 
+            100% { transform: translate(10px, -10px) scale(0.95); opacity: 1; } 
+        }
+
+        /* Global UI Elements */
+        .loading-bar-container {
+            position: absolute; bottom: 10%; left: 10%; right: 10%;
+            height: 4px; background: rgba(255,255,255,0.1);
+        }
+        .loading-bar-fill {
+            height: 100%; width: 0%; background: #fff;
+            transition: width 0.1s linear, background-color 1s ease;
+        }
+
+        @media (max-width: 768px) {
+            .main-percentage { font-size: 90px; }
+            .phase-text { font-size: 12px; }
+            .radar { width: 200px; height: 200px; }
+            .data-bars { height: 200px; }
+            .hex-container { width: 220px; height: 220px; }
+            .glitch-ring { width: 220px; height: 220px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PHASE 1 VISUALS -->
+    <div class="visual-layer" id="layer1">
+        <div class="radar"></div>
+    </div>
+
+    <!-- PHASE 2 VISUALS -->
+    <div class="visual-layer" id="layer2">
+        <div class="data-bars">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        </div>
+    </div>
+
+    <!-- PHASE 3 VISUALS -->
+    <div class="visual-layer" id="layer3">
+        <div class="hex-container">
+            <div class="hex"></div><div class="hex"></div><div class="hex"></div>
+        </div>
+    </div>
+
+    <!-- PHASE 4 VISUALS -->
+    <div class="visual-layer" id="layer4">
+        <div class="warning-bg"></div>
+        <div class="glitch-ring"></div>
+    </div>
+
+    <div class="percentage-container">
+        <div class="main-percentage" id="perc">0%</div>
+        <div class="phase-text" id="phaseText">PHASE 1: CONNECTION</div>
+    </div>
+
+    <div class="loading-bar-container">
+        <div class="loading-bar-fill" id="barFill"></div>
+    </div>
+
+    <script>
+        const percEl = document.getElementById('perc');
+        const phaseText = document.getElementById('phaseText');
+        const barFill = document.getElementById('barFill');
+        
+        const layer1 = document.getElementById('layer1');
+        const layer2 = document.getElementById('layer2');
+        const layer3 = document.getElementById('layer3');
+        const layer4 = document.getElementById('layer4');
+
+        function setPhase(phaseNum, text, color) {
+            phaseText.innerText = `PHASE ${phaseNum}: ${text}`;
+            phaseText.style.color = color;
+            barFill.style.backgroundColor = color;
+            
+            // Toggle active layers
+            layer1.className = 'visual-layer' + (phaseNum === 1 ? ' active' : '');
+            layer2.className = 'visual-layer' + (phaseNum === 2 ? ' active' : '');
+            layer3.className = 'visual-layer' + (phaseNum === 3 ? ' active' : '');
+            layer4.className = 'visual-layer' + (phaseNum === 4 ? ' active' : '');
+            
+            // Add subtle glow to text based on phase color
+            percEl.style.textShadow = `0px 10px 30px rgba(0,0,0,0.9), 0px 0px 30px ${color}`;
+        }
+
+        let current = 0;
+        let activePhase = 0;
+
+        function runSimulation() {
+            current = 0;
+            const sim = setInterval(() => {
+                // Simulate slow loading (taking around 30-40 seconds for the demo)
+                current += Math.random() * 0.3;
+                
+                if(current >= 100) {
+                    current = 100;
+                    clearInterval(sim);
+                    percEl.innerText = "100%";
+                    phaseText.innerText = "RENDER COMPLETE";
+                    phaseText.style.color = "#ffffff";
+                    setTimeout(runSimulation, 4000); // restart for demo
+                } else {
+                    percEl.innerText = Math.floor(current) + "%";
+                }
+                
+                barFill.style.width = current + "%";
+
+                // Update phases based on percentage
+                let newPhase = 1;
+                if (current >= 25 && current < 50) newPhase = 2;
+                else if (current >= 50 && current < 80) newPhase = 3;
+                else if (current >= 80 && current < 100) newPhase = 4;
+
+                if (newPhase !== activePhase) {
+                    activePhase = newPhase;
+                    if (activePhase === 1) setPhase(1, "ESTABLISHING CONNECTION", "#0088ff");
+                    else if (activePhase === 2) setPhase(2, "DOWNLOADING MEDIA", "#00ff88");
+                    else if (activePhase === 3) setPhase(3, "APPLYING NEURAL FILTERS", "#ffaa00");
+                    else if (activePhase === 4) setPhase(4, "FINALIZING RENDER", "#ff0033");
+                }
+
+            }, 50); // 50ms interval for smooth progression
+        }
+
+        runSimulation();
+    </script>
+</body>
+</html>

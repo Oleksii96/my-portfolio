@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preloader Prototype</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syncopate:wght@700&display=swap');
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #050505;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Share Tech Mono', monospace;
+            overflow: hidden;
+        }
+
+        /* Scanline effect for AI/Cyberpunk feel */
+        .scanlines {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .preloader-container {
+            width: 90%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 20;
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .status-text {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 14px;
+            letter-spacing: 3px;
+            color: #00ffcc;
+            text-transform: uppercase;
+            animation: pulse 1.5s infinite;
+        }
+
+        .timecode {
+            font-size: 18px;
+            color: #888;
+        }
+
+        /* The Timeline / Progress Bar */
+        .timeline-track {
+            width: 100%;
+            height: 40px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Timeline grid lines to look like an editor */
+        .timeline-grid {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(90deg, #333 1px, transparent 1px);
+            background-size: 20px 100%;
+            opacity: 0.3;
+        }
+
+        .timeline-progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00ffcc, #00b3ff);
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
+            position: relative;
+            transition: width 0.1s linear;
+        }
+
+        /* The Playhead */
+        .playhead {
+            position: absolute;
+            top: -5px;
+            bottom: -5px;
+            width: 2px;
+            background: #ff003c;
+            box-shadow: 0 0 10px #ff003c;
+            left: 0%;
+            transition: left 0.1s linear;
+            z-index: 5;
+        }
+        
+        .playhead::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -5px;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid #ff003c;
+        }
+
+        .percentage {
+            margin-top: 15px;
+            font-size: 32px;
+            font-weight: bold;
+            text-align: right;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; text-shadow: 0 0 10px rgba(0, 255, 204, 0.8); }
+            100% { opacity: 0.7; }
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 768px) {
+            .status-text { font-size: 11px; letter-spacing: 1px; }
+            .timecode { font-size: 14px; }
+            .percentage { font-size: 24px; }
+            .timeline-track { height: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+
+    <div class="preloader-container">
+        <div class="status-header">
+            <div class="status-text">Initializing Engine...</div>
+            <div class="timecode" id="timecode">00:00:00:00</div>
+        </div>
+
+        <div class="timeline-track">
+            <div class="timeline-grid"></div>
+            <div class="timeline-progress" id="progress-bar"></div>
+            <div class="playhead" id="playhead"></div>
+        </div>
+
+        <div class="percentage" id="percentage-text">0%</div>
+    </div>
+
+    <script>
+        // Simulate loading process
+        let currentPercent = 0;
+        const progressBar = document.getElementById('progress-bar');
+        const playhead = document.getElementById('playhead');
+        const percentageText = document.getElementById('percentage-text');
+        const timecodeText = document.getElementById('timecode');
+        const statusText = document.querySelector('.status-text');
+
+        // Random texts to simulate AI / Video processing
+        const loadingPhases = [
+            "Initializing AI Engine...",
+            "Loading Neural Textures...",
+            "Compositing VFX...",
+            "Color Grading...",
+            "Applying Motion Blur...",
+            "Final Rendering..."
+        ];
+
+        function formatTimecode(frames) {
+            const h = Math.floor(frames / 3600).toString().padStart(2, '0');
+            const m = Math.floor((frames % 3600) / 60).toString().padStart(2, '0');
+            const s = Math.floor(frames % 60).toString().padStart(2, '0');
+            const f = Math.floor(Math.random() * 24).toString().padStart(2, '0');
+            return `${h}:${m}:${s}:${f}`;
+        }
+
+        let frames = 0;
+        
+        const simulation = setInterval(() => {
+            // Increment randomly to make it look realistic
+            currentPercent += Math.random() * 2; 
+            frames += 2;
+
+            if (currentPercent >= 100) {
+                currentPercent = 100;
+                clearInterval(simulation);
+                statusText.innerText = "RENDER COMPLETE";
+                statusText.style.color = "#00ff00";
+            } else {
+                // Update text based on phase
+                const phaseIndex = Math.floor((currentPercent / 100) * loadingPhases.length);
+                if (loadingPhases[phaseIndex]) {
+                    statusText.innerText = loadingPhases[phaseIndex];
+                }
+            }
+
+            // Update UI
+            progressBar.style.width = currentPercent + "%";
+            playhead.style.left = currentPercent + "%";
+            percentageText.innerText = Math.floor(currentPercent) + "%";
+            timecodeText.innerText = formatTimecode(frames);
+
+            // Re-run animation loop if it finishes (just for demo purposes)
+            if (currentPercent >= 100) {
+                setTimeout(() => {
+                    currentPercent = 0;
+                    frames = 0;
+                    simulation;
+                }, 2000);
+            }
+        }, 80);
+    </script>
+</body>
+</html>

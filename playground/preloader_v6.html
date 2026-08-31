@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preloader Prototype V6 (V4 Evolved)</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: #020205; color: #fff;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Orbitron', sans-serif; overflow: hidden;
+            transition: background 2s ease;
+        }
+
+        /* Matrix Rain Canvas */
+        #matrixCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.2; }
+
+        /* Giant Background Text */
+        .giant-bg-text {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 15vw; font-weight: 900; color: rgba(255,255,255,0.03);
+            white-space: nowrap; z-index: 2; pointer-events: none;
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        /* The Main HUD Area */
+        .hud-wrapper {
+            position: relative; width: 350px; height: 350px;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 50; transition: transform 2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* Concentric Rotating Rings (JARVIS style) */
+        .hud-circle { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; box-sizing: border-box; transition: all 1s ease; }
+        
+        .circle-1 { border: 2px dashed rgba(0, 255, 204, 0.4); animation: rotate-right 25s linear infinite; }
+        .circle-2 { border: 4px dotted rgba(255, 0, 60, 0.3); transform: scale(1.1); animation: rotate-left 20s linear infinite; }
+        .circle-3 { 
+            border-top: 3px solid #00ffcc; border-bottom: 3px solid #00ffcc; 
+            border-left: 3px solid transparent; border-right: 3px solid transparent; 
+            transform: scale(1.2); animation: rotate-right 10s linear infinite; 
+            box-shadow: 0 0 15px rgba(0,255,204,0.2) inset, 0 0 15px rgba(0,255,204,0.2);
+            transition: border-color 2s ease, box-shadow 2s ease;
+        }
+        
+        /* Floating Icons from V4 */
+        .floating-element { position: absolute; color: rgba(255, 255, 255, 0.05); font-size: 50px; z-index: 5; transition: color 2s ease; }
+        .el-camera { top: 15%; left: 15%; animation: float1 6s infinite ease-in-out; }
+        .el-drone { top: 10%; right: 20%; font-size: 40px; animation: flyAround 15s infinite linear; }
+        .el-film { bottom: 15%; right: 20%; animation: float1 7s infinite ease-in-out, spin 10s infinite linear; }
+
+        @keyframes rotate-right { 100% { transform: rotate(360deg); } }
+        @keyframes rotate-left { 100% { transform: scale(1.1) rotate(-360deg); } }
+        @keyframes float1 { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-30px) rotate(10deg); } }
+        @keyframes flyAround { 0% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(-100px, 150px) rotate(180deg); } 100% { transform: translate(0, 0) rotate(360deg); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* SVG Progress Ring */
+        .progress-ring-svg { position: absolute; top: 0; left: 0; transform: rotate(-90deg); z-index: 10; width: 350px; height: 350px; }
+        .ring-track { fill: transparent; stroke: rgba(255,255,255,0.05); stroke-width: 4; }
+        .ring-fill { 
+            fill: transparent; stroke: #00ffcc; stroke-width: 8; 
+            stroke-dasharray: 1068; stroke-dashoffset: 1068; 
+            transition: stroke-dashoffset 0.1s linear, stroke 2s ease, filter 2s ease; 
+            filter: drop-shadow(0 0 10px #00ffcc);
+        }
+
+        /* Center Content */
+        .center-content { position: relative; z-index: 20; text-align: center; }
+        
+        .percentage {
+            font-size: 90px; font-weight: 900; color: #fff;
+            text-shadow: 0 0 20px rgba(0, 255, 204, 0.8);
+            letter-spacing: 2px; margin: 0;
+            font-family: 'Share Tech Mono', monospace;
+            transition: text-shadow 2s ease;
+        }
+
+        .ai-status {
+            font-size: 11px; color: #ff003c; letter-spacing: 4px;
+            text-transform: uppercase; margin-top: 10px;
+            animation: blink 1s infinite; font-family: 'Orbitron', sans-serif;
+            transition: color 2s ease;
+        }
+
+        /* Rapid Console Output */
+        .rapid-console {
+            position: absolute; bottom: -80px; left: -50px; right: -50px;
+            font-family: 'Share Tech Mono', monospace; font-size: 11px;
+            color: rgba(0,255,204,0.7); text-align: center;
+            height: 40px; overflow: hidden;
+            mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            transition: color 2s ease;
+        }
+        .console-line { margin: 2px 0; }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        @media (max-width: 768px) {
+            .hud-wrapper { transform: scale(0.8); }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrixCanvas"></canvas>
+    
+    <div class="giant-bg-text" id="bgText">SYSTEM BOOT</div>
+
+    <!-- Floating Background Icons -->
+    <i class="fa-solid fa-camera el-camera floating-element" id="icon1"></i>
+    <i class="fa-brands fa-space-awesome el-drone floating-element" id="icon2"></i>
+    <i class="fa-solid fa-film el-film floating-element" id="icon3"></i>
+
+    <!-- Main HUD -->
+    <div class="hud-wrapper" id="hudWrapper">
+        <div class="hud-circle circle-1" id="c1"></div>
+        <div class="hud-circle circle-2" id="c2"></div>
+        <div class="hud-circle circle-3" id="c3"></div>
+        
+        <svg class="progress-ring-svg">
+            <circle class="ring-track" cx="175" cy="175" r="170"></circle>
+            <circle class="ring-fill" id="ringFill" cx="175" cy="175" r="170"></circle>
+        </svg>
+
+        <div class="center-content">
+            <!-- No scramble here, always clear -->
+            <div class="percentage" id="perc">0%</div>
+            <!-- Scramble applied here instead -->
+            <div class="ai-status" id="aiStatus">UPLOADING NEURAL DATA</div>
+        </div>
+
+        <!-- Rapid Console logs -->
+        <div class="rapid-console" id="rapidConsole"></div>
+    </div>
+
+    <script>
+        // --- MATRIX RAIN LOGIC ---
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const matrixChars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%""\'#&_(),.;:?!\\|{}<>[]^~';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        for(let x = 0; x < columns; x++) drops[x] = 1;
+
+        let matrixColor = '#00ffcc'; // Default color
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(2, 2, 5, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = matrixColor;
+            ctx.font = fontSize + 'px monospace';
+            for(let i = 0; i < drops.length; i++) {
+                const text = matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 33);
+
+        // --- RAPID CONSOLE LOGIC ---
+        const consoleEl = document.getElementById('rapidConsole');
+        const logs = [
+            "Compiling WebGL shaders...", "Analyzing video metadata...", "Applying heuristic filters...",
+            "Decrypting Cloudinary tokens...", "Establishing secure CDN link...", "Syncing keyframes...",
+            "Optimizing H.265 streams...", "Loading AI upscaler model...", "Injecting CSS variables..."
+        ];
+        function addLog() {
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            line.innerText = `> ${logs[Math.floor(Math.random() * logs.length)]} [OK]`;
+            consoleEl.prepend(line);
+            if(consoleEl.children.length > 3) consoleEl.removeChild(consoleEl.lastChild);
+        }
+        setInterval(addLog, 200);
+
+        // --- SCRAMBLE LOGIC (Only for status text now) ---
+        const scrambleChars = '0123456789!@#$%^&*()';
+        function scrambleStatus(finalValue) {
+            let iterations = 0;
+            const statusEl = document.getElementById('aiStatus');
+            const interval = setInterval(() => {
+                statusEl.innerText = finalValue.split('').map((char, index) => {
+                    if(index < iterations) return char;
+                    return scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+                }).join('');
+                
+                if(iterations >= finalValue.length) clearInterval(interval);
+                iterations += 1/2;
+            }, 30);
+        }
+
+        // --- PHASES LOGIC ---
+        const percEl = document.getElementById('perc');
+        const ringFill = document.getElementById('ringFill');
+        const bgText = document.getElementById('bgText');
+        const hudWrapper = document.getElementById('hudWrapper');
+        const c3 = document.getElementById('c3');
+        const icons = document.querySelectorAll('.floating-element');
+        
+        let activePhase = 0;
+
+        function setPhase(phase) {
+            if (activePhase === phase) return;
+            activePhase = phase;
+
+            if (phase === 1) {
+                // Base V4 Phase (Cyan)
+                matrixColor = '#00ffcc';
+                bgText.innerText = 'DOWNLOADING MEDIA';
+                ringFill.style.stroke = '#00ffcc';
+                ringFill.style.filter = 'drop-shadow(0 0 10px #00ffcc)';
+                percEl.style.textShadow = '0 0 20px rgba(0, 255, 204, 0.8)';
+                consoleEl.style.color = 'rgba(0,255,204,0.7)';
+                c3.style.borderColor = '#00ffcc transparent #00ffcc transparent';
+                c3.style.boxShadow = '0 0 15px rgba(0,255,204,0.2) inset, 0 0 15px rgba(0,255,204,0.2)';
+                hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1)' : 'scale(0.8)';
+                scrambleStatus("UPLOADING NEURAL DATA");
+            } 
+            else if (phase === 2) {
+                // Phase 2 (Yellow/Orange - Heavy Processing)
+                matrixColor = '#ffaa00';
+                bgText.innerText = 'PROCESSING AI';
+                bgText.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                ringFill.style.stroke = '#ffaa00';
+                ringFill.style.filter = 'drop-shadow(0 0 15px #ffaa00)';
+                percEl.style.textShadow = '0 0 25px rgba(255, 170, 0, 0.9)';
+                consoleEl.style.color = 'rgba(255, 170, 0, 0.7)';
+                c3.style.borderColor = '#ffaa00 transparent #ffaa00 transparent';
+                c3.style.boxShadow = '0 0 25px rgba(255, 170, 0, 0.4) inset, 0 0 25px rgba(255,170,0,0.4)';
+                hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1.1)' : 'scale(0.9)';
+                icons.forEach(i => i.style.color = 'rgba(255, 170, 0, 0.1)');
+                scrambleStatus("APPLYING VFX FILTERS");
+            }
+            else if (phase === 3) {
+                // Phase 3 (Red - High Tension / Finalizing)
+                matrixColor = '#ff003c';
+                bgText.innerText = 'CRITICAL LOAD';
+                bgText.style.transform = 'translate(-50%, -50%) scale(1.2)';
+                ringFill.style.stroke = '#ff003c';
+                ringFill.style.filter = 'drop-shadow(0 0 20px #ff003c)';
+                percEl.style.textShadow = '0 0 30px rgba(255, 0, 60, 1)';
+                consoleEl.style.color = 'rgba(255, 0, 60, 0.7)';
+                c3.style.borderColor = '#ff003c transparent #ff003c transparent';
+                c3.style.boxShadow = '0 0 30px rgba(255, 0, 60, 0.6) inset, 0 0 30px rgba(255,0,60,0.6)';
+                hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1.2)' : 'scale(1)';
+                icons.forEach(i => i.style.color = 'rgba(255, 0, 60, 0.1)');
+                document.body.style.background = '#1a0005';
+                scrambleStatus("FINALIZING RENDER");
+            }
+        }
+
+        // --- SIMULATION LOOP ---
+        let current = 0;
+        const circumference = 1068;
+
+        function runSimulation() {
+            current = 0;
+            setPhase(1);
+            document.body.style.background = '#020205';
+            icons.forEach(i => i.style.color = 'rgba(255, 255, 255, 0.05)');
+            
+            const sim = setInterval(() => {
+                // Slow loading simulation
+                current += Math.random() * 0.4;
+                
+                if (current >= 33 && current < 66) setPhase(2);
+                if (current >= 66 && current < 100) setPhase(3);
+
+                if(current >= 100) {
+                    current = 100;
+                    clearInterval(sim);
+                    
+                    // 100% state
+                    ringFill.style.strokeDashoffset = 0;
+                    percEl.innerText = "100%";
+                    scrambleStatus("SYSTEM READY");
+                    matrixColor = '#ffffff';
+                    
+                    setTimeout(runSimulation, 4000); // Restart for demo
+                } else {
+                    const offset = circumference - (current / 100) * circumference;
+                    ringFill.style.strokeDashoffset = offset;
+                    
+                    // NUMBERS ARE ALWAYS CLEAN NOW
+                    percEl.innerText = Math.floor(current) + "%";
+                }
+            }, 50);
+        }
+        
+        runSimulation();
+    </script>
+</body>
+</html>

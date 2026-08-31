@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preloader Prototype V3 (Action Mode)</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Orbitron', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Central Percentage Container */
+        .percentage-container {
+            position: relative;
+            z-index: 50;
+            text-align: center;
+            padding: 40px;
+        }
+
+        /* Viewfinder Frame (Camera REC) */
+        .viewfinder {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 45;
+            pointer-events: none;
+        }
+        
+        /* The 4 corners of the viewfinder */
+        .viewfinder::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 30px; height: 30px;
+            border-top: 3px solid rgba(255,255,255,0.4); border-left: 3px solid rgba(255,255,255,0.4);
+        }
+        .viewfinder::after {
+            content: ''; position: absolute; bottom: 0; right: 0; width: 30px; height: 30px;
+            border-bottom: 3px solid rgba(255,255,255,0.4); border-right: 3px solid rgba(255,255,255,0.4);
+        }
+        .viewfinder-inner::before {
+            content: ''; position: absolute; top: 0; right: 0; width: 30px; height: 30px;
+            border-top: 3px solid rgba(255,255,255,0.4); border-right: 3px solid rgba(255,255,255,0.4);
+        }
+        .viewfinder-inner::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 30px; height: 30px;
+            border-bottom: 3px solid rgba(255,255,255,0.4); border-left: 3px solid rgba(255,255,255,0.4);
+        }
+
+        .rec-dot {
+            position: absolute;
+            top: -25px; right: 0;
+            color: #ff003c;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: blink 1s infinite;
+        }
+        .rec-dot::before {
+            content: ''; width: 12px; height: 12px; background: #ff003c; border-radius: 50%;
+            box-shadow: 0 0 10px #ff003c;
+        }
+
+        /* Laser Scanner */
+        .laser-scanner {
+            position: absolute;
+            left: -10%; right: -10%;
+            height: 2px;
+            background: #00ffcc;
+            box-shadow: 0 0 15px #00ffcc, 0 0 30px #00ffcc;
+            z-index: 55;
+            animation: scan 2s infinite ease-in-out alternate;
+        }
+
+        @keyframes scan {
+            0% { top: -10%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 110%; opacity: 0; }
+        }
+
+        /* Glitch Percentage */
+        .percentage {
+            font-size: 90px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(0, 255, 204, 0.8), 0 0 40px rgba(0, 255, 204, 0.4);
+            letter-spacing: 2px;
+            animation: pulse-glow 2s infinite alternate, glitch-anim 3s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0%, 15% { transform: translate(0); text-shadow: 0 0 20px rgba(0, 255, 204, 0.8); }
+            16% { transform: translate(-3px, 3px); text-shadow: -4px 0 #ff003c, 4px 0 #00ffcc; }
+            17% { transform: translate(3px, -3px); text-shadow: 4px 0 #ff003c, -4px 0 #00ffcc; }
+            18% { transform: translate(0); text-shadow: 0 0 20px rgba(0, 255, 204, 0.8); }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        /* AI Console Text */
+        .console-container {
+            margin-top: 30px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 13px;
+            color: #00ffcc;
+            text-align: left;
+            width: 320px;
+            min-height: 40px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px rgba(0,255,204,0.5);
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .cursor {
+            display: inline-block;
+            width: 8px; height: 15px;
+            background: #00ffcc;
+            vertical-align: middle;
+            animation: blink 0.8s infinite;
+        }
+
+        /* Floating Elements (Preserved from V2) */
+        .floating-element {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.07);
+            font-size: 60px;
+            z-index: 10;
+        }
+
+        .el-camera { top: 15%; left: 15%; animation: float1 6s infinite ease-in-out, flash 4s infinite; }
+        .el-drone { top: 10%; right: 20%; font-size: 50px; animation: flyAround 12s infinite linear; }
+        .el-wand { bottom: 20%; left: 15%; font-size: 70px; color: rgba(255, 0, 255, 0.1); animation: float2 5s infinite ease-in-out reverse; }
+        .el-film { bottom: 15%; right: 20%; animation: float1 7s infinite ease-in-out, spin 10s infinite linear; }
+        .el-clapper { top: 45%; left: 5%; animation: float2 8s infinite ease-in-out; }
+        .el-brain { top: 50%; right: 8%; color: rgba(0, 255, 204, 0.05); animation: float1 9s infinite ease-in-out, pulse-brain 3s infinite alternate; }
+        .el-video { top: 80%; left: 45%; animation: float1 5s infinite ease-in-out; }
+
+        @keyframes float1 { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-30px) rotate(10deg); } }
+        @keyframes float2 { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(35px) rotate(-15deg); } }
+        @keyframes flyAround { 0% { transform: translate(0, 0) rotate(0deg) scale(1); } 25% { transform: translate(-100px, 50px) rotate(-15deg) scale(1.2); } 50% { transform: translate(-50px, 150px) rotate(0deg) scale(0.8); } 75% { transform: translate(50px, 50px) rotate(15deg) scale(1.1); } 100% { transform: translate(0, 0) rotate(0deg) scale(1); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes flash { 0%, 95%, 100% { color: rgba(255, 255, 255, 0.07); text-shadow: none; } 96%, 98% { color: rgba(255, 255, 255, 0.8); text-shadow: 0 0 40px #fff; } }
+        @keyframes pulse-brain { 0% { text-shadow: 0 0 5px rgba(0,255,204,0.1); } 100% { text-shadow: 0 0 35px rgba(0,255,204,0.8); } }
+
+        /* Connecting Nodes (AI Generation vibe) */
+        .nodes-canvas {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 5;
+            opacity: 0.4;
+        }
+
+        @media (max-width: 768px) {
+            .percentage { font-size: 60px; }
+            .floating-element { font-size: 40px; }
+            .el-wand { font-size: 50px; }
+            .console-container { width: 280px; font-size: 11px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Particle/Node background -->
+    <canvas class="nodes-canvas" id="nodesCanvas"></canvas>
+
+    <!-- Floating Icons -->
+    <i class="fa-solid fa-camera el-camera floating-element"></i>
+    <i class="fa-brands fa-space-awesome el-drone floating-element"></i>
+    <i class="fa-solid fa-wand-magic-sparkles el-wand floating-element"></i>
+    <i class="fa-solid fa-film el-film floating-element"></i>
+    <i class="fa-solid fa-clapperboard el-clapper floating-element"></i>
+    <i class="fa-solid fa-brain el-brain floating-element"></i>
+    <i class="fa-solid fa-video el-video floating-element"></i>
+
+    <!-- Center Action Area -->
+    <div class="percentage-container">
+        <!-- Viewfinder & REC -->
+        <div class="viewfinder"><div class="viewfinder-inner"></div></div>
+        <div class="rec-dot">REC</div>
+        
+        <!-- Laser Scanner -->
+        <div class="laser-scanner"></div>
+
+        <!-- The Numbers -->
+        <div class="percentage" id="perc">0%</div>
+
+        <!-- AI Console -->
+        <div class="console-container">
+            <span id="console-text">> prompt: </span><span class="cursor"></span>
+        </div>
+    </div>
+
+    <script>
+        // Canvas Nodes
+        const canvas = document.getElementById('nodesCanvas');
+        const ctx = canvas.getContext('2d');
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+
+        const nodes = [];
+        const numNodes = window.innerWidth < 768 ? 20 : 40;
+        for(let i=0; i<numNodes; i++) {
+            nodes.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 1.5, vy: (Math.random() - 0.5) * 1.5 });
+        }
+
+        function drawNodes() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ffcc'; ctx.strokeStyle = '#00ffcc'; ctx.lineWidth = 0.5;
+            for(let i=0; i<nodes.length; i++) {
+                let n = nodes[i];
+                n.x += n.vx; n.y += n.vy;
+                if(n.x < 0 || n.x > canvas.width) n.vx *= -1;
+                if(n.y < 0 || n.y > canvas.height) n.vy *= -1;
+                ctx.beginPath(); ctx.arc(n.x, n.y, 1.5, 0, Math.PI*2); ctx.fill();
+                for(let j=i+1; j<nodes.length; j++) {
+                    let n2 = nodes[j];
+                    let dist = Math.hypot(n.x - n2.x, n.y - n2.y);
+                    if(dist < 120) {
+                        ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(n2.x, n2.y);
+                        ctx.globalAlpha = 1 - (dist/120); ctx.stroke(); ctx.globalAlpha = 1;
+                    }
+                }
+            }
+            requestAnimationFrame(drawNodes);
+        }
+        drawNodes();
+
+        // Console Typing Effect
+        const consoleTexts = [
+            'generate_epic_portfolio_video.mp4',
+            'applying_VFX_and_color_grading...',
+            'rendering_masterpiece...',
+            'compiling_assets... done.'
+        ];
+        let textIndex = 0;
+        let charIndex = 0;
+        const consoleEl = document.getElementById('console-text');
+        
+        function typeConsole() {
+            if (charIndex < consoleTexts[textIndex].length) {
+                consoleEl.innerHTML += consoleTexts[textIndex].charAt(charIndex);
+                charIndex++;
+                setTimeout(typeConsole, Math.random() * 50 + 30);
+            } else {
+                setTimeout(() => {
+                    consoleEl.innerHTML = '> prompt: ';
+                    charIndex = 0;
+                    textIndex = (textIndex + 1) % consoleTexts.length;
+                    typeConsole();
+                }, 2000);
+            }
+        }
+        setTimeout(typeConsole, 1000);
+
+        // Percentage counter simulation
+        let current = 0;
+        const percEl = document.getElementById('perc');
+        
+        function runSimulation() {
+            current = 0;
+            percEl.innerText = "0%";
+            percEl.style.color = "#fff";
+            
+            const sim = setInterval(() => {
+                current += Math.random() * 0.8;
+                if(current >= 100) {
+                    current = 100;
+                    clearInterval(sim);
+                    percEl.style.color = "#00ffcc";
+                    percEl.innerText = "100%";
+                    setTimeout(runSimulation, 3000);
+                } else {
+                    percEl.innerText = Math.floor(current) + "%";
+                }
+            }, 60);
+        }
+        
+        runSimulation();
+    </script>
+</body>
+</html>
