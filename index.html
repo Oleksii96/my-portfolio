@@ -461,11 +461,11 @@
     <script src="js/owl.carousel.min.js?v=2"></script>
     <script src="js/main.js?v=2"></script>
 
-    <!-- IOS CHROME DEBUG LOGGER (IN FOOTER) -->
-    <div id="ios-debug-log" style="background:#111; color:lime; font-family:monospace; font-size:12px; padding:20px; border-top: 4px solid lime; margin-top:50px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <strong style="font-size:16px;">DIAGNOSTIC LOGS:</strong>
-            <button onclick="copyLogs()" style="background:lime; color:black; padding:5px 10px; border:none; font-weight:bold; cursor:pointer;">КОПІЮВАТИ ЛОГИ</button>
+    <!-- IOS CHROME DEBUG LOGGER (FIXED BOTTOM) -->
+    <div id="ios-debug-log" style="position:fixed; bottom:0; left:0; width:100%; max-height:25vh; overflow-y:auto; background:rgba(0,0,0,0.95); color:lime; z-index:9999999; font-family:monospace; font-size:12px; padding:10px; border-top: 2px solid lime; box-shadow: 0 -5px 15px rgba(0,0,0,0.5);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; border-bottom: 1px solid lime; padding-bottom:5px;">
+            <strong style="font-size:14px;">LOGS:</strong>
+            <button onclick="copyLogs()" style="background:lime; color:black; padding:5px 10px; border:none; font-weight:bold; cursor:pointer;">КОПІЮВАТИ</button>
         </div>
         <div id="log-content" style="white-space: pre-wrap; word-break: break-all;"></div>
     </div>
