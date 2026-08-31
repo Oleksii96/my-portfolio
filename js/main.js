@@ -197,13 +197,13 @@
                 // 1. Випускаємо Shockwave (ударну хвилю)
                 let shockwave = document.createElement('div');
                 shockwave.className = 'shockwave';
-                document.body.appendChild(shockwave);
+                document.getElementById('preloder').appendChild(shockwave);
 
                 // 2. Пауза на 100% (1.2 сек)
                 setTimeout(() => {
                     let flash = document.createElement('div');
                     flash.className = 'flash';
-                    document.body.appendChild(flash);
+                    document.getElementById('preloder').appendChild(flash);
                     
                     if(hudWrapper) $(hudWrapper).fadeTo(300, 0);
                     if(bgText) $(bgText).fadeTo(300, 0);
@@ -211,8 +211,6 @@
 
                     $("#preloder").delay(400).fadeTo(800, 0, function() {
                         $(this).css({'pointer-events': 'none', 'z-index': '-1'});
-                        $(flash).fadeTo(1500, 0, function() { $(flash).css({'pointer-events': 'none', 'z-index': '-1'}); });
-                        $(shockwave).remove();
                     });
                 }, 1200);
             }
