@@ -170,42 +170,23 @@
         if(hasFlashed) return;
         hasFlashed = true;
         
-        clearInterval(fakeInterval); // Зупиняємо повільний таймер
+        clearInterval(fakeInterval); 
         clearInterval(checkInterval);
         clearTimeout(fallbackTimeout);
 
-        // Плавно і ПОМІТНО дотягуємо відсотки до 100 (розтягуємо на 1 секунду)
-        const remaining = 100 - currentPercent;
-        const duration = 1000; // 1 секунда на докрутку
-        const intervalTime = 20; // Оновлення кожні 20мс для ідеальної плавності кільця
-        const steps = duration / intervalTime;
-        const stepValue = remaining / steps;
+        currentPercent = 100;
+        updatePreloaderUI(100);
+        scrambleStatus("SYSTEM ONLINE");
+        matrixColor = '#ffffff';
 
-        let finishInterval = setInterval(() => {
-            if (currentPercent < 100) {
-                currentPercent += stepValue;
-                if (currentPercent >= 100) currentPercent = 100;
-                updatePreloaderUI(currentPercent);
-            }
-            
-            if (currentPercent === 100) {
-                clearInterval(finishInterval);
-                
-                scrambleStatus("SYSTEM ONLINE");
-                matrixColor = '#ffffff';
+        // Миттєве зникнення, як у Версії 8
+        if(hudWrapper) $(hudWrapper).fadeTo(200, 0);
+        if(bgText) $(bgText).fadeTo(200, 0);
+        $percentage.fadeTo(200, 0);
 
-                // Спрощена анімація без створення нових елементів (без shockwave/flash)
-                setTimeout(() => {
-                    if(hudWrapper) $(hudWrapper).fadeTo(300, 0);
-                    if(bgText) $(bgText).fadeTo(300, 0);
-                    $percentage.fadeTo(300, 0);
-
-                    $("#preloder").delay(400).fadeTo(800, 0, function() {
-                        $(this).css({'pointer-events': 'none'});
-                    });
-                }, 1200);
-            }
-        }, intervalTime);
+        $("#preloder").delay(100).fadeTo(500, 0, function() {
+            $(this).css({'pointer-events': 'none', 'display': 'none'});
+        });
     }
 
     // IMMEDIATELY start checking, do NOT wait for window.load to avoid hanging the site
