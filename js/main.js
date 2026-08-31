@@ -205,12 +205,13 @@
                     flash.className = 'flash';
                     document.body.appendChild(flash);
                     
-                    if(hudWrapper) $(hudWrapper).fadeOut(300);
-                    if(bgText) $(bgText).fadeOut(300);
-                    $percentage.fadeOut(300);
+                    if(hudWrapper) $(hudWrapper).fadeTo(300, 0);
+                    if(bgText) $(bgText).fadeTo(300, 0);
+                    $percentage.fadeTo(300, 0);
 
-                    $("#preloder").delay(400).fadeOut(800, function() {
-                        $(flash).fadeOut(1500, function() { $(flash).remove(); });
+                    $("#preloder").delay(400).fadeTo(800, 0, function() {
+                        $(this).css({'pointer-events': 'none', 'z-index': '-1'});
+                        $(flash).fadeTo(1500, 0, function() { $(flash).css({'pointer-events': 'none', 'z-index': '-1'}); });
                         $(shockwave).remove();
                     });
                 }, 1200);
