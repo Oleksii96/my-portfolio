@@ -348,15 +348,16 @@ ol {
 
 /* Epic Ending Animations */
 .shockwave {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 0; height: 0; border-radius: 50%;
+    position: absolute; top: 50%; left: 50%;
+    width: 100vw; height: 100vw; border-radius: 50%;
     box-shadow: 0 0 150px 50px rgba(255,255,255,1), 0 0 0 20px rgba(255,255,255,0.8) inset;
     animation: shockwave-anim 1.2s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
     z-index: 99; pointer-events: none;
+    transform: translate(-50%, -50%) scale(0);
 }
 @keyframes shockwave-anim {
-    0% { width: 0; height: 0; opacity: 1; }
-    100% { width: 150vw; height: 150vw; opacity: 0; box-shadow: 0 0 100px 5px rgba(255,255,255,0); }
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; box-shadow: 0 0 100px 5px rgba(255,255,255,0); }
 }
 
 .flash {
