@@ -166,38 +166,41 @@
     var checkInterval, fallbackTimeout;
 
     function triggerFlashAndHide() {
-        $('#preloder').fadeTo(0, 0, function() {
-            $(this).css('display', 'none');
-            
-            // Force play all native autoplay videos
-            $('video[autoplay]').each(function() {
-                var p = this.play();
-                if (p && typeof p.catch === 'function') {
-                    p.catch(function(e) { console.log('Autoplay blocked:', e); });
-                }
-            });
-        });
-        clearInterval(checkInterval);
-        clearTimeout(fallbackTimeout);
-
         if(hasFlashed) return;
         hasFlashed = true;
         
         clearInterval(fakeInterval); 
+        clearInterval(checkInterval);
+        clearTimeout(fallbackTimeout);
 
-        currentPercent = 100;
-        updatePreloaderUI(100);
-        scrambleStatus("SYSTEM ONLINE");
-        matrixColor = '#ffffff';
+        var finishInterval = setInterval(function() {
+            if (currentPercent < 100) {
+                currentPercent += (100 - currentPercent) * 0.15 + 1;
+                if (currentPercent > 100) currentPercent = 100;
+                updatePreloaderUI(currentPercent);
+            } else {
+                clearInterval(finishInterval);
+                
+                scrambleStatus("SYSTEM ONLINE");
+                matrixColor = '#ffffff';
 
-        // Миттєве зникнення, як у Версії 8
-        if(hudWrapper) $(hudWrapper).fadeTo(200, 0);
-        if(bgText) $(bgText).fadeTo(200, 0);
-        $percentage.fadeTo(200, 0);
+                if(hudWrapper) $(hudWrapper).fadeTo(200, 0);
+                if(bgText) $(bgText).fadeTo(200, 0);
+                $percentage.fadeTo(200, 0);
 
-        $("#preloder").delay(100).fadeTo(500, 0, function() {
-            $(this).css({'pointer-events': 'none', 'display': 'none'});
-        });
+                $("#preloder").delay(500).fadeTo(500, 0, function() {
+                    $(this).css({'pointer-events': 'none', 'display': 'none'});
+                    
+                    // Force play all native autoplay videos
+                    $('video[autoplay]').each(function() {
+                        var p = this.play();
+                        if (p && typeof p.catch === 'function') {
+                            p.catch(function(e) { console.log('Autoplay blocked:', e); });
+                        }
+                    });
+                });
+            }
+        }, 50);
     }
 
     // IMMEDIATELY start checking, do NOT wait for window.load to avoid hanging the site
