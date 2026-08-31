@@ -464,7 +464,62 @@
     <script src="js/owl.carousel.min.js?v=3"></script>
     <script src="js/main.js?v=3"></script>
 
+    <!-- IOS CHROME DEBUG LOGGER -->
+    <div id="ios-debug-log" style="position:fixed; bottom:0; left:0; width:100%; max-height:25vh; overflow-y:auto; background:rgba(0,0,0,0.95); color:lime; z-index:9999999; font-family:monospace; font-size:12px; padding:10px; border-top: 2px solid lime;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; border-bottom: 1px solid lime; padding-bottom:5px;">
+            <strong style="font-size:14px;">LOGS:</strong>
+            <button onclick="copyLogs()" style="background:lime; color:black; padding:5px 10px; border:none; font-weight:bold; cursor:pointer;">КОПІЮВАТИ</button>
+        </div>
+        <div id="log-content" style="white-space: pre-wrap; word-break: break-all;"></div>
+    </div>
+    <script>
+        var logHistory = [];
+        var logBox = document.getElementById('log-content');
+        
+        function printLog(msg) {
+            var time = new Date().toISOString().split('T')[1].slice(0, -1);
+            var entry = time + ': ' + msg;
+            logHistory.push(entry);
+            logBox.innerHTML += '<div>' + entry + '</div>';
+        }
 
+        function copyLogs() {
+            var text = logHistory.join('\n');
+            navigator.clipboard.writeText(text).then(function() { alert("Скопійовано!"); }).catch(function() {});
+        }
+        
+        (function() {
+            var lastIH = window.innerHeight;
+            var lastSY = window.scrollY;
+            
+            printLog("INIT IH:" + lastIH + " SY:" + lastSY);
+            
+            window.addEventListener('resize', function() {
+                printLog("RESIZE! IH:" + window.innerHeight);
+            });
+            
+            setInterval(function() {
+                var currentIH = window.innerHeight;
+                if (currentIH !== lastIH) {
+                    printLog("HEIGHT CHANGE! IH: " + lastIH + "->" + currentIH);
+                    lastIH = currentIH;
+                }
+                if (Math.abs(window.scrollY - lastSY) > 50) {
+                    printLog("SCROLL JUMP! SY: " + lastSY + "->" + window.scrollY);
+                    lastSY = window.scrollY;
+                }
+            }, 500);
+
+            var observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === 'class' || mutation.attributeName === 'style') {
+                        printLog("BODY ATTR: " + document.body.getAttribute(mutation.attributeName));
+                    }
+                });
+            });
+            observer.observe(document.body, { attributes: true });
+        })();
+    </script>
 </body>
 
 </html>
