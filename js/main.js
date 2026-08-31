@@ -155,12 +155,48 @@
     }
 
     // Start UI update loop
-    var fakeInterval = setInterval(function() {
-        if (currentPercent < 98) {
-            currentPercent += (98 - currentPercent) * 0.15;
-            updatePreloaderUI(currentPercent);
+    var currentPercent = 0;
+    var isFinishing = false;
+    var lastTime = performance.now();
+
+    function animatePreloader(time) {
+        var deltaTime = time - lastTime;
+        lastTime = time;
+        if (deltaTime > 100) deltaTime = 16; // Prevent huge jumps if tab was inactive
+
+        if (!isFinishing) {
+            // Easing towards 97%
+            currentPercent += (97 - currentPercent) * 0.02 * (deltaTime / 16);
+        } else {
+            // Linear slow progression from current to 100
+            // E.g., takes ~1.2 seconds to do 3% -> 3 / 1200 ms -> 0.04 per 16ms
+            currentPercent += 0.04 * (deltaTime / 16);
         }
-    }, 100);
+
+        if (currentPercent >= 100) {
+            currentPercent = 100;
+            updatePreloaderUI(100);
+            scrambleStatus("SYSTEM ONLINE");
+            matrixColor = '#ffffff';
+
+            if(hudWrapper) $(hudWrapper).fadeTo(400, 0);
+            if(bgText) $(bgText).fadeTo(400, 0);
+            $percentage.fadeTo(400, 0);
+
+            $("#preloder").delay(800).fadeTo(800, 0, function() {
+                $(this).css({'pointer-events': 'none', 'display': 'none'});
+                $('video[autoplay]').each(function() {
+                    var p = this.play();
+                    if (p && typeof p.catch === 'function') p.catch(function(e) {});
+                });
+            });
+            return; // Stop loop
+        }
+
+        updatePreloaderUI(currentPercent);
+        requestAnimationFrame(animatePreloader);
+    }
+    requestAnimationFrame(animatePreloader);
 
     let hasFlashed = false;
     var checkInterval, fallbackTimeout;
@@ -169,38 +205,10 @@
         if(hasFlashed) return;
         hasFlashed = true;
         
-        clearInterval(fakeInterval); 
         clearInterval(checkInterval);
         clearTimeout(fallbackTimeout);
 
-        var finishInterval = setInterval(function() {
-            if (currentPercent < 100) {
-                currentPercent += (100 - currentPercent) * 0.15 + 1;
-                if (currentPercent > 100) currentPercent = 100;
-                updatePreloaderUI(currentPercent);
-            } else {
-                clearInterval(finishInterval);
-                
-                scrambleStatus("SYSTEM ONLINE");
-                matrixColor = '#ffffff';
-
-                if(hudWrapper) $(hudWrapper).fadeTo(200, 0);
-                if(bgText) $(bgText).fadeTo(200, 0);
-                $percentage.fadeTo(200, 0);
-
-                $("#preloder").delay(500).fadeTo(500, 0, function() {
-                    $(this).css({'pointer-events': 'none', 'display': 'none'});
-                    
-                    // Force play all native autoplay videos
-                    $('video[autoplay]').each(function() {
-                        var p = this.play();
-                        if (p && typeof p.catch === 'function') {
-                            p.catch(function(e) { console.log('Autoplay blocked:', e); });
-                        }
-                    });
-                });
-            }
-        }, 50);
+        isFinishing = true;
     }
 
     // IMMEDIATELY start checking, do NOT wait for window.load to avoid hanging the site
