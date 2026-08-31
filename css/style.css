@@ -387,6 +387,11 @@ ol {
   background: transparent;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 9;
+  
+  /* Фікс для iOS Chrome Paint Bug */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
 }
 
 .header__logo {
