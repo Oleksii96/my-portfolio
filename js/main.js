@@ -174,38 +174,45 @@
             if(hasFlashed) return;
             hasFlashed = true;
             
-            // Reached ready - trigger 100% logic
-            currentPercent = 100;
-            updatePreloaderUI(100);
-            scrambleStatus("SYSTEM ONLINE");
-            matrixColor = '#ffffff';
+            clearInterval(fakeInterval); // Зупиняємо повільний таймер
 
-            if(ringFill) ringFill.style.strokeDashoffset = 0;
-            $percentage.text('100%');
+            // Плавно дотягуємо відсотки до 100
+            let finishInterval = setInterval(() => {
+                if (currentPercent < 100) {
+                    currentPercent += 1;
+                    if (currentPercent > 100) currentPercent = 100;
+                    updatePreloaderUI(currentPercent);
+                } else {
+                    clearInterval(finishInterval);
+                    
+                    scrambleStatus("SYSTEM ONLINE");
+                    matrixColor = '#ffffff';
 
-            // 1. Fire Shockwave
-            let shockwave = document.createElement('div');
-            shockwave.className = 'shockwave';
-            document.body.appendChild(shockwave);
+                    // 1. Випускаємо Shockwave (ударну хвилю)
+                    let shockwave = document.createElement('div');
+                    shockwave.className = 'shockwave';
+                    document.body.appendChild(shockwave);
 
-            // 2. Wait 0.8s for suspense, then full flash
-            setTimeout(() => {
-                let flash = document.createElement('div');
-                flash.className = 'flash';
-                document.body.appendChild(flash);
-                
-                // Fade out inner UI first
-                if(hudWrapper) $(hudWrapper).fadeOut(300);
-                if(bgText) $(bgText).fadeOut(300);
-                $percentage.fadeOut(300);
+                    // 2. Робимо солідну паузу (1.2 сек) на 100% перед тим як все пропаде (щоб не було різкого удару по очах і системі)
+                    setTimeout(() => {
+                        let flash = document.createElement('div');
+                        flash.className = 'flash';
+                        document.body.appendChild(flash);
+                        
+                        // Спочатку зникає внутрішній UI
+                        if(hudWrapper) $(hudWrapper).fadeOut(300);
+                        if(bgText) $(bgText).fadeOut(300);
+                        $percentage.fadeOut(300);
 
-                // Fade out entire preloader smoothly
-                $("#preloder").delay(400).fadeOut(600, function() {
-                    $('body').removeClass('no-scroll');
-                    $(flash).fadeOut(1000, function() { $(flash).remove(); });
-                    $(shockwave).remove();
-                });
-            }, 800);
+                        // Потім плавно ховаємо весь прелоадер і відкриваємо сайт
+                        $("#preloder").delay(400).fadeOut(800, function() {
+                            $('body').removeClass('no-scroll');
+                            $(flash).fadeOut(1500, function() { $(flash).remove(); });
+                            $(shockwave).remove();
+                        });
+                    }, 1200);
+                }
+            }, 50); // Кожні 50мс додаємо 1% (від 97 до 100 це займе 150мс, буде гладко)
         }
 
         if (totalVideos === 0) {
