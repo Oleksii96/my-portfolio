@@ -194,23 +194,14 @@
                 scrambleStatus("SYSTEM ONLINE");
                 matrixColor = '#ffffff';
 
-                // 1. Випускаємо Shockwave (ударну хвилю)
-                let shockwave = document.createElement('div');
-                shockwave.className = 'shockwave';
-                document.getElementById('preloder').appendChild(shockwave);
-
-                // 2. Пауза на 100% (1.2 сек)
+                // Спрощена анімація без створення нових елементів (без shockwave/flash)
                 setTimeout(() => {
-                    let flash = document.createElement('div');
-                    flash.className = 'flash';
-                    document.getElementById('preloder').appendChild(flash);
-                    
                     if(hudWrapper) $(hudWrapper).fadeTo(300, 0);
                     if(bgText) $(bgText).fadeTo(300, 0);
                     $percentage.fadeTo(300, 0);
 
                     $("#preloder").delay(400).fadeTo(800, 0, function() {
-                        $(this).css({'pointer-events': 'none', 'z-index': '-1'});
+                        $(this).css({'pointer-events': 'none'});
                     });
                 }, 1200);
             }
