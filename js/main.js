@@ -176,13 +176,21 @@
             
             clearInterval(fakeInterval); // Зупиняємо повільний таймер
 
-            // Плавно дотягуємо відсотки до 100
+            // Плавно і ПОМІТНО дотягуємо відсотки до 100 (розтягуємо на 1 секунду)
+            const remaining = 100 - currentPercent;
+            const duration = 1000; // 1 секунда на докрутку
+            const intervalTime = 20; // Оновлення кожні 20мс для ідеальної плавності кільця
+            const steps = duration / intervalTime;
+            const stepValue = remaining / steps;
+
             let finishInterval = setInterval(() => {
                 if (currentPercent < 100) {
-                    currentPercent += 1;
-                    if (currentPercent > 100) currentPercent = 100;
+                    currentPercent += stepValue;
+                    if (currentPercent >= 100) currentPercent = 100;
                     updatePreloaderUI(currentPercent);
-                } else {
+                }
+                
+                if (currentPercent === 100) {
                     clearInterval(finishInterval);
                     
                     scrambleStatus("SYSTEM ONLINE");
@@ -193,18 +201,16 @@
                     shockwave.className = 'shockwave';
                     document.body.appendChild(shockwave);
 
-                    // 2. Робимо солідну паузу (1.2 сек) на 100% перед тим як все пропаде (щоб не було різкого удару по очах і системі)
+                    // 2. Пауза на 100% (1.2 сек)
                     setTimeout(() => {
                         let flash = document.createElement('div');
                         flash.className = 'flash';
                         document.body.appendChild(flash);
                         
-                        // Спочатку зникає внутрішній UI
                         if(hudWrapper) $(hudWrapper).fadeOut(300);
                         if(bgText) $(bgText).fadeOut(300);
                         $percentage.fadeOut(300);
 
-                        // Потім плавно ховаємо весь прелоадер і відкриваємо сайт
                         $("#preloder").delay(400).fadeOut(800, function() {
                             $('body').removeClass('no-scroll');
                             $(flash).fadeOut(1500, function() { $(flash).remove(); });
@@ -212,7 +218,7 @@
                         });
                     }, 1200);
                 }
-            }, 50); // Кожні 50мс додаємо 1% (від 97 до 100 це займе 150мс, буде гладко)
+            }, intervalTime);
         }
 
         if (totalVideos === 0) {
