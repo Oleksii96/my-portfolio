@@ -41,60 +41,6 @@
 </head>
 
 <body class="no-scroll">
-    <!-- IOS CHROME DEBUG LOGGER -->
-    <div id="ios-debug-log" style="position:fixed; bottom:15vh; left:10px; right:10px; background:rgba(0,0,0,0.9); color:lime; z-index:9999999; font-family:monospace; font-size:12px; padding:10px; border: 2px solid lime; border-radius: 5px; pointer-events:none; display:flex; flex-direction:column; justify-content:flex-end;">
-        <div id="log-content"></div>
-    </div>
-    <script>
-        (function() {
-            var logBox = document.getElementById('log-content');
-            var logHistory = [];
-            function printLog(msg) {
-                var time = new Date().toISOString().split('T')[1].slice(0, -1);
-                logHistory.push(time + ': ' + msg);
-                if (logHistory.length > 8) logHistory.shift(); // Keep last 8 lines
-                logBox.innerHTML = logHistory.join('<br>');
-            }
-            
-            var lastIH = window.innerHeight;
-            var lastCH = document.documentElement.clientHeight;
-            
-            printLog("INIT IH:" + lastIH + " CH:" + lastCH);
-            
-            // Track Resize Events
-            window.addEventListener('resize', function() {
-                printLog("RESIZE EVENT FIRED! IH:" + window.innerHeight + " CH:" + document.documentElement.clientHeight);
-            });
-            
-            // Track height changes periodically
-            setInterval(function() {
-                var currentIH = window.innerHeight;
-                var currentCH = document.documentElement.clientHeight;
-                if (currentIH !== lastIH || currentCH !== lastCH) {
-                    printLog("HEIGHT CHANGE! IH: " + lastIH + "->" + currentIH + ", CH: " + lastCH + "->" + currentCH);
-                    lastIH = currentIH;
-                    lastCH = currentCH;
-                }
-            }, 500);
-
-            // Track class/style changes on body (like no-scroll removal)
-            var observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    if (mutation.attributeName === 'class' || mutation.attributeName === 'style') {
-                        printLog("BODY ATTR CHANGED: " + mutation.attributeName + " = " + document.body.getAttribute(mutation.attributeName));
-                    }
-                });
-            });
-            observer.observe(document.body, { attributes: true });
-
-            // Catch JS errors
-            window.onerror = function(msg, url, line) {
-                printLog("ERR: " + msg + " line " + line);
-            };
-        })();
-    </script>
-    <!-- END DEBUG LOGGER -->
-
     <!-- НАЛАШТУВАННЯ ПАРОЛЮ (Легко змінити або вимкнути) -->
     <script>
         const USE_PASSWORD = true;    // Змініть на false, щоб відключити запит пароля
@@ -515,6 +461,69 @@
     <script src="js/owl.carousel.min.js?v=2"></script>
     <script src="js/main.js?v=2"></script>
 
+    <!-- IOS CHROME DEBUG LOGGER (IN FOOTER) -->
+    <div id="ios-debug-log" style="background:#111; color:lime; font-family:monospace; font-size:12px; padding:20px; border-top: 4px solid lime; margin-top:50px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <strong style="font-size:16px;">DIAGNOSTIC LOGS:</strong>
+            <button onclick="copyLogs()" style="background:lime; color:black; padding:5px 10px; border:none; font-weight:bold; cursor:pointer;">КОПІЮВАТИ ЛОГИ</button>
+        </div>
+        <div id="log-content" style="white-space: pre-wrap; word-break: break-all;"></div>
+    </div>
+    <script>
+        var logHistory = [];
+        var logBox = document.getElementById('log-content');
+        
+        function printLog(msg) {
+            var time = new Date().toISOString().split('T')[1].slice(0, -1);
+            var entry = time + ': ' + msg;
+            logHistory.push(entry);
+            logBox.innerHTML += '<div>' + entry + '</div>';
+        }
+
+        function copyLogs() {
+            var text = logHistory.join('\n');
+            navigator.clipboard.writeText(text).then(function() {
+                alert("Логи скопійовано! Вставте їх в чат.");
+            }).catch(function() {
+                alert("Помилка копіювання, виділіть текст вручну.");
+            });
+        }
+        
+        (function() {
+            var lastIH = window.innerHeight;
+            var lastCH = document.documentElement.clientHeight;
+            
+            printLog("INIT IH:" + lastIH + " CH:" + lastCH);
+            
+            window.addEventListener('resize', function() {
+                printLog("RESIZE EVENT FIRED! IH:" + window.innerHeight + " CH:" + document.documentElement.clientHeight);
+            });
+            
+            setInterval(function() {
+                var currentIH = window.innerHeight;
+                var currentCH = document.documentElement.clientHeight;
+                if (currentIH !== lastIH || currentCH !== lastCH) {
+                    printLog("HEIGHT CHANGE! IH: " + lastIH + "->" + currentIH + ", CH: " + lastCH + "->" + currentCH);
+                    lastIH = currentIH;
+                    lastCH = currentCH;
+                }
+            }, 500);
+
+            var observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === 'class' || mutation.attributeName === 'style') {
+                        printLog("BODY ATTR CHANGED: " + mutation.attributeName + " = " + document.body.getAttribute(mutation.attributeName));
+                    }
+                });
+            });
+            observer.observe(document.body, { attributes: true });
+
+            window.onerror = function(msg, url, line) {
+                printLog("ERR: " + msg + " line " + line);
+            };
+        })();
+    </script>
+    <!-- END DEBUG LOGGER -->
 </body>
 
 </html>
