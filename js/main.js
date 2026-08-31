@@ -163,16 +163,27 @@
     }, 100);
 
     let hasFlashed = false;
-    let checkInterval;
-    let fallbackTimeout;
+    var checkInterval, fallbackTimeout;
 
     function triggerFlashAndHide() {
+        $('#preloder').fadeTo(0, 0, function() {
+            $(this).css('display', 'none');
+            
+            // Force play all native autoplay videos
+            $('video[autoplay]').each(function() {
+                var p = this.play();
+                if (p && typeof p.catch === 'function') {
+                    p.catch(function(e) { console.log('Autoplay blocked:', e); });
+                }
+            });
+        });
+        clearInterval(checkInterval);
+        clearTimeout(fallbackTimeout);
+
         if(hasFlashed) return;
         hasFlashed = true;
         
         clearInterval(fakeInterval); 
-        clearInterval(checkInterval);
-        clearTimeout(fallbackTimeout);
 
         currentPercent = 100;
         updatePreloaderUI(100);
