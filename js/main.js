@@ -169,7 +169,6 @@
     function triggerFlashAndHide() {
         if(hasFlashed) return;
         hasFlashed = true;
-        if(window.printLog) printLog("TRIGGER_FLASH_AND_HIDE CALLED");
         
         clearInterval(fakeInterval); // Зупиняємо повільний таймер
         clearInterval(checkInterval);
@@ -190,7 +189,6 @@
             }
             
             if (currentPercent === 100) {
-                if(window.printLog) printLog("PRELOADER PERCENT HIT 100");
                 clearInterval(finishInterval);
                 
                 scrambleStatus("SYSTEM ONLINE");
@@ -198,13 +196,11 @@
 
                 // Спрощена анімація без створення нових елементів (без shockwave/flash)
                 setTimeout(() => {
-                    if(window.printLog) printLog("FADETO STARTING NOW");
                     if(hudWrapper) $(hudWrapper).fadeTo(300, 0);
                     if(bgText) $(bgText).fadeTo(300, 0);
                     $percentage.fadeTo(300, 0);
 
                     $("#preloder").delay(400).fadeTo(800, 0, function() {
-                        if(window.printLog) printLog("FADETO COMPLETED");
                         $(this).css({'pointer-events': 'none'});
                     });
                 }, 1200);
@@ -229,14 +225,12 @@
             });
 
             if (ready >= totalVideos) {
-                if(window.printLog) printLog("ALL VIDEOS READY");
                 triggerFlashAndHide();
             }
         }, 300);
 
         // ABSOLUTE MAXIMUM FALLBACK - Forces the site to open after 5.5 seconds no matter what!
         fallbackTimeout = setTimeout(function() {
-            if(window.printLog) printLog("FALLBACK TIMEOUT FIRED");
             triggerFlashAndHide();
         }, 5500); 
     }
