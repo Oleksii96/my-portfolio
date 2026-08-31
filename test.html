@@ -17,9 +17,8 @@
         }
         
         .header {
-            position: fixed;
-            /* Використовуємо safe-area-inset щоб Хром не ховав шапку під свою панель */
-            top: max(0px, env(safe-area-inset-top));
+            position: absolute; /* ЗМІНЕНО НА ABSOLUTE ДЛЯ ТЕСТУ */
+            top: 0;
             left: 0;
             width: 100%;
             height: 60px;
@@ -50,7 +49,7 @@
 <body>
 
     <div class="header">
-        ФІКСОВАНА ШАПКА (TEST V3)
+        АБСОЛЮТНА ШАПКА (TEST V4)
     </div>
 
     <div class="content">
