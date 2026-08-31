@@ -15,8 +15,6 @@
     if ('scrollRestoration' in history) {
         history.scrollRestoration = 'manual';
     }
-    // Force scroll to top on reload
-    window.scrollTo(0, 0);
 
     /*------------------
         Preloader V6
@@ -212,7 +210,6 @@
                     $percentage.fadeOut(300);
 
                     $("#preloder").delay(400).fadeOut(800, function() {
-                        $('body').removeClass('no-scroll');
                         $(flash).fadeOut(1500, function() { $(flash).remove(); });
                         $(shockwave).remove();
                     });
