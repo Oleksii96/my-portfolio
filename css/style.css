@@ -242,7 +242,7 @@ ol {
   width: 100%;
 }
 
-/* --- NEW PRELOADER V6 --- */
+/* --- NEW PRELOADER V11 --- */
 #preloder {
     position: fixed;
     width: 100%;
@@ -267,25 +267,25 @@ ol {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     font-size: 15vw; font-weight: 900; color: rgba(255,255,255,0.03);
     white-space: nowrap; z-index: 2; pointer-events: none;
-    transition: opacity 1s ease, transform 1s ease;
+    transition: opacity 1s ease, transform 2s ease, color 1s ease;
 }
 
 /* The Main HUD Area */
 .hud-wrapper {
     position: relative; width: 350px; height: 350px;
     display: flex; justify-content: center; align-items: center;
-    z-index: 50; transition: transform 2s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 50; transition: transform 2s ease;
 }
 
-/* Concentric Rotating Rings (JARVIS style) */
-.hud-circle { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; box-sizing: border-box; transition: all 1s ease; }
+/* Concentric Rotating Rings (Fixed scales) */
+.hud-circle { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; box-sizing: border-box; }
 
-.circle-1 { border: 2px dashed rgba(0, 255, 204, 0.4); animation: rotate-right 25s linear infinite; }
-.circle-2 { border: 4px dotted rgba(255, 0, 60, 0.3); transform: scale(1.1); animation: rotate-left 20s linear infinite; }
+.circle-1 { border: 2px dashed rgba(0, 255, 204, 0.4); animation: rotate-1 25s linear infinite; transition: border-color 2s ease; }
+.circle-2 { border: 4px dotted rgba(255, 0, 60, 0.3); transform: scale(1.1); animation: rotate-2 20s linear infinite; transition: border-color 2s ease; }
 .circle-3 { 
     border-top: 3px solid #00ffcc; border-bottom: 3px solid #00ffcc; 
     border-left: 3px solid transparent; border-right: 3px solid transparent; 
-    transform: scale(1.2); animation: rotate-right 10s linear infinite; 
+    transform: scale(1.2); animation: rotate-3 10s linear infinite; 
     box-shadow: 0 0 15px rgba(0,255,204,0.2) inset, 0 0 15px rgba(0,255,204,0.2);
     transition: border-color 2s ease, box-shadow 2s ease;
 }
@@ -296,8 +296,11 @@ ol {
 .el-drone { top: 10%; right: 20%; font-size: 40px; animation: flyAround 15s infinite linear; }
 .el-film { bottom: 15%; right: 20%; animation: float1 7s infinite ease-in-out, spin 10s infinite linear; }
 
-@keyframes rotate-right { 100% { transform: rotate(360deg); } }
-@keyframes rotate-left { 100% { transform: scale(1.1) rotate(-360deg); } }
+/* Proper keyframes preserving scale */
+@keyframes rotate-1 { 100% { transform: scale(1.0) rotate(360deg); } }
+@keyframes rotate-2 { 100% { transform: scale(1.1) rotate(-360deg); } }
+@keyframes rotate-3 { 100% { transform: scale(1.2) rotate(360deg); } }
+
 @keyframes float1 { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-30px) rotate(10deg); } }
 @keyframes flyAround { 0% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(-100px, 150px) rotate(180deg); } 100% { transform: translate(0, 0) rotate(360deg); } }
 @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -320,7 +323,7 @@ ol {
     text-shadow: 0 0 20px rgba(0, 255, 204, 0.8);
     letter-spacing: 2px; margin: 0;
     font-family: 'Share Tech Mono', monospace;
-    transition: text-shadow 2s ease;
+    transition: text-shadow 2s ease, transform 2s ease;
 }
 
 .ai-status {
@@ -338,16 +341,40 @@ ol {
     height: 40px; overflow: hidden;
     mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
     -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
-    transition: color 2s ease;
+    transition: color 2s ease, opacity 1s ease;
 }
 .console-line { margin: 2px 0; }
 
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
+/* Epic Ending Animations */
+.shockwave {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 0; height: 0; border-radius: 50%;
+    box-shadow: 0 0 150px 50px rgba(255,255,255,1), 0 0 0 20px rgba(255,255,255,0.8) inset;
+    animation: shockwave-anim 1.2s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+    z-index: 99; pointer-events: none;
+}
+@keyframes shockwave-anim {
+    0% { width: 0; height: 0; opacity: 1; }
+    100% { width: 150vw; height: 150vw; opacity: 0; box-shadow: 0 0 100px 5px rgba(255,255,255,0); }
+}
+
+.flash {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: #fff; z-index: 100; pointer-events: none;
+    animation: flash-anim 1.5s ease-out forwards;
+}
+@keyframes flash-anim {
+    0% { opacity: 0; }
+    30% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
 @media (max-width: 768px) {
     .hud-wrapper { transform: scale(0.8); }
 }
-/* --- END NEW PRELOADER V6 --- */
+/* --- END NEW PRELOADER V11 --- */
 
 /*---------------------
   Header

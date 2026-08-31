@@ -24,10 +24,11 @@
     var $percentage = $('#loader-percentage');
     var currentPercent = 0;
     
-    // --- V6 UI Elements ---
+    // --- V11 UI Elements ---
     const ringFill = document.getElementById('ringFill');
     const bgText = document.getElementById('bgText');
     const hudWrapper = document.getElementById('hudWrapper');
+    const c1 = document.getElementById('c1');
     const c3 = document.getElementById('c3');
     const icons = document.querySelectorAll('.floating-element');
     const consoleEl = document.getElementById('rapidConsole');
@@ -94,34 +95,50 @@
     function setPhase(phase) {
         if (activePhase === phase || !bgText) return;
         activePhase = phase;
-        if (phase === 1) {
+        if (phase === 1) { // 0-33%
             matrixColor = '#00ffcc'; bgText.innerText = 'DOWNLOADING MEDIA';
             if(ringFill) { ringFill.style.stroke = '#00ffcc'; ringFill.style.filter = 'drop-shadow(0 0 10px #00ffcc)'; }
             if($percentage.length) $percentage[0].style.textShadow = '0 0 20px rgba(0, 255, 204, 0.8)';
             if(consoleEl) consoleEl.style.color = 'rgba(0,255,204,0.7)';
+            if(c1) c1.style.borderColor = 'rgba(0, 255, 204, 0.4)';
             if(c3) { c3.style.borderColor = '#00ffcc transparent #00ffcc transparent'; c3.style.boxShadow = '0 0 15px rgba(0,255,204,0.2) inset, 0 0 15px rgba(0,255,204,0.2)'; }
             if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1)' : 'scale(0.8)';
+            if(bgText) bgText.style.transform = 'translate(-50%, -50%) scale(1)';
             scrambleStatus("UPLOADING NEURAL DATA");
-        } else if (phase === 2) {
+        } else if (phase === 2) { // 33-66%
             matrixColor = '#ffaa00'; bgText.innerText = 'PROCESSING AI';
-            bgText.style.transform = 'translate(-50%, -50%) scale(1.1)';
+            if(bgText) bgText.style.transform = 'translate(-50%, -50%) scale(1.1)';
             if(ringFill) { ringFill.style.stroke = '#ffaa00'; ringFill.style.filter = 'drop-shadow(0 0 15px #ffaa00)'; }
             if($percentage.length) $percentage[0].style.textShadow = '0 0 25px rgba(255, 170, 0, 0.9)';
             if(consoleEl) consoleEl.style.color = 'rgba(255, 170, 0, 0.7)';
+            if(c1) c1.style.borderColor = 'rgba(255, 170, 0, 0.4)';
             if(c3) { c3.style.borderColor = '#ffaa00 transparent #ffaa00 transparent'; c3.style.boxShadow = '0 0 25px rgba(255, 170, 0, 0.4) inset, 0 0 25px rgba(255,170,0,0.4)'; }
             if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1.1)' : 'scale(0.9)';
             icons.forEach(i => i.style.color = 'rgba(255, 170, 0, 0.1)');
             scrambleStatus("APPLYING VFX FILTERS");
-        } else if (phase === 3) {
+        } else if (phase === 3) { // 66-95%
             matrixColor = '#ff003c'; bgText.innerText = 'CRITICAL LOAD';
-            bgText.style.transform = 'translate(-50%, -50%) scale(1.2)';
+            if(bgText) bgText.style.transform = 'translate(-50%, -50%) scale(1.2)';
             if(ringFill) { ringFill.style.stroke = '#ff003c'; ringFill.style.filter = 'drop-shadow(0 0 20px #ff003c)'; }
             if($percentage.length) $percentage[0].style.textShadow = '0 0 30px rgba(255, 0, 60, 1)';
             if(consoleEl) consoleEl.style.color = 'rgba(255, 0, 60, 0.7)';
+            if(c1) c1.style.borderColor = 'rgba(255, 0, 60, 0.4)';
             if(c3) { c3.style.borderColor = '#ff003c transparent #ff003c transparent'; c3.style.boxShadow = '0 0 30px rgba(255, 0, 60, 0.6) inset, 0 0 30px rgba(255,0,60,0.6)'; }
             if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1.2)' : 'scale(1)';
             icons.forEach(i => i.style.color = 'rgba(255, 0, 60, 0.1)');
+            document.body.style.background = '#1a0005';
             scrambleStatus("FINALIZING RENDER");
+        } else if (phase === 4) { // 96-99% Hyper-drive
+            matrixColor = '#ffffff'; bgText.innerText = 'SYSTEM READY';
+            if(bgText) { bgText.style.color = 'rgba(255,255,255,0.1)'; bgText.style.transform = 'translate(-50%, -50%) scale(1.3)'; }
+            if(ringFill) { ringFill.style.stroke = '#ffffff'; ringFill.style.filter = 'drop-shadow(0 0 30px #ffffff)'; }
+            if($percentage.length) { $percentage[0].style.textShadow = '0 0 40px rgba(255, 255, 255, 1)'; $percentage[0].style.transform = 'scale(1.1)'; }
+            if(consoleEl) consoleEl.style.opacity = '0';
+            if(c1) c1.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+            if(c3) { c3.style.borderColor = '#ffffff transparent #ffffff transparent'; c3.style.boxShadow = '0 0 40px rgba(255, 255, 255, 0.8) inset, 0 0 40px rgba(255,255,255,0.8)'; }
+            if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1.3)' : 'scale(1.1)';
+            icons.forEach(i => i.style.color = 'rgba(255, 255, 255, 0.3)');
+            scrambleStatus("INITIATING LAUNCH");
         }
     }
 
@@ -135,7 +152,8 @@
         $percentage.text(Math.floor(pct) + '%');
         
         if (pct >= 33 && pct < 66) setPhase(2);
-        if (pct >= 66 && pct <= 100) setPhase(3);
+        if (pct >= 66 && pct < 96) setPhase(3);
+        if (pct >= 96 && pct <= 100) setPhase(4);
     }
 
     // Start UI update loop
@@ -156,36 +174,38 @@
             if(hasFlashed) return;
             hasFlashed = true;
             
-            // Reached ready - trigger 99% logic
-            currentPercent = 99;
-            updatePreloaderUI(99);
-            scrambleStatus("SYSTEM READY");
+            // Reached ready - trigger 100% logic
+            currentPercent = 100;
+            updatePreloaderUI(100);
+            scrambleStatus("SYSTEM ONLINE");
             matrixColor = '#ffffff';
 
-            // Flash effect
-            let flash = document.createElement('div');
-            flash.style.position = 'fixed';
-            flash.style.top = 0; flash.style.left = 0;
-            flash.style.width = '100%'; flash.style.height = '100%';
-            flash.style.background = '#fff'; flash.style.zIndex = 9999999;
-            flash.style.opacity = 0; flash.style.pointerEvents = 'none';
-            flash.style.transition = 'opacity 0.3s ease-out';
-            document.body.appendChild(flash);
-            
-            setTimeout(() => { flash.style.opacity = 1; }, 100);
+            if(ringFill) ringFill.style.strokeDashoffset = 0;
+            $percentage.text('100%');
 
-            setTimeout(function() {
+            // 1. Fire Shockwave
+            let shockwave = document.createElement('div');
+            shockwave.className = 'shockwave';
+            document.body.appendChild(shockwave);
+
+            // 2. Wait 0.8s for suspense, then full flash
+            setTimeout(() => {
+                let flash = document.createElement('div');
+                flash.className = 'flash';
+                document.body.appendChild(flash);
+                
                 // Fade out inner UI first
-                if(hudWrapper) $(hudWrapper).fadeOut();
-                if(bgText) $(bgText).fadeOut();
-                $percentage.fadeOut();
+                if(hudWrapper) $(hudWrapper).fadeOut(300);
+                if(bgText) $(bgText).fadeOut(300);
+                $percentage.fadeOut(300);
 
                 // Fade out entire preloader smoothly
                 $("#preloder").delay(400).fadeOut(600, function() {
                     $('body').removeClass('no-scroll');
                     $(flash).fadeOut(1000, function() { $(flash).remove(); });
+                    $(shockwave).remove();
                 });
-            }, 600); // Wait 0.6s after flash starts to fade out the preloader
+            }, 800);
         }
 
         if (totalVideos === 0) {
