@@ -8,6 +8,9 @@
     <meta name="keywords" content="Відеомонтажер, Монтаж відео, VFX, Кольорокорекція, Портфоліо">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Портфоліо | Відеомонтажер</title>
 
     <!-- Open Graph / Facebook / Telegram -->
@@ -30,14 +33,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
     <!-- Css Styles -->
-    <link rel="stylesheet" href="css/bootstrap.min.css?v=2" type="text/css">
+    <link rel="stylesheet" href="css/bootstrap.min.css?v=3" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" type="text/css">
-    <link rel="stylesheet" href="css/font-awesome.min.css?v=2" type="text/css">
-    <link rel="stylesheet" href="css/elegant-icons.css?v=2" type="text/css">
-    <link rel="stylesheet" href="css/owl.carousel.min.css?v=2" type="text/css">
-    <link rel="stylesheet" href="css/magnific-popup.css?v=2" type="text/css">
-    <link rel="stylesheet" href="css/slicknav.min.css?v=2" type="text/css">
-    <link rel="stylesheet" href="css/style.css?v=2" type="text/css">
+    <link rel="stylesheet" href="css/font-awesome.min.css?v=3" type="text/css">
+    <link rel="stylesheet" href="css/elegant-icons.css?v=3" type="text/css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css?v=3" type="text/css">
+    <link rel="stylesheet" href="css/magnific-popup.css?v=3" type="text/css">
+    <link rel="stylesheet" href="css/slicknav.min.css?v=3" type="text/css">
+    <link rel="stylesheet" href="css/style.css?v=3" type="text/css">
 </head>
 
 <body>
@@ -453,77 +456,15 @@
     <!-- Footer Section End -->
 
     <!-- Js Plugins -->
-    <script src="js/jquery-3.3.1.min.js?v=2"></script>
-    <script src="js/bootstrap.min.js?v=2"></script>
-    <script src="js/jquery.magnific-popup.min.js?v=2"></script>
-    <script src="js/masonry.pkgd.min.js?v=2"></script>
-    <script src="js/jquery.slicknav.js?v=2"></script>
-    <script src="js/owl.carousel.min.js?v=2"></script>
-    <script src="js/main.js?v=2"></script>
+    <script src="js/jquery-3.3.1.min.js?v=3"></script>
+    <script src="js/bootstrap.min.js?v=3"></script>
+    <script src="js/jquery.magnific-popup.min.js?v=3"></script>
+    <script src="js/masonry.pkgd.min.js?v=3"></script>
+    <script src="js/jquery.slicknav.js?v=3"></script>
+    <script src="js/owl.carousel.min.js?v=3"></script>
+    <script src="js/main.js?v=3"></script>
 
-    <!-- IOS CHROME DEBUG LOGGER (FIXED BOTTOM) -->
-    <div id="ios-debug-log" style="position:fixed; bottom:0; left:0; width:100%; max-height:25vh; overflow-y:auto; background:rgba(0,0,0,0.95); color:lime; z-index:9999999; font-family:monospace; font-size:12px; padding:10px; border-top: 2px solid lime; box-shadow: 0 -5px 15px rgba(0,0,0,0.5);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; border-bottom: 1px solid lime; padding-bottom:5px;">
-            <strong style="font-size:14px;">LOGS:</strong>
-            <button onclick="copyLogs()" style="background:lime; color:black; padding:5px 10px; border:none; font-weight:bold; cursor:pointer;">КОПІЮВАТИ</button>
-        </div>
-        <div id="log-content" style="white-space: pre-wrap; word-break: break-all;"></div>
-    </div>
-    <script>
-        var logHistory = [];
-        var logBox = document.getElementById('log-content');
-        
-        function printLog(msg) {
-            var time = new Date().toISOString().split('T')[1].slice(0, -1);
-            var entry = time + ': ' + msg;
-            logHistory.push(entry);
-            logBox.innerHTML += '<div>' + entry + '</div>';
-        }
 
-        function copyLogs() {
-            var text = logHistory.join('\n');
-            navigator.clipboard.writeText(text).then(function() {
-                alert("Логи скопійовано! Вставте їх в чат.");
-            }).catch(function() {
-                alert("Помилка копіювання, виділіть текст вручну.");
-            });
-        }
-        
-        (function() {
-            var lastIH = window.innerHeight;
-            var lastCH = document.documentElement.clientHeight;
-            
-            printLog("INIT IH:" + lastIH + " CH:" + lastCH);
-            
-            window.addEventListener('resize', function() {
-                printLog("RESIZE EVENT FIRED! IH:" + window.innerHeight + " CH:" + document.documentElement.clientHeight);
-            });
-            
-            setInterval(function() {
-                var currentIH = window.innerHeight;
-                var currentCH = document.documentElement.clientHeight;
-                if (currentIH !== lastIH || currentCH !== lastCH) {
-                    printLog("HEIGHT CHANGE! IH: " + lastIH + "->" + currentIH + ", CH: " + lastCH + "->" + currentCH);
-                    lastIH = currentIH;
-                    lastCH = currentCH;
-                }
-            }, 500);
-
-            var observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    if (mutation.attributeName === 'class' || mutation.attributeName === 'style') {
-                        printLog("BODY ATTR CHANGED: " + mutation.attributeName + " = " + document.body.getAttribute(mutation.attributeName));
-                    }
-                });
-            });
-            observer.observe(document.body, { attributes: true });
-
-            window.onerror = function(msg, url, line) {
-                printLog("ERR: " + msg + " line " + line);
-            };
-        })();
-    </script>
-    <!-- END DEBUG LOGGER -->
 </body>
 
 </html>
