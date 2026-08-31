@@ -5,15 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Polygon</title>
     <style>
-        body {
+        html, body {
             margin: 0;
             padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden !important; /* БЛОКУЄМО РІДНИЙ СКРОЛ */
+            position: fixed; /* Фіксуємо для iOS Chrome */
             font-family: sans-serif;
             background: #222;
             color: white;
-            /* Додаємо висоту, щоб можна було скролити */
-            height: 3000px; 
         }
+        
+        .main-scroll-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .content-inner {
+            /* Додаємо висоту, щоб можна було скролити всередині врапера */
+            height: 3000px; 
+            padding-top: 100px;
+            text-align: center;
+        }
+
         .header {
             position: fixed;
             top: 0;
@@ -26,10 +46,7 @@
             justify-content: center;
             z-index: 100;
         }
-        .content {
-            padding-top: 100px;
-            text-align: center;
-        }
+        
         .box {
             width: 80%;
             height: 200px;
@@ -49,15 +66,18 @@
         ФІКСОВАНА ШАПКА (TEST)
     </div>
 
-    <div class="content">
-        <h1>Тестовий полігон</h1>
-        <p>Скрольте вниз, щоб побачити поведінку браузера.</p>
-        
-        <div class="box">Блок 1</div>
-        <div class="box">Блок 2</div>
-        <div class="box">Блок 3</div>
-        <div class="box">Блок 4</div>
-        <div class="box">Блок 5</div>
+    <!-- Обгортка, яка забирає скрол на себе -->
+    <div class="main-scroll-wrapper">
+        <div class="content-inner">
+            <h1>Тестовий полігон</h1>
+            <p>Скрольте вниз, щоб побачити поведінку браузера.</p>
+            
+            <div class="box">Блок 1</div>
+            <div class="box">Блок 2</div>
+            <div class="box">Блок 3</div>
+            <div class="box">Блок 4</div>
+            <div class="box">Блок 5</div>
+        </div>
     </div>
 
     <!-- IOS CHROME DEBUG LOGGER -->
