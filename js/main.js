@@ -102,7 +102,7 @@
             if(consoleEl) consoleEl.style.color = 'rgba(0,255,204,0.7)';
             if(c1) c1.style.borderColor = 'rgba(0, 255, 204, 0.4)';
             if(c3) { c3.style.borderColor = '#00ffcc transparent #00ffcc transparent'; c3.style.boxShadow = '0 0 15px rgba(0,255,204,0.2) inset, 0 0 15px rgba(0,255,204,0.2)'; }
-            if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1)' : 'scale(0.8)';
+            if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1)' : 'scale(0.65)';
             if(bgText) bgText.style.transform = 'translate(-50%, -50%) scale(1)';
             scrambleStatus("UPLOADING NEURAL DATA");
         } else if (phase === 2) { // 33-66%
@@ -113,7 +113,7 @@
             if(consoleEl) consoleEl.style.color = 'rgba(255, 170, 0, 0.7)';
             if(c1) c1.style.borderColor = 'rgba(255, 170, 0, 0.4)';
             if(c3) { c3.style.borderColor = '#ffaa00 transparent #ffaa00 transparent'; c3.style.boxShadow = '0 0 25px rgba(255, 170, 0, 0.4) inset, 0 0 25px rgba(255,170,0,0.4)'; }
-            if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1.1)' : 'scale(0.9)';
+            if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1.1)' : 'scale(0.75)';
             icons.forEach(i => i.style.color = 'rgba(255, 170, 0, 0.1)');
             scrambleStatus("APPLYING VFX FILTERS");
         } else if (phase === 3) { // 66-95%
@@ -124,7 +124,7 @@
             if(consoleEl) consoleEl.style.color = 'rgba(255, 0, 60, 0.7)';
             if(c1) c1.style.borderColor = 'rgba(255, 0, 60, 0.4)';
             if(c3) { c3.style.borderColor = '#ff003c transparent #ff003c transparent'; c3.style.boxShadow = '0 0 30px rgba(255, 0, 60, 0.6) inset, 0 0 30px rgba(255,0,60,0.6)'; }
-            if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1.2)' : 'scale(1)';
+            if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1.2)' : 'scale(0.85)';
             icons.forEach(i => i.style.color = 'rgba(255, 0, 60, 0.1)');
             document.body.style.background = '#1a0005';
             scrambleStatus("FINALIZING RENDER");
@@ -136,7 +136,7 @@
             if(consoleEl) consoleEl.style.opacity = '0';
             if(c1) c1.style.borderColor = 'rgba(255, 255, 255, 0.4)';
             if(c3) { c3.style.borderColor = '#ffffff transparent #ffffff transparent'; c3.style.boxShadow = '0 0 40px rgba(255, 255, 255, 0.8) inset, 0 0 40px rgba(255,255,255,0.8)'; }
-            if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1.3)' : 'scale(1.1)';
+            if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1.3)' : 'scale(0.95)';
             icons.forEach(i => i.style.color = 'rgba(255, 255, 255, 0.3)');
             scrambleStatus("INITIATING LAUNCH");
         }
@@ -164,92 +164,89 @@
         }
     }, 100);
 
-    $(window).on('load', function () {
-        var $videos = $('video');
-        var totalVideos = $videos.length;
-        var fallbackTimeout;
-        let hasFlashed = false;
+    let hasFlashed = false;
+    let checkInterval;
+    let fallbackTimeout;
 
-        function triggerFlashAndHide() {
-            if(hasFlashed) return;
-            hasFlashed = true;
+    function triggerFlashAndHide() {
+        if(hasFlashed) return;
+        hasFlashed = true;
+        
+        clearInterval(fakeInterval); // Зупиняємо повільний таймер
+        clearInterval(checkInterval);
+        clearTimeout(fallbackTimeout);
+
+        // Плавно і ПОМІТНО дотягуємо відсотки до 100 (розтягуємо на 1 секунду)
+        const remaining = 100 - currentPercent;
+        const duration = 1000; // 1 секунда на докрутку
+        const intervalTime = 20; // Оновлення кожні 20мс для ідеальної плавності кільця
+        const steps = duration / intervalTime;
+        const stepValue = remaining / steps;
+
+        let finishInterval = setInterval(() => {
+            if (currentPercent < 100) {
+                currentPercent += stepValue;
+                if (currentPercent >= 100) currentPercent = 100;
+                updatePreloaderUI(currentPercent);
+            }
             
-            clearInterval(fakeInterval); // Зупиняємо повільний таймер
-
-            // Плавно і ПОМІТНО дотягуємо відсотки до 100 (розтягуємо на 1 секунду)
-            const remaining = 100 - currentPercent;
-            const duration = 1000; // 1 секунда на докрутку
-            const intervalTime = 20; // Оновлення кожні 20мс для ідеальної плавності кільця
-            const steps = duration / intervalTime;
-            const stepValue = remaining / steps;
-
-            let finishInterval = setInterval(() => {
-                if (currentPercent < 100) {
-                    currentPercent += stepValue;
-                    if (currentPercent >= 100) currentPercent = 100;
-                    updatePreloaderUI(currentPercent);
-                }
+            if (currentPercent === 100) {
+                clearInterval(finishInterval);
                 
-                if (currentPercent === 100) {
-                    clearInterval(finishInterval);
+                scrambleStatus("SYSTEM ONLINE");
+                matrixColor = '#ffffff';
+
+                // 1. Випускаємо Shockwave (ударну хвилю)
+                let shockwave = document.createElement('div');
+                shockwave.className = 'shockwave';
+                document.body.appendChild(shockwave);
+
+                // 2. Пауза на 100% (1.2 сек)
+                setTimeout(() => {
+                    let flash = document.createElement('div');
+                    flash.className = 'flash';
+                    document.body.appendChild(flash);
                     
-                    scrambleStatus("SYSTEM ONLINE");
-                    matrixColor = '#ffffff';
+                    if(hudWrapper) $(hudWrapper).fadeOut(300);
+                    if(bgText) $(bgText).fadeOut(300);
+                    $percentage.fadeOut(300);
 
-                    // 1. Випускаємо Shockwave (ударну хвилю)
-                    let shockwave = document.createElement('div');
-                    shockwave.className = 'shockwave';
-                    document.body.appendChild(shockwave);
+                    $("#preloder").delay(400).fadeOut(800, function() {
+                        $('body').removeClass('no-scroll');
+                        $(flash).fadeOut(1500, function() { $(flash).remove(); });
+                        $(shockwave).remove();
+                    });
+                }, 1200);
+            }
+        }, intervalTime);
+    }
 
-                    // 2. Пауза на 100% (1.2 сек)
-                    setTimeout(() => {
-                        let flash = document.createElement('div');
-                        flash.className = 'flash';
-                        document.body.appendChild(flash);
-                        
-                        if(hudWrapper) $(hudWrapper).fadeOut(300);
-                        if(bgText) $(bgText).fadeOut(300);
-                        $percentage.fadeOut(300);
+    // IMMEDIATELY start checking, do NOT wait for window.load to avoid hanging the site
+    var $videos = $('video');
+    var totalVideos = $videos.length;
 
-                        $("#preloder").delay(400).fadeOut(800, function() {
-                            $('body').removeClass('no-scroll');
-                            $(flash).fadeOut(1500, function() { $(flash).remove(); });
-                            $(shockwave).remove();
-                        });
-                    }, 1200);
+    if (totalVideos === 0) {
+        clearInterval(fakeInterval);
+        triggerFlashAndHide();
+    } else {
+        checkInterval = setInterval(function() {
+            var ready = 0;
+            $videos.each(function() {
+                if (this.readyState >= 3) {
+                    ready++;
                 }
-            }, intervalTime);
-        }
+            });
 
-        if (totalVideos === 0) {
-            clearInterval(fakeInterval);
-            triggerFlashAndHide();
-        } else {
-            var checkInterval = setInterval(function() {
-                var ready = 0;
-                $videos.each(function() {
-                    // readyState >= 3: HAVE_FUTURE_DATA
-                    if (this.readyState >= 3) {
-                        ready++;
-                    }
-                });
-
-                if (ready >= totalVideos) {
-                    clearInterval(checkInterval);
-                    clearInterval(fakeInterval);
-                    clearTimeout(fallbackTimeout);
-                    triggerFlashAndHide();
-                }
-            }, 300);
-
-            // Fallback Timeout 
-            fallbackTimeout = setTimeout(function() {
-                clearInterval(checkInterval);
-                clearInterval(fakeInterval);
+            if (ready >= totalVideos) {
                 triggerFlashAndHide();
-            }, 10000); // 10 seconds timeout is safer so users don't wait forever
-        }
-    });
+            }
+        }, 300);
+
+        // ABSOLUTE MAXIMUM FALLBACK - Forces the site to open after 5.5 seconds no matter what!
+        fallbackTimeout = setTimeout(function() {
+            triggerFlashAndHide();
+        }, 5500); 
+    }
 
     /*------------------
         Smooth Scroll
