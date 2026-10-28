@@ -133,13 +133,13 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', s
   var CL = 'https://res.cloudinary.com/evdoyndv/video/upload/';
   var WIDTH = matchMedia('(max-width: 767px)').matches ? 480 : 720;
   var clips = [
-    { id: 'sailun', name: 'Sailun Tires', len: 7, grade: true, now: 'Кольорокорекція — потягніть повзунок на кадрі' },
-    { id: 'karting', name: 'Картинг', len: 4, now: 'Motion-графіка й телеметрія' },
-    { id: 'me-1', name: 'Серія відео', len: 4, now: 'Монтаж розмовного відео' },
-    { yt: '8_LSFVe5i5E', name: 'Шини Ф1', len: 4, now: 'VFX для шортсів' },
-    { id: 'nba', name: 'NBA Stars', len: 4, now: 'Анімація та моушн' }
+    { id: 'sailun', name: 'Sailun Tires', len: 3, grade: true, now: 'Кольорокорекція — потягніть повзунок на кадрі' },
+    { yt: '5Hl6TwF55oc', name: 'Tire Reviews Show', len: 2, now: 'Переклад і графіка для шоу' },
+    { id: 'me-1', name: 'Серія відео', len: 2, now: 'Монтаж розмовного відео' },
+    { yt: '8_LSFVe5i5E', name: 'Шини Ф1', len: 2, now: 'VFX для шортсів' },
+    { id: 'karting', name: 'Картинг', len: 2, now: 'Motion-графіка й телеметрія' }
   ];
-  var fx = [['Кольорокорекція', 0, 7, 'color'], ['Телеметрія', 7.4, 3.2, 'alt'], ['Титри', 11.4, 2.4, ''], ['VFX', 15.2, 3.4, 'alt'], ['Титри', 19.4, 2.6, '']];
+  var fx = [['Кольорокорекція', 0, 3, 'color'], ['Субтитри', 3.2, 1.6, 'alt'], ['Титри', 5.2, 1.2, ''], ['VFX', 7.1, 1.7, 'alt'], ['Телеметрія', 9.1, 1.8, '']];
   var FPS = 25, TOTAL = 0;
   clips.forEach(function (c) { c.start = TOTAL; TOTAL += c.len; });
 
@@ -155,7 +155,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', s
   function pct(s) { return (s / TOTAL * 100) + '%'; }
   function play(el) { if (el && el.play) { var p = el.play(); if (p && p.catch) p.catch(function () {}); } }
 
-  for (var s = 0; s < TOTAL; s += 2) {
+  for (var s = 0; s < TOTAL; s += 1) {
     var mark = document.createElement('span');
     mark.className = 'mono';
     mark.style.left = pct(s);
@@ -255,7 +255,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', s
     }
     if (!touched && clips[active] && clips[active].grade) {
       if (!swayStart) swayStart = now;
-      setX(50 + Math.sin((now - swayStart) / 1100) * 24);
+      setX(50 + Math.sin((now - swayStart) / 450) * 24);
     }
     render();
     requestAnimationFrame(frame);
@@ -276,7 +276,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', s
   function release() {
     if (!dragging) return;
     dragging = false;
-    holdUntil = performance.now() + 2500;
+    holdUntil = performance.now() + 1500;
   }
   grade.addEventListener('pointerup', release);
   grade.addEventListener('pointercancel', release);
