@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Пісочниця · варіанти hero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Josefin+Sans:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #100028;
+  --deep: #07000f;
+  --panel: #1a0b36;
+  --line: rgba(255,255,255,.12);
+  --text: #f4f2ff;
+  --muted: #a39fbf;
+  --accent: #00bfe7;
+  --hot: #ff2e63;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+.divider { height: 140px; background: #2a2340; display: flex; align-items: center; justify-content: center; font: 600 15px/1.4 'Josefin Sans', sans-serif; letter-spacing: 2px; text-transform: uppercase; color: #cfc9ea; text-align: center; padding: 0 16px; }
+.divider:first-child { height: 90px; }
+.kicker { font: 600 14px/1.4 'Josefin Sans', sans-serif; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); }
+.title { font-family: 'Unbounded', sans-serif; font-weight: 700; line-height: 1.08; letter-spacing: -.01em; }
+.lead { font-size: 18px; line-height: 1.55; color: var(--muted); max-width: 30em; }
+.btn { display: inline-flex; align-items: center; gap: 10px; padding: 16px 26px; border: 1px solid var(--accent); color: #fff; text-decoration: none; font: 600 14px/1 'Josefin Sans', sans-serif; letter-spacing: 2px; text-transform: uppercase; transition: background .25s, color .25s; }
+.btn:hover { background: var(--accent); color: var(--deep); }
+.mono { font-family: 'Share Tech Mono', monospace; }
+
+/* ---------- 2. Timeline ---------- */
+.tl { min-height: 100vh; display: grid; grid-template-rows: 1fr auto; background: radial-gradient(120% 80% at 80% 0%, #24104a 0%, var(--bg) 60%); }
+.tl__top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 48px; align-items: center; max-width: 1320px; width: 100%; margin: 0 auto; padding: 56px 32px 32px; }
+.tl__text .title { font-size: clamp(34px, 4.4vw, 62px); margin: 18px 0 22px; }
+.tl__text .lead { margin-bottom: 34px; }
+.monitor { position: relative; height: min(62vh, 640px); aspect-ratio: 9 / 16; background: #000; border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+.monitor video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .25s; }
+.monitor video.on { opacity: 1; }
+.monitor__bar { position: absolute; left: 0; right: 0; top: -30px; display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
+.monitor__bar b { color: var(--hot); font-weight: 400; }
+.monitor__tc { position: absolute; left: 0; right: 0; bottom: -30px; text-align: center; font-size: 16px; color: #fff; letter-spacing: 1px; }
+.timeline { background: var(--deep); border-top: 1px solid var(--line); padding: 14px 0 22px; user-select: none; }
+.timeline__inner { max-width: 1320px; margin: 0 auto; padding: 0 32px; }
+.tracks { position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr); row-gap: 6px; cursor: pointer; }
+.track-name { font-size: 12px; color: var(--muted); display: flex; align-items: center; }
+.lane { position: relative; height: 30px; }
+.lane--v1 { height: 58px; }
+.ruler { height: 22px; border-bottom: 1px solid var(--line); background-image: repeating-linear-gradient(90deg, rgba(255,255,255,.25) 0 1px, transparent 1px 5%); background-size: 100% 6px; background-repeat: no-repeat; background-position: bottom; }
+.ruler span { position: absolute; top: 0; font-size: 11px; color: var(--muted); transform: translateX(3px); }
+.clip { position: absolute; top: 0; bottom: 0; border: 1px solid rgba(0,0,0,.6); overflow: hidden; }
+.clip--v { background: #2c6e8a center / auto 100% repeat-x; }
+.clip--v::after { content: attr(data-name); position: absolute; left: 6px; top: 4px; font-size: 11px; color: #fff; text-shadow: 0 1px 2px #000; white-space: nowrap; }
+.clip--v.on { outline: 2px solid var(--accent); outline-offset: -2px; }
+.clip--fx { background: #7b3fd1; font-size: 11px; color: #fff; padding: 7px 6px; white-space: nowrap; }
+.clip--fx.alt { background: #c2407a; }
+.clip--a { background: #1f7a4f; }
+.clip--a svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.playhead { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--hot); pointer-events: none; z-index: 2; }
+.playhead::before { content: ""; position: absolute; top: -2px; left: -6px; border: 7px solid transparent; border-top: 9px solid var(--hot); }
+
+/* ---------- 3. Video in letters ---------- */
+.lt { position: relative; height: 100vh; min-height: 560px; overflow: hidden; background: var(--deep); }
+.lt video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.lt__mask { position: absolute; inset: 0; background: var(--deep); mix-blend-mode: multiply; display: flex; align-items: center; justify-content: center; }
+.lt__word { font-family: 'Unbounded', sans-serif; font-weight: 900; color: #fff; font-size: 15.5vw; line-height: .9; letter-spacing: -.03em; transition: opacity .35s, transform .35s; white-space: nowrap; }
+.lt__word.out { opacity: 0; transform: translateY(6%); }
+.lt__top, .lt__bottom { position: absolute; left: 0; right: 0; padding: 0 32px; max-width: 1320px; margin: 0 auto; z-index: 2; }
+.lt__top { top: 36px; display: flex; justify-content: space-between; align-items: center; }
+.lt__bottom { bottom: 44px; display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; }
+.lt__tags { display: flex; gap: 8px; }
+.lt__tags button { background: none; border: 1px solid var(--line); color: var(--muted); font: 600 13px/1 'Josefin Sans', sans-serif; letter-spacing: 2px; text-transform: uppercase; padding: 10px 14px; cursor: pointer; transition: all .25s; }
+.lt__tags button.on { border-color: var(--accent); color: #fff; }
+.lt__count { font-size: 14px; color: var(--muted); }
+
+/* ---------- 5. Before / after ---------- */
+.ba { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 64px; align-items: center; max-width: 1320px; margin: 0 auto; padding: 64px 32px; }
+.ba__text .title { font-size: clamp(34px, 4.4vw, 62px); margin: 18px 0 22px; }
+.ba__text .lead { margin-bottom: 34px; }
+.ba__hint { display: flex; gap: 26px; margin-bottom: 34px; font-size: 15px; color: var(--muted); }
+.ba__hint b { display: block; color: #fff; font: 500 13px/1.4 'Share Tech Mono', monospace; letter-spacing: 2px; }
+.frame { position: relative; height: min(78vh, 760px); aspect-ratio: 9 / 16; background: #000; overflow: hidden; touch-action: none; cursor: ew-resize; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+.frame video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.frame__raw { position: absolute; top: 0; bottom: 0; left: 0; width: var(--x, 50%); -webkit-backdrop-filter: saturate(.22) contrast(.7) brightness(1.12) sepia(.06); backdrop-filter: saturate(.22) contrast(.7) brightness(1.12) sepia(.06); }
+.frame__line { position: absolute; top: 0; bottom: 0; left: var(--x, 50%); width: 2px; margin-left: -1px; background: #fff; }
+.frame__knob { position: absolute; top: 50%; left: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; background: #fff; color: var(--deep); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; box-shadow: 0 4px 18px rgba(0,0,0,.5); }
+.frame__tag { position: absolute; top: 16px; font: 13px/1 'Share Tech Mono', monospace; letter-spacing: 2px; padding: 7px 9px; background: rgba(0,0,0,.55); color: #fff; }
+.frame__tag--l { left: 16px; }
+.frame__tag--r { right: 16px; color: var(--accent); }
+
+@media (max-width: 860px) {
+  .tl__top { grid-template-columns: minmax(0, 1fr); padding: 40px 16px 44px; gap: 52px; }
+  .monitor { height: 52vh; justify-self: center; }
+  .timeline__inner { padding: 0 16px; }
+  .tracks { grid-template-columns: 32px minmax(0, 1fr); }
+  .clip--v::after, .clip--fx { font-size: 0; }
+  .lt__word { font-size: 14vw; }
+  .lt__top, .lt__bottom { padding: 0 16px; }
+  .lt__top { top: 24px; }
+  .lt__bottom { bottom: 28px; flex-direction: column; align-items: flex-start; }
+  .ba { grid-template-columns: minmax(0, 1fr); padding: 48px 16px; gap: 36px; }
+  .frame { height: 66vh; justify-self: center; }
+  .lead { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lt__word { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="divider">Варіант 2 · Монтажна таймлайн</div>
+
+<section class="tl" id="tl">
+  <div class="tl__top">
+    <div class="tl__text">
+      <div class="kicker">Відеомонтаж · Motion · VFX</div>
+      <h1 class="title">Монтаж, який тримає до&nbsp;останнього кадру</h1>
+      <p class="lead">Реклама, шортси й анімація для брендів. Клікніть на будь-який кліп на таймлайні, щоб перемотати.</p>
+      <a href="#" class="btn">Дивитися роботи <span>→</span></a>
+    </div>
+    <div class="monitor" id="monitor">
+      <div class="monitor__bar mono"><span id="tlName">Sailun Tires</span><b>● REC</b></div>
+      <div class="monitor__tc mono" id="tlTc">00:00:00:00</div>
+    </div>
+  </div>
+  <div class="timeline">
+    <div class="timeline__inner">
+      <div class="tracks" id="tracks">
+        <span></span><div class="lane ruler" id="ruler"></div>
+        <span class="track-name mono">V2</span><div class="lane" id="laneFx"></div>
+        <span class="track-name mono">V1</span><div class="lane lane--v1" id="laneV"></div>
+        <span class="track-name mono">A1</span><div class="lane" id="laneA"></div>
+        <div class="playhead" id="playhead"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider">Варіант 3 · Відео всередині літер</div>
+
+<section class="lt" id="lt">
+  <video id="ltVideo" muted loop playsinline preload="none"></video>
+  <div class="lt__mask"><div class="lt__word" id="ltWord">МОНТАЖ</div></div>
+  <div class="lt__top">
+    <div class="kicker">Олексій · відеомонтажер</div>
+    <div class="lt__count mono" id="ltCount">01 / 03</div>
+  </div>
+  <div class="lt__bottom">
+    <div class="lt__tags" id="ltTags"></div>
+    <a href="#" class="btn">Дивитися роботи <span>→</span></a>
+  </div>
+</section>
+
+<div class="divider">Варіант 5 · До / після кольорокорекції</div>
+
+<section class="ba" id="ba">
+  <div class="ba__text">
+    <div class="kicker">Кольорокорекція</div>
+    <h2 class="title">Колір, що робить кадр дорогим</h2>
+    <p class="lead">Потягніть повзунок: зліва сирий кадр з камери, справа — після обробки.</p>
+    <div class="ba__hint"><span><b>RAW</b>плоский, як знято</span><span><b>GRADE</b>готовий до показу</span></div>
+    <a href="#" class="btn">Дивитися роботи <span>→</span></a>
+  </div>
+  <div class="frame" id="frame">
+    <video id="baVideo" muted loop playsinline preload="none"></video>
+    <div class="frame__raw"></div>
+    <div class="frame__line"><div class="frame__knob">⇆</div></div>
+    <span class="frame__tag frame__tag--l">RAW</span>
+    <span class="frame__tag frame__tag--r">GRADE</span>
+  </div>
+</section>
+
+<div class="divider">Кінець пісочниці</div>
+
+<script>
+var CL = 'https://res.cloudinary.com/evdoyndv/video/upload/';
+var WIDTH = matchMedia('(max-width: 767px)').matches ? 480 : 720;
+function src(id) { return CL + 'f_auto,q_auto,w_' + WIDTH + '/' + id + '.mp4'; }
+function poster(id) { return CL + 'so_1,w_' + WIDTH + ',q_auto/' + id + '.jpg'; }
+function play(v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+function whenVisible(el, on, off) {
+  new IntersectionObserver(function (e) { e[0].isIntersecting ? on() : off(); }, { threshold: .15 }).observe(el);
+}
+
+(function timeline() {
+  var clips = [
+    { id: 'sailun', name: 'Sailun Tires' },
+    { id: 'nba', name: 'NBA Stars' },
+    { id: 'track', name: 'Гоночний трек' },
+    { id: 'karting', name: 'Картинг' },
+    { id: 'me-1', name: 'Серія відео' }
+  ];
+  var LEN = 4, TOTAL = clips.length * LEN, FPS = 25;
+  var monitor = document.getElementById('monitor'), laneV = document.getElementById('laneV'),
+      laneFx = document.getElementById('laneFx'), laneA = document.getElementById('laneA'),
+      ruler = document.getElementById('ruler'), head = document.getElementById('playhead'),
+      tracks = document.getElementById('tracks'), tc = document.getElementById('tlTc'), nameEl = document.getElementById('tlName');
+  var videos = [], blocks = [], active = -1, t = 0, last = 0, running = false;
+
+  for (var s = 0; s <= TOTAL; s += 2) {
+    var mark = document.createElement('span');
+    mark.className = 'mono';
+    mark.style.left = (s / TOTAL * 100) + '%';
+    mark.textContent = '00:' + String(s).padStart(2, '0');
+    if (s < TOTAL) ruler.appendChild(mark);
+  }
+
+  clips.forEach(function (c, i) {
+    var v = document.createElement('video');
+    v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'none';
+    v.poster = poster(c.id);
+    monitor.appendChild(v);
+    videos.push(v);
+
+    var b = document.createElement('div');
+    b.className = 'clip clip--v';
+    b.dataset.name = c.name;
+    b.style.left = (i * LEN / TOTAL * 100) + '%';
+    b.style.width = (LEN / TOTAL * 100) + '%';
+    b.style.backgroundImage = 'url(' + CL + 'so_1,h_120,q_auto/' + c.id + '.jpg)';
+    laneV.appendChild(b);
+    blocks.push(b);
+
+    var a = document.createElement('div');
+    a.className = 'clip clip--a';
+    a.style.left = b.style.left; a.style.width = b.style.width;
+    var d = 'M0 15';
+    for (var x = 0; x <= 100; x += 2) { var h = 3 + Math.random() * 11; d += ' M' + x + ' ' + (15 - h) + ' V' + (15 + h); }
+    a.innerHTML = '<svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="' + d + '" stroke="rgba(255,255,255,.55)" stroke-width=".8" vector-effect="non-scaling-stroke"/></svg>';
+    laneA.appendChild(a);
+  });
+
+  [['Титри', 0.3, 2.6, ''], ['Glow FX', 5.2, 2.2, 'alt'], ['Трекінг', 9.4, 3.2, ''], ['Телеметрія', 12.6, 3, 'alt'], ['Титри', 16.6, 2.6, '']].forEach(function (f) {
+    var el = document.createElement('div');
+    el.className = 'clip clip--fx ' + f[3];
+    el.textContent = f[0];
+    el.style.left = (f[1] / TOTAL * 100) + '%';
+    el.style.width = (f[2] / TOTAL * 100) + '%';
+    laneFx.appendChild(el);
+  });
+
+  function setActive(i) {
+    if (i === active) return;
+    if (active >= 0) { videos[active].classList.remove('on'); videos[active].pause(); blocks[active].classList.remove('on'); }
+    active = i;
+    var v = videos[i];
+    if (!v.src) v.src = src(clips[i].id);
+    var n = videos[(i + 1) % videos.length];
+    if (!n.src) { n.src = src(clips[(i + 1) % clips.length].id); n.preload = 'auto'; }
+    v.currentTime = 0;
+    v.classList.add('on');
+    blocks[i].classList.add('on');
+    nameEl.textContent = clips[i].name;
+    if (running) play(v);
+  }
+
+  function render() {
+    var lane = laneV.getBoundingClientRect(), box = tracks.getBoundingClientRect();
+    head.style.left = (lane.left - box.left + lane.width * t / TOTAL) + 'px';
+    var sec = Math.floor(t), fr = Math.floor((t - sec) * FPS);
+    tc.textContent = '00:00:' + String(sec).padStart(2, '0') + ':' + String(fr).padStart(2, '0');
+    setActive(Math.min(clips.length - 1, Math.floor(t / LEN)));
+  }
+
+  function frame(now) {
+    if (!running) return;
+    t += Math.max(0, Math.min(.1, (now - last) / 1000));
+    last = now;
+    if (t >= TOTAL) t = 0;
+    render();
+    requestAnimationFrame(frame);
+  }
+
+  tracks.addEventListener('click', function (e) {
+    var lane = laneV.getBoundingClientRect();
+    t = Math.max(0, Math.min(TOTAL - .01, (e.clientX - lane.left) / lane.width * TOTAL));
+    render();
+    if (videos[active]) videos[active].currentTime = (t % LEN);
+  });
+  addEventListener('resize', render);
+  render();
+
+  whenVisible(document.getElementById('tl'), function () {
+    if (running) return;
+    running = true; last = performance.now();
+    play(videos[active]);
+    requestAnimationFrame(frame);
+  }, function () {
+    running = false;
+    if (videos[active]) videos[active].pause();
+  });
+})();
+
+(function letters() {
+  var items = [
+    { word: 'МОНТАЖ', tag: 'Монтаж', id: 'karting' },
+    { word: 'МОУШН', tag: 'Motion', id: 'nba' },
+    { word: 'КОЛІР', tag: 'Колір', id: 'sailun' }
+  ];
+  var video = document.getElementById('ltVideo'), word = document.getElementById('ltWord'),
+      count = document.getElementById('ltCount'), tags = document.getElementById('ltTags');
+  var index = 0, timer = 0, visible = false;
+  var buttons = items.map(function (it, i) {
+    var b = document.createElement('button');
+    b.textContent = it.tag;
+    b.addEventListener('click', function () { show(i); restart(); });
+    tags.appendChild(b);
+    return b;
+  });
+
+  function show(i) {
+    index = i;
+    buttons.forEach(function (b, k) { b.classList.toggle('on', k === i); });
+    count.textContent = '0' + (i + 1) + ' / 0' + items.length;
+    word.classList.add('out');
+    setTimeout(function () {
+      word.textContent = items[i].word;
+      video.poster = poster(items[i].id);
+      if (visible) { video.src = src(items[i].id); play(video); }
+      word.classList.remove('out');
+    }, 300);
+  }
+  function restart() {
+    clearInterval(timer);
+    if (visible) timer = setInterval(function () { show((index + 1) % items.length); }, 5000);
+  }
+  video.poster = poster(items[0].id);
+  buttons[0].classList.add('on');
+
+  whenVisible(document.getElementById('lt'), function () {
+    visible = true;
+    if (!video.src) video.src = src(items[index].id);
+    play(video);
+    restart();
+  }, function () {
+    visible = false;
+    video.pause();
+    clearInterval(timer);
+  });
+})();
+
+(function beforeAfter() {
+  var frame = document.getElementById('frame'), video = document.getElementById('baVideo');
+  var dragging = false, touched = false, start = 0, raf = 0;
+  video.poster = poster('sailun');
+
+  function setX(p) { frame.style.setProperty('--x', Math.max(0, Math.min(100, p)) + '%'); }
+  function fromEvent(e) {
+    var r = frame.getBoundingClientRect();
+    setX((e.clientX - r.left) / r.width * 100);
+  }
+  function sway(now) {
+    if (touched) return;
+    if (!start) start = now;
+    setX(50 + Math.sin((now - start) / 1400) * 22);
+    raf = requestAnimationFrame(sway);
+  }
+  frame.addEventListener('pointerdown', function (e) {
+    dragging = true; touched = true; cancelAnimationFrame(raf);
+    frame.setPointerCapture(e.pointerId);
+    fromEvent(e);
+  });
+  frame.addEventListener('pointermove', function (e) { if (dragging) fromEvent(e); });
+  frame.addEventListener('pointerup', function () { dragging = false; });
+  frame.addEventListener('pointercancel', function () { dragging = false; });
+
+  whenVisible(document.getElementById('ba'), function () {
+    if (!video.src) video.src = src('sailun');
+    play(video);
+    if (!touched) { start = 0; raf = requestAnimationFrame(sway); }
+  }, function () {
+    video.pause();
+    cancelAnimationFrame(raf);
+  });
+})();
+</script>
+</body>
+</html>
