@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Пісочниця · hero таймлайн + колір</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Josefin+Sans:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #100028;
+  --deep: #07000f;
+  --line: rgba(255,255,255,.12);
+  --text: #f4f2ff;
+  --muted: #a39fbf;
+  --accent: #00bfe7;
+  --hot: #ff2e63;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+.divider { height: 90px; background: #2a2340; display: flex; align-items: center; justify-content: center; font: 600 15px/1.4 'Josefin Sans', sans-serif; letter-spacing: 2px; text-transform: uppercase; color: #cfc9ea; text-align: center; padding: 0 16px; }
+.mono { font-family: 'Share Tech Mono', monospace; }
+.kicker { font: 600 14px/1.4 'Josefin Sans', sans-serif; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); }
+.title { font-family: 'Unbounded', sans-serif; font-weight: 700; line-height: 1.08; letter-spacing: -.01em; font-size: clamp(34px, 4.4vw, 62px); margin: 18px 0 22px; }
+.lead { font-size: 18px; line-height: 1.55; color: var(--muted); max-width: 30em; margin-bottom: 28px; }
+.btn { display: inline-flex; align-items: center; gap: 10px; padding: 16px 26px; border: 1px solid var(--accent); color: #fff; text-decoration: none; font: 600 14px/1 'Josefin Sans', sans-serif; letter-spacing: 2px; text-transform: uppercase; transition: background .25s, color .25s; }
+.btn:hover { background: var(--accent); color: var(--deep); }
+
+.hero { min-height: 100vh; display: grid; grid-template-rows: 1fr auto; background: radial-gradient(120% 80% at 80% 0%, #24104a 0%, var(--bg) 60%); }
+.hero__top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 56px; align-items: center; max-width: 1320px; width: 100%; margin: 0 auto; padding: 64px 32px 44px; }
+
+.now { display: flex; align-items: center; gap: 14px; margin-bottom: 34px; padding: 14px 16px; border: 1px solid var(--line); max-width: 30em; min-height: 74px; }
+.now__dot { width: 10px; height: 10px; border-radius: 50%; background: var(--hot); flex: none; animation: blink 1.2s infinite; }
+.now__label { font-size: 12px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+.now__text { font-size: 17px; color: #fff; margin-top: 3px; }
+@keyframes blink { 50% { opacity: .25; } }
+
+.monitor { position: relative; height: min(66vh, 680px); aspect-ratio: 9 / 16; background: #000 center / cover; box-shadow: 0 30px 80px rgba(0,0,0,.6); touch-action: pan-y; }
+.monitor__screen { position: absolute; inset: 0; overflow: hidden; }
+.monitor video, .monitor iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; opacity: 0; transition: opacity .25s; }
+.monitor iframe { pointer-events: none; transform: scale(1.15); }
+.monitor .on { opacity: 1; }
+.monitor__bar { position: absolute; left: 0; right: 0; top: -30px; display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
+.monitor__bar b { color: var(--hot); font-weight: 400; }
+.monitor__tc { position: absolute; left: 0; right: 0; bottom: -30px; text-align: center; font-size: 16px; color: #fff; letter-spacing: 1px; }
+
+.grade { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity .35s; cursor: ew-resize; }
+.monitor.is-grade .grade { opacity: 1; pointer-events: auto; }
+.grade__raw { position: absolute; top: 0; bottom: 0; left: 0; width: var(--x, 50%); -webkit-backdrop-filter: saturate(.22) contrast(.7) brightness(1.12) sepia(.06); backdrop-filter: saturate(.22) contrast(.7) brightness(1.12) sepia(.06); }
+.grade__line { position: absolute; top: 0; bottom: 0; left: var(--x, 50%); width: 2px; margin-left: -1px; background: #fff; }
+.grade__knob { position: absolute; top: 50%; left: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; background: #fff; color: var(--deep); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; box-shadow: 0 4px 18px rgba(0,0,0,.5); }
+.grade__tag { position: absolute; top: 14px; font: 13px/1 'Share Tech Mono', monospace; letter-spacing: 2px; padding: 7px 9px; background: rgba(0,0,0,.7); color: #fff; }
+.grade__tag--l { left: 14px; }
+.grade__tag--r { right: 14px; }
+
+.timeline { background: var(--deep); border-top: 1px solid var(--line); padding: 14px 0 22px; user-select: none; }
+.timeline__inner { max-width: 1320px; margin: 0 auto; padding: 0 32px; }
+.tracks { position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr); row-gap: 6px; cursor: pointer; }
+.track-name { font-size: 12px; color: var(--muted); display: flex; align-items: center; }
+.lane { position: relative; height: 30px; }
+.lane--v1 { height: 58px; }
+.ruler { height: 22px; border-bottom: 1px solid var(--line); overflow: hidden; }
+.ruler span { position: absolute; top: 0; font-size: 11px; color: var(--muted); padding-left: 3px; border-left: 1px solid rgba(255,255,255,.25); height: 100%; }
+.clip { position: absolute; top: 0; bottom: 0; border: 1px solid rgba(0,0,0,.6); overflow: hidden; }
+.clip--v { background: #2c6e8a center / auto 100% repeat-x; }
+.clip--v::after { content: attr(data-name); position: absolute; left: 6px; top: 4px; font-size: 11px; color: #fff; text-shadow: 0 1px 2px #000; white-space: nowrap; }
+.clip--v.on { outline: 2px solid var(--accent); outline-offset: -2px; }
+.clip--fx { font-size: 11px; color: #fff; padding: 7px 6px; white-space: nowrap; background: #7b3fd1; }
+.clip--fx.color { background: linear-gradient(90deg, #d14b3f, #d1a13f, #3fd17a, #3f8ad1, #9b3fd1); }
+.clip--fx.alt { background: #c2407a; }
+.clip--a { background: #1f7a4f; }
+.clip--a svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.playhead { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--hot); pointer-events: none; z-index: 2; }
+.playhead::before { content: ""; position: absolute; top: -2px; left: -6px; border: 7px solid transparent; border-top: 9px solid var(--hot); }
+
+@media (max-width: 860px) {
+  .hero__top { grid-template-columns: minmax(0, 1fr); padding: 40px 16px 48px; gap: 48px; }
+  .monitor { height: 60vh; justify-self: center; }
+  .timeline__inner { padding: 0 16px; }
+  .tracks { grid-template-columns: 30px minmax(0, 1fr); }
+  .clip--v::after, .clip--fx { font-size: 0; }
+  .ruler span:nth-child(even) { visibility: hidden; }
+  .lead { font-size: 16px; }
+  .now { margin-bottom: 26px; }
+}
+</style>
+</head>
+<body>
+
+<div class="divider">Hero · таймлайн + кольорокорекція</div>
+
+<section class="hero" id="hero">
+  <div class="hero__top">
+    <div>
+      <div class="kicker">Відеомонтаж · Motion · VFX · Колір</div>
+      <h1 class="title">Монтаж, який тримає до&nbsp;останнього кадру</h1>
+      <p class="lead">Реклама, шортси й анімація для брендів. Клікніть на кліп на таймлайні, щоб перемотати.</p>
+      <div class="now">
+        <span class="now__dot"></span>
+        <div><div class="now__label" id="nowLabel">Зараз на таймлайні</div><div class="now__text" id="nowText">Кольорокорекція</div></div>
+      </div>
+      <a href="#" class="btn">Дивитися роботи <span>→</span></a>
+    </div>
+    <div class="monitor" id="monitor">
+      <div class="monitor__screen" id="screen"></div>
+      <div class="grade" id="grade">
+        <div class="grade__raw"></div>
+        <div class="grade__line"><div class="grade__knob">⇆</div></div>
+        <span class="grade__tag grade__tag--l">RAW</span>
+        <span class="grade__tag grade__tag--r">GRADE</span>
+      </div>
+      <div class="monitor__bar mono"><span id="clipName">Sailun Tires</span><b>● REC</b></div>
+      <div class="monitor__tc mono" id="tc">00:00:00:00</div>
+    </div>
+  </div>
+  <div class="timeline">
+    <div class="timeline__inner">
+      <div class="tracks" id="tracks">
+        <span></span><div class="lane ruler" id="ruler"></div>
+        <span class="track-name mono">V2</span><div class="lane" id="laneFx"></div>
+        <span class="track-name mono">V1</span><div class="lane lane--v1" id="laneV"></div>
+        <span class="track-name mono">A1</span><div class="lane" id="laneA"></div>
+        <div class="playhead" id="playhead"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider">Кінець пісочниці</div>
+
+<script>
+(function () {
+  var CL = 'https://res.cloudinary.com/evdoyndv/video/upload/';
+  var WIDTH = matchMedia('(max-width: 767px)').matches ? 480 : 720;
+  var clips = [
+    { id: 'sailun', name: 'Sailun Tires', len: 7, grade: true, now: 'Кольорокорекція — потягніть повзунок на кадрі' },
+    { id: 'karting', name: 'Картинг', len: 4, now: 'Motion-графіка й телеметрія' },
+    { id: 'me-1', name: 'Серія відео', len: 4, now: 'Монтаж розмовного відео' },
+    { yt: '8_LSFVe5i5E', name: 'Шини Ф1', len: 4, now: 'VFX для шортсів' },
+    { id: 'nba', name: 'NBA Stars', len: 4, now: 'Анімація та моушн' }
+  ];
+  var fx = [['Кольорокорекція', 0, 7, 'color'], ['Телеметрія', 7.4, 3.2, 'alt'], ['Титри', 11.4, 2.4, ''], ['VFX', 15.2, 3.4, 'alt'], ['Титри', 19.4, 2.6, '']];
+  var FPS = 25, TOTAL = 0;
+  clips.forEach(function (c) { c.start = TOTAL; TOTAL += c.len; });
+
+  var monitor = document.getElementById('monitor'), screen = document.getElementById('screen'),
+      grade = document.getElementById('grade'), laneV = document.getElementById('laneV'),
+      laneFx = document.getElementById('laneFx'), laneA = document.getElementById('laneA'),
+      ruler = document.getElementById('ruler'), head = document.getElementById('playhead'),
+      tracks = document.getElementById('tracks'), tc = document.getElementById('tc'),
+      clipName = document.getElementById('clipName'), nowText = document.getElementById('nowText');
+  var media = [], blocks = [], active = -1, t = 0, last = 0, running = false, visible = false, holdUntil = 0;
+
+  function thumb(c, h) { return c.yt ? 'https://img.youtube.com/vi/' + c.yt + '/hqdefault.jpg' : CL + 'so_1,h_' + h + ',q_auto/' + c.id + '.jpg'; }
+  function pct(s) { return (s / TOTAL * 100) + '%'; }
+  function play(el) { if (el && el.play) { var p = el.play(); if (p && p.catch) p.catch(function () {}); } }
+
+  for (var s = 0; s < TOTAL; s += 2) {
+    var mark = document.createElement('span');
+    mark.className = 'mono';
+    mark.style.left = pct(s);
+    mark.textContent = '00:' + String(s).padStart(2, '0');
+    ruler.appendChild(mark);
+  }
+
+  clips.forEach(function (c) {
+    var el;
+    if (c.yt) {
+      el = document.createElement('iframe');
+      el.allow = 'autoplay; encrypted-media';
+    } else {
+      el = document.createElement('video');
+      el.muted = true; el.loop = true; el.playsInline = true; el.preload = 'none';
+      el.poster = CL + 'so_1,w_' + WIDTH + ',q_auto/' + c.id + '.jpg';
+    }
+    screen.appendChild(el);
+    media.push(el);
+
+    var b = document.createElement('div');
+    b.className = 'clip clip--v';
+    b.dataset.name = c.name;
+    b.style.left = pct(c.start);
+    b.style.width = pct(c.len);
+    b.style.backgroundImage = 'url(' + thumb(c, 120) + ')';
+    laneV.appendChild(b);
+    blocks.push(b);
+
+    var a = document.createElement('div');
+    a.className = 'clip clip--a';
+    a.style.left = b.style.left; a.style.width = b.style.width;
+    var d = '';
+    for (var x = 0; x <= 100; x += 2) { var h = 3 + Math.random() * 11; d += 'M' + x + ' ' + (15 - h) + 'V' + (15 + h); }
+    a.innerHTML = '<svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="' + d + '" stroke="rgba(255,255,255,.55)" stroke-width=".8" vector-effect="non-scaling-stroke"/></svg>';
+    laneA.appendChild(a);
+  });
+
+  fx.forEach(function (f) {
+    var el = document.createElement('div');
+    el.className = 'clip clip--fx ' + f[3];
+    el.textContent = f[0];
+    el.style.left = pct(f[1]);
+    el.style.width = pct(f[2]);
+    laneFx.appendChild(el);
+  });
+
+  monitor.style.backgroundImage = 'url(' + CL + 'so_1,w_' + WIDTH + ',q_auto/sailun.jpg)';
+
+  function load(i) {
+    var c = clips[i], el = media[i];
+    if (el.dataset.ready) return;
+    el.dataset.ready = 1;
+    if (c.yt) el.src = 'https://www.youtube.com/embed/' + c.yt + '?autoplay=1&mute=1&loop=1&playlist=' + c.yt + '&controls=0&rel=0&playsinline=1';
+    else { el.preload = 'auto'; el.src = CL + 'f_auto,q_auto,w_' + WIDTH + '/' + c.id + '.mp4'; }
+  }
+
+  function setActive(i) {
+    if (i === active) return;
+    if (active >= 0) {
+      media[active].classList.remove('on');
+      if (media[active].pause) media[active].pause();
+      blocks[active].classList.remove('on');
+    }
+    active = i;
+    load(i);
+    load((i + 1) % clips.length);
+    var el = media[i];
+    if (el.tagName === 'VIDEO') { el.currentTime = 0; if (visible) play(el); }
+    el.classList.add('on');
+    blocks[i].classList.add('on');
+    clipName.textContent = clips[i].name;
+    nowText.textContent = clips[i].now;
+    monitor.classList.toggle('is-grade', !!clips[i].grade);
+  }
+
+  function render() {
+    var lane = laneV.getBoundingClientRect(), box = tracks.getBoundingClientRect();
+    head.style.left = (lane.left - box.left + lane.width * t / TOTAL) + 'px';
+    var sec = Math.floor(t), fr = Math.floor((t - sec) * FPS);
+    tc.textContent = '00:00:' + String(sec).padStart(2, '0') + ':' + String(fr).padStart(2, '0');
+    var i = 0;
+    while (i < clips.length - 1 && t >= clips[i + 1].start) i++;
+    setActive(i);
+  }
+
+  var swayStart = 0, touched = false;
+  function setX(p) { grade.style.setProperty('--x', Math.max(0, Math.min(100, p)) + '%'); }
+
+  function frame(now) {
+    if (!running) return;
+    var dt = Math.max(0, Math.min(.1, (now - last) / 1000));
+    last = now;
+    if (now > holdUntil) {
+      t += dt;
+      if (t >= TOTAL) t = 0;
+    }
+    if (!touched && clips[active] && clips[active].grade) {
+      if (!swayStart) swayStart = now;
+      setX(50 + Math.sin((now - swayStart) / 1100) * 24);
+    }
+    render();
+    requestAnimationFrame(frame);
+  }
+
+  var dragging = false;
+  function fromEvent(e) {
+    var r = grade.getBoundingClientRect();
+    setX((e.clientX - r.left) / r.width * 100);
+  }
+  grade.addEventListener('pointerdown', function (e) {
+    dragging = true; touched = true;
+    grade.setPointerCapture(e.pointerId);
+    holdUntil = Infinity;
+    fromEvent(e);
+  });
+  grade.addEventListener('pointermove', function (e) { if (dragging) fromEvent(e); });
+  function release() {
+    if (!dragging) return;
+    dragging = false;
+    holdUntil = performance.now() + 2500;
+  }
+  grade.addEventListener('pointerup', release);
+  grade.addEventListener('pointercancel', release);
+
+  tracks.addEventListener('click', function (e) {
+    var lane = laneV.getBoundingClientRect();
+    t = Math.max(0, Math.min(TOTAL - .01, (e.clientX - lane.left) / lane.width * TOTAL));
+    holdUntil = 0;
+    render();
+    var el = media[active];
+    if (el.tagName === 'VIDEO') el.currentTime = t - clips[active].start;
+  });
+  addEventListener('resize', render);
+  render();
+
+  new IntersectionObserver(function (e) {
+    visible = e[0].isIntersecting;
+    if (visible && !running) {
+      running = true; last = performance.now();
+      play(media[active]);
+      requestAnimationFrame(frame);
+    } else if (!visible) {
+      running = false;
+      if (media[active].pause) media[active].pause();
+    }
+  }, { threshold: .15 }).observe(document.getElementById('hero'));
+})();
+</script>
+</body>
+</html>
