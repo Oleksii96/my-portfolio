@@ -853,6 +853,7 @@ iframe.is-loaded { opacity: 1; }
             finished = true;
             clearTimeout(timer);
             el.classList.add('is-loaded');
+            document.dispatchEvent(new CustomEvent('media-ready', { detail: el }));
             if (el.tagName === 'VIDEO') visible.observe(el);
             done++;
             report();

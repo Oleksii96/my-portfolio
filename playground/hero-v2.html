@@ -133,13 +133,18 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', s
   var CL = 'https://res.cloudinary.com/evdoyndv/video/upload/';
   var WIDTH = matchMedia('(max-width: 767px)').matches ? 480 : 720;
   var clips = [
-    { id: 'sailun', name: 'Sailun Tires', len: 3, grade: true, now: 'Кольорокорекція — потягніть повзунок на кадрі' },
-    { yt: '5Hl6TwF55oc', name: 'Tire Reviews Show', len: 2, now: 'Переклад і графіка для шоу' },
-    { id: 'me-1', name: 'Серія відео', len: 2, now: 'Монтаж розмовного відео' },
-    { yt: '8_LSFVe5i5E', name: 'Шини Ф1', len: 2, now: 'VFX для шортсів' },
-    { id: 'karting', name: 'Картинг', len: 2, now: 'Motion-графіка й телеметрія' }
+    { id: 'sailun', name: 'Sailun Tires', len: 4, from: 0, grade: true, now: 'Кольорокорекція — потягніть повзунок на кадрі' },
+    { yt: '5Hl6TwF55oc', name: 'Tire Reviews Show', len: 3, from: 0, now: 'Переклад і графіка для шоу' },
+    { id: 'me-1', name: 'Серія відео', len: 3, from: 0, now: 'Монтаж розмовного відео' },
+    { yt: '8_LSFVe5i5E', name: 'Шини Ф1', len: 3, from: 0, now: 'VFX для шортсів' },
+    { id: 'karting', name: 'Картинг', len: 3, from: 0, now: 'Motion-графіка й телеметрія' }
   ];
-  var fx = [['Кольорокорекція', 0, 3, 'color'], ['Субтитри', 3.2, 1.6, 'alt'], ['Титри', 5.2, 1.2, ''], ['VFX', 7.1, 1.7, 'alt'], ['Телеметрія', 9.1, 1.8, '']];
+  var cuts = new URLSearchParams(location.search).get('cut');
+  if (cuts) cuts.split(',').forEach(function (pair) {
+    var kv = pair.split(':');
+    clips.forEach(function (c) { if ((c.id || c.yt) === kv[0]) c.from = parseFloat(kv[1]) || 0; });
+  });
+  var fx = [['Кольорокорекція', 0, 4, 'color'], ['Субтитри', 4.3, 2.4, 'alt'], ['Титри', 7.3, 1.8, ''], ['VFX', 10.2, 2.6, 'alt'], ['Телеметрія', 13.2, 2.6, '']];
   var FPS = 25, TOTAL = 0;
   clips.forEach(function (c) { c.start = TOTAL; TOTAL += c.len; });
 
@@ -209,8 +214,15 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', s
     var c = clips[i], el = media[i];
     if (el.dataset.ready) return;
     el.dataset.ready = 1;
-    if (c.yt) el.src = 'https://www.youtube.com/embed/' + c.yt + '?autoplay=1&mute=1&loop=1&playlist=' + c.yt + '&controls=0&rel=0&playsinline=1';
-    else { el.preload = 'auto'; el.src = CL + 'f_auto,q_auto,w_' + WIDTH + '/' + c.id + '.mp4'; }
+    if (c.yt) el.src = 'https://www.youtube.com/embed/' + c.yt + '?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&enablejsapi=1&start=' + Math.floor(c.from);
+    else { el.preload = 'auto'; el.src = CL + 'so_' + c.from + ',eo_' + (c.from + c.len + .5) + ',f_auto,q_auto,w_' + WIDTH + '/' + c.id + '.mp4'; }
+  }
+
+  function ytSeek(i) {
+    var el = media[i];
+    if (!el.contentWindow) return;
+    el.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'seekTo', args: [clips[i].from, true] }), '*');
+    el.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*');
   }
 
   function setActive(i) {
@@ -225,6 +237,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', s
     load((i + 1) % clips.length);
     var el = media[i];
     if (el.tagName === 'VIDEO') { el.currentTime = 0; if (visible) play(el); }
+    else ytSeek(i);
     el.classList.add('on');
     blocks[i].classList.add('on');
     clipName.textContent = clips[i].name;
