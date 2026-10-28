@@ -51,34 +51,29 @@ video[data-media][poster] { opacity: 1; }
 iframe.is-loaded { opacity: 1; }
 
 .work { padding: 30px 0 70px; }
-.vblock { max-width: 1150px; margin: 0 auto; padding: 0 15px; }
+.vblock { max-width: 1430px; margin: 0 auto; padding: 0 15px; }
 .vblock + .vblock { margin-top: 60px; }
-.vblock--wide { max-width: 1440px; }
 .vblock__head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 20px; color: #fff; }
 .vblock__num { font-family: 'Orbitron', sans-serif; font-size: 14px; color: #00bfe7; letter-spacing: 2px; }
 .vblock__title { font-size: 26px; font-weight: 700; text-transform: uppercase; margin: 0; color: #fff; }
 .vblock__note { font-size: 13px; color: #8a86a3; margin-left: auto; }
-.vgrid { display: grid; gap: 10px; }
-.vgrid--vert { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-.vgrid--motion { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
-.vgrid--yt { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.tile { position: relative; overflow: hidden; background: #000 center / cover no-repeat; border-radius: 4px; }
+.vrow { display: flex; gap: 10px; align-items: flex-start; }
+.vblock--narrow { max-width: 1120px; }
+.tile { position: relative; overflow: hidden; background: #000 center / cover no-repeat; border-radius: 4px; flex: var(--a) 1 0; min-width: 0; aspect-ratio: var(--a); }
 .tile:hover .work__item__hover { bottom: 0; }
 .tile .work__item__hover { padding: 18px 20px 14px; }
 .tile .work__item__hover h4 { font-size: 17px; }
-.r916 { aspect-ratio: 9 / 16; }
-.r169 { aspect-ratio: 16 / 9; }
-.vgrid--motion .tile:first-child { grid-row: span 2; }
-@media (max-width: 991px) {
-  .vgrid--vert { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
+.r916 { --a: .5625; }
+.r34 { --a: .75; }
+.r169 { --a: 1.7778; }
+.tile--empty { background: #07000f; outline: 1px dashed rgba(255,255,255,.18); outline-offset: -1px; display: flex; align-items: center; justify-content: center; text-align: center; color: #8a86a3; font-size: 14px; line-height: 1.5; }
+.tile--empty b { display: block; color: #fff; font-size: 16px; }
 @media (max-width: 767px) {
   .vblock__head { flex-wrap: wrap; gap: 4px 12px; }
   .vblock__note { margin-left: 0; width: 100%; }
   .vblock__title { font-size: 20px; }
-  .vgrid--vert { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .vgrid--motion, .vgrid--yt { grid-template-columns: minmax(0, 1fr); }
-  .vgrid--motion .tile:first-child { grid-row: auto; aspect-ratio: 16 / 9; }
+  .vrow { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .r169, .r34 { grid-column: 1 / -1; }
   .tile .work__item__hover { bottom: 0; padding: 10px 12px 8px; background: linear-gradient(transparent, rgba(0,0,0,.85)); }
   .tile .work__item__hover h4 { font-size: 14px; margin: 0; }
   .tile .work__item__hover ul { display: none; }
@@ -87,7 +82,7 @@ iframe.is-loaded { opacity: 1; }
     </style>
 </head>
 
-<body data-first="6">
+<body data-first="4">
     <!-- НАЛАШТУВАННЯ ПАРОЛЮ (Легко змінити або вимкнути) -->
     <script>
         const USE_PASSWORD = true;    // Змініть на false, щоб відключити запит пароля
@@ -235,15 +230,15 @@ iframe.is-loaded { opacity: 1; }
     <!-- Services Section End -->
 
     <section class="work" id="portfolio">
-<div class="vblock vblock--wide">
-<div class="vblock__head"><span class="vblock__num">01</span><h3 class="vblock__title">Вертикальні</h3><span class="vblock__note">робоча назва · 9:16</span></div>
-<div class="vgrid vgrid--vert">
-<div class="tile r916">
-<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="sailun" muted loop playsinline preload="none"></video>
-<a href="https://res.cloudinary.com/evdoyndv/video/upload/f_auto,q_auto/sailun.mp4" class="full-clickable-overlay video-popup vertical-video"></a>
+<div class="vblock">
+<div class="vblock__head"><span class="vblock__num">01</span><h3 class="vblock__title">Блок 1</h3><span class="vblock__note">робоча назва</span></div>
+<div class="vrow">
+<div class="tile r169" style="background-image: url(../video/preview/kytayski-shini.jpg);">
+<a href="https://www.youtube.com/watch?v=fUTRHN1MBEY" class="full-clickable-overlay" target="_blank"></a>
+<span class="tile__play"><i class="fa fa-play"></i></span>
 <div class="work__item__hover" style="z-index: 4;">
-<h4>Sailun Tires</h4>
-<ul><li>Cinematic</li><li>3D Animation</li></ul>
+<h4>Про китайські шини</h4>
+<ul><li>Монтаж</li><li>Кольорокорекція</li></ul>
 </div>
 </div>
 <div class="tile r916">
@@ -252,6 +247,14 @@ iframe.is-loaded { opacity: 1; }
 <div class="work__item__hover" style="z-index: 4;">
 <h4>Шини Ф1</h4>
 <ul><li>Shorts</li><li>VFX</li></ul>
+</div>
+</div>
+<div class="tile r916">
+<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="sailun" muted loop playsinline preload="none"></video>
+<a href="https://res.cloudinary.com/evdoyndv/video/upload/f_auto,q_auto/sailun.mp4" class="full-clickable-overlay video-popup vertical-video"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Sailun Tires</h4>
+<ul><li>Cinematic</li><li>3D Animation</li></ul>
 </div>
 </div>
 <div class="tile r916">
@@ -270,36 +273,12 @@ iframe.is-loaded { opacity: 1; }
 <ul><li>Анімаційне відео</li></ul>
 </div>
 </div>
-<div class="tile r916">
-<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="me-1" muted loop playsinline preload="none"></video>
-<a href="https://res.cloudinary.com/evdoyndv/video/upload/f_auto,q_auto/me-1.mp4" class="full-clickable-overlay video-popup vertical-video"></a>
-<div class="work__item__hover" style="z-index: 4;">
-<h4>Серія відео (ролик 1)</h4>
-<ul><li>Тут я тільки в якості ведучого</li></ul>
-</div>
-</div>
-<div class="tile r916">
-<iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; transform: scale(1.15);" data-media="5Hl6TwF55oc" frameborder="0" allow="autoplay; encrypted-media"></iframe>
-<a href="https://www.youtube.com/shorts/5Hl6TwF55oc" class="full-clickable-overlay" target="_blank"></a>
-<div class="work__item__hover" style="z-index: 4;">
-<h4>Tire Reviews Show</h4>
-<ul><li>Переклад відео і додавання окремих елементів</li></ul>
-</div>
-</div>
 </div>
 </div>
 <div class="vblock">
-<div class="vblock__head"><span class="vblock__num">02</span><h3 class="vblock__title">Моушн і анімація</h3><span class="vblock__note">робоча назва · 16:9</span></div>
-<div class="vgrid vgrid--motion">
-<div class="tile ">
-<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="austone" muted loop playsinline preload="none"></video>
-<a href="https://res.cloudinary.com/evdoyndv/video/upload/f_auto,q_auto/austone.mp4" class="full-clickable-overlay video-popup"></a>
-<div class="work__item__hover" style="z-index: 4;">
-<h4>Austone Tires</h4>
-<ul><li>Анімаційне відео</li></ul>
-</div>
-</div>
-<div class="tile r169">
+<div class="vblock__head"><span class="vblock__num">02</span><h3 class="vblock__title">Блок 2</h3><span class="vblock__note">робоча назва</span></div>
+<div class="vrow">
+<div class="tile r916">
 <video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="track" muted loop playsinline preload="none"></video>
 <a href="https://res.cloudinary.com/evdoyndv/video/upload/f_auto,q_auto/track.mp4" class="full-clickable-overlay video-popup"></a>
 <div class="work__item__hover" style="z-index: 4;">
@@ -307,27 +286,7 @@ iframe.is-loaded { opacity: 1; }
 <ul><li>Motion Graphics</li></ul>
 </div>
 </div>
-<div class="tile r169">
-<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="karting" muted loop playsinline preload="none"></video>
-<a href="https://res.cloudinary.com/evdoyndv/video/upload/f_auto,q_auto/karting.mp4" class="full-clickable-overlay video-popup"></a>
-<div class="work__item__hover" style="z-index: 4;">
-<h4>Картинг телеметрія</h4>
-<ul><li>Motion Graphics</li></ul>
-</div>
-</div>
-</div>
-</div>
-<div class="vblock">
-<div class="vblock__head"><span class="vblock__num">03</span><h3 class="vblock__title">YouTube-випуски</h3><span class="vblock__note">робоча назва · відкриваються на YouTube</span></div>
-<div class="vgrid vgrid--yt">
-<div class="tile r169" style="background-image: url(../video/preview/kytayski-shini.jpg);">
-<a href="https://www.youtube.com/watch?v=fUTRHN1MBEY" class="full-clickable-overlay" target="_blank"></a>
-<span class="tile__play"><i class="fa fa-play"></i></span>
-<div class="work__item__hover" style="z-index: 4;">
-<h4>Про китайські шини</h4>
-<ul><li>Монтаж</li><li>Кольорокорекція</li></ul>
-</div>
-</div>
+<div class="tile tile--empty r916"><span><b>Нове відео 1</b>місце під вертикальне</span></div>
 <div class="tile r169" style="background-image: url('../video/preview/tyre-reviews-ferst test.jpg');">
 <a href="https://www.youtube.com/watch?v=0F07RLcIYx4" class="full-clickable-overlay" target="_blank"></a>
 <span class="tile__play"><i class="fa fa-play"></i></span>
@@ -336,6 +295,45 @@ iframe.is-loaded { opacity: 1; }
 <ul><li>Переклад відео і додавання окремих елементів</li></ul>
 </div>
 </div>
+<div class="tile r916">
+<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="karting" muted loop playsinline preload="none"></video>
+<a href="https://res.cloudinary.com/evdoyndv/video/upload/f_auto,q_auto/karting.mp4" class="full-clickable-overlay video-popup"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Картинг телеметрія</h4>
+<ul><li>Motion Graphics</li></ul>
+</div>
+</div>
+<div class="tile r916">
+<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="me-1" muted loop playsinline preload="none"></video>
+<a href="https://res.cloudinary.com/evdoyndv/video/upload/f_auto,q_auto/me-1.mp4" class="full-clickable-overlay video-popup vertical-video"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Серія відео (ролик 1)</h4>
+<ul><li>Тут я тільки в якості ведучого</li></ul>
+</div>
+</div>
+</div>
+</div>
+<div class="vblock vblock--narrow">
+<div class="vblock__head"><span class="vblock__num">03</span><h3 class="vblock__title">Блок 3</h3><span class="vblock__note">робоча назва</span></div>
+<div class="vrow">
+<div class="tile r916">
+<iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; transform: scale(1.15);" data-media="5Hl6TwF55oc" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+<a href="https://www.youtube.com/shorts/5Hl6TwF55oc" class="full-clickable-overlay" target="_blank"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Tire Reviews Show</h4>
+<ul><li>Переклад відео і додавання окремих елементів</li></ul>
+</div>
+</div>
+<div class="tile r34">
+<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="austone" muted loop playsinline preload="none"></video>
+<a href="https://res.cloudinary.com/evdoyndv/video/upload/f_auto,q_auto/austone.mp4" class="full-clickable-overlay video-popup"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Austone Tires</h4>
+<ul><li>Анімаційне відео</li></ul>
+</div>
+</div>
+<div class="tile tile--empty r916"><span><b>Нове відео 2</b>місце під вертикальне</span></div>
+<div class="tile tile--empty r916"><span><b>Нове відео 3</b>місце під вертикальне</span></div>
 </div>
 </div>
     </section>
