@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description"
+        content="Професійне портфоліо відеомонтажера. Якісний відеомонтаж, кольорокорекція, саунд-дизайн та VFX.">
+    <meta name="keywords" content="Відеомонтажер, Монтаж відео, VFX, Кольорокорекція, Портфоліо">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Пісочниця · галерея без блоків</title>
+
+    <!-- Open Graph / Facebook / Telegram -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://oleksii96.github.io/my-portfolio/"> 
+    <meta property="og:title" content="Портфоліо | Олексій - Відеомонтажер">
+    <meta property="og:description" content="Професійне портфоліо відеомонтажера. Якісний відеомонтаж, кольорокорекція, саунд-дизайн та VFX.">
+    <meta property="og:image" content="https://oleksii96.github.io/my-portfolio/img/hero/hero-1.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://oleksii96.github.io/my-portfolio/">
+    <meta property="twitter:title" content="Портфоліо | Олексій - Відеомонтажер">
+    <meta property="twitter:description" content="Професійне портфоліо відеомонтажера. Якісний відеомонтаж, кольорокорекція, саунд-дизайн та VFX.">
+    <meta property="twitter:image" content="https://oleksii96.github.io/my-portfolio/img/hero/hero-1.jpg">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="../css/bootstrap.min.css?v=24" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" type="text/css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css?v=24" type="text/css">
+    <link rel="stylesheet" href="../css/elegant-icons.css?v=24" type="text/css">
+    <link rel="stylesheet" href="../css/owl.carousel.min.css?v=24" type="text/css">
+    <link rel="stylesheet" href="../css/magnific-popup.css?v=24" type="text/css">
+    <link rel="stylesheet" href="../css/slicknav.min.css?v=24" type="text/css">
+    <link rel="stylesheet" href="../css/style.css?v=24" type="text/css">
+    <style>
+
+.yt-bg { background-size: cover !important; background-position: center !important; }
+.tile__play { position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.7); color: #fff; font-size: 22px; display: flex; align-items: center; justify-content: center; padding-left: 4px; z-index: 2; pointer-events: none; transition: transform .3s; }
+.tile:hover .tile__play { transform: scale(1.12); }
+video[data-media], iframe[data-media] { opacity: 0; transition: opacity .6s; }
+video[data-media][poster] { opacity: 1; }
+iframe.is-loaded { opacity: 1; }
+
+    </style>
+</head>
+
+<body data-first="5">
+    <!-- НАЛАШТУВАННЯ ПАРОЛЮ (Легко змінити або вимкнути) -->
+    <script>
+        const USE_PASSWORD = true;    // Змініть на false, щоб відключити запит пароля
+        const PAGE_PASSWORD = "123";  // Встановіть ваш пароль тут
+    </script>
+
+    <!-- Екран введення пароля -->
+    <div id="password-overlay">
+        <div class="password-box">
+            <h2>Доступ закрито</h2>
+            <input type="password" id="password-input" placeholder="Введіть пароль...">
+            <button id="password-submit-btn">Увійти</button>
+            <p id="password-error">Невірний пароль, спробуйте ще раз.</p>
+        </div>
+    </div>
+
+    <!-- Page Preloder V6 -->
+    <div id="preloder">
+        <canvas id="matrixCanvas"></canvas>
+        <div class="giant-bg-text" id="bgText">SYSTEM BOOT</div>
+
+        <!-- Floating Background Icons -->
+        <i class="fa-solid fa-camera el-camera floating-element"></i>
+        <i class="fa-brands fa-space-awesome el-drone floating-element"></i>
+        <i class="fa-solid fa-film el-film floating-element"></i>
+
+        <!-- Main HUD -->
+        <div class="hud-wrapper" id="hudWrapper">
+            <div class="hud-circle circle-1" id="c1"></div>
+            <div class="hud-circle circle-2" id="c2"></div>
+            <div class="hud-circle circle-3" id="c3"></div>
+            
+            <svg class="progress-ring-svg">
+                <circle class="ring-track" cx="175" cy="175" r="170"></circle>
+                <circle class="ring-fill" id="ringFill" cx="175" cy="175" r="170"></circle>
+            </svg>
+
+            <div class="center-content">
+                <div class="percentage" id="loader-percentage">0%</div>
+                <div class="ai-status" id="aiStatus">UPLOADING NEURAL DATA</div>
+            </div>
+
+            <!-- Rapid Console logs -->
+            <div class="rapid-console" id="rapidConsole"></div>
+        </div>
+    </div>
+
+    <!-- Hero Section Begin -->
+    <section class="hero">
+        <div class="hero__slider owl-carousel">
+            <div class="hero__item set-bg" data-setbg="../img/hero/hero-1.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="hero__text">
+                                <span>Професійний монтаж та motion design</span>
+                                <h2>Креативний відеопродакшн</h2>
+                                <a href="#portfolio" class="primary-btn">Дивитися роботи</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero__item set-bg" data-setbg="../img/hero/hero-1.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="hero__text">
+                                <span>Професійний монтаж та motion design</span>
+                                <h2>Візуальні медіа рішення</h2>
+                                <a href="#portfolio" class="primary-btn">Дивитися роботи</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hero Section End -->
+
+    <!-- Services Section Begin -->
+    <section class="services spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="services__title">
+                        <div class="section-title">
+                            <span>Мої послуги</span>
+                            <h2>Що я роблю?</h2>
+                        </div>
+                        <p>Я надаю професійні послуги з постпродакшену, перетворюючи відзнятий матеріал на якісний та
+                            захоплюючий відеоконтент для вашого бізнесу або особистого бренду.</p>
+                        <a href="#portfolio" class="primary-btn">Дивитись роботи</a>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="services__item">
+                                <div class="services__item__icon">
+                                    <img src="../img/icons/si-1.png" alt="">
+                                </div>
+                                <h4>Motion Design & VFX</h4>
+                                <p>Додавання професійних візуальних ефектів та графіки для підвищення візуальної
+                                    привабливості.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="services__item">
+                                <div class="services__item__icon">
+                                    <img src="../img/icons/si-2.png" alt="">
+                                </div>
+                                <h4>Професійний Монтаж</h4>
+                                <p>Точна нарізка та візуальний сторітелінг, щоб ваше повідомлення було донесено чітко та
+                                    ефективно.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="services__item">
+                                <div class="services__item__icon">
+                                    <img src="../img/icons/si-3.png" alt="">
+                                </div>
+                                <h4>Кольорокорекція</h4>
+                                <p>Створення стабільного та професійного кінематографічного вигляду для всіх ваших
+                                    відеопроектів.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="services__item">
+                                <div class="services__item__icon">
+                                    <img src="../img/icons/si-4.png" alt="">
+                                </div>
+                                <h4>Саунд-дизайн</h4>
+                                <p>Професійне зведення звуку та шумові ефекти для створення повного занурення глядача.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <!-- Services Section End -->
+
+    <section class="work" id="portfolio">
+        <div class="work__gallery">
+            <div class="grid-sizer"></div>
+<div class="work__item wide__item set-bg mob-16x9" data-setbg="../video/preview/kytayski-shini.jpg" style="background: #222; background-size: cover; background-position: center;">
+<a href="https://www.youtube.com/watch?v=fUTRHN1MBEY" class="full-clickable-overlay" target="_blank"></a>
+<span class="tile__play"><i class="fa fa-play"></i></span>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Про китайські шини</h4>
+<ul><li>Монтаж</li><li>Кольорокорекція</li></ul>
+</div>
+</div>
+<div class="work__item large__item mob-9x16 yt-bg" style="background-color: #333;">
+<iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; transform: scale(1.15);" data-media="8_LSFVe5i5E" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+<a href="https://www.youtube.com/shorts/8_LSFVe5i5E" class="full-clickable-overlay" target="_blank"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Шини Ф1</h4>
+<ul><li>Shorts</li><li>VFX</li></ul>
+</div>
+</div>
+<div class="work__item large__item mob-9x16" style="background: #000;">
+<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="sailun" muted loop playsinline preload="none"></video>
+<a href="https://res.cloudinary.com/evdoyndv/video/upload/f_auto,q_auto/sailun.mp4" class="full-clickable-overlay video-popup vertical-video"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Sailun Tires</h4>
+<ul><li>Cinematic</li><li>3D Animation</li></ul>
+</div>
+</div>
+<div class="work__item custom-wrapper">
+<div class="inner-video-block mob-3x4" style="width: 38%;">
+<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="austone" muted loop playsinline preload="none"></video>
+<a href="https://res.cloudinary.com/evdoyndv/video/upload/f_auto,q_auto/austone.mp4" class="full-clickable-overlay video-popup"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Austone Tires</h4>
+<ul><li>Анімаційне відео</li></ul>
+</div>
+</div>
+<div class="inner-video-block mob-9x16" style="width: 31%;">
+<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="nba" muted loop playsinline preload="none"></video>
+<a href="https://res.cloudinary.com/evdoyndv/video/upload/f_auto,q_auto/nba.mp4" class="full-clickable-overlay video-popup vertical-video"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>NBA Stars</h4>
+<ul><li>Motion Graphics</li></ul>
+</div>
+</div>
+<div class="inner-video-block mob-9x16 yt-bg" style="width: 31%; background-color: #000;">
+<iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; transform: scale(1.15);" data-media="vGC3vZwDooM" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+<a href="https://www.youtube.com/shorts/vGC3vZwDooM" class="full-clickable-overlay" target="_blank"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Порівняння двох шин</h4>
+<ul><li>Анімаційне відео</li></ul>
+</div>
+</div>
+</div>
+<div class="work__item large__item mob-9x16" style="background: #000;">
+<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="track" muted loop playsinline preload="none"></video>
+<a href="https://res.cloudinary.com/evdoyndv/video/upload/f_auto,q_auto/track.mp4" class="full-clickable-overlay video-popup"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Гоночний трек</h4>
+<ul><li>Motion Graphics</li></ul>
+</div>
+</div>
+<div class="work__item large__item mob-9x16" style="background: #000;">
+<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="karting" muted loop playsinline preload="none"></video>
+<a href="https://res.cloudinary.com/evdoyndv/video/upload/f_auto,q_auto/karting.mp4" class="full-clickable-overlay video-popup"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Картинг телеметрія</h4>
+<ul><li>Motion Graphics</li></ul>
+</div>
+</div>
+<div class="work__item wide__item set-bg mob-16x9" data-setbg="../video/preview/tyre-reviews-ferst%20test.jpg" style="background: #222; background-size: cover; background-position: center;">
+<a href="https://www.youtube.com/watch?v=0F07RLcIYx4" class="full-clickable-overlay" target="_blank"></a>
+<span class="tile__play"><i class="fa fa-play"></i></span>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Tire Reviews Show</h4>
+<ul><li>Переклад відео і додавання окремих елементів</li></ul>
+</div>
+</div>
+<div class="work__item bottom-centered-wrapper">
+<div class="inner-video-block large__item mob-9x16" style="background: #000;">
+<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="me-1" muted loop playsinline preload="none"></video>
+<a href="https://res.cloudinary.com/evdoyndv/video/upload/f_auto,q_auto/me-1.mp4" class="full-clickable-overlay video-popup vertical-video"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Серія відео (ролик 1)</h4>
+<ul><li>Тут я тільки в якості ведучого</li></ul>
+</div>
+</div>
+<div class="inner-video-block large__item mob-9x16 yt-bg" style="background-color: #333;">
+<iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; transform: scale(1.15);" data-media="5Hl6TwF55oc" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+<a href="https://www.youtube.com/shorts/5Hl6TwF55oc" class="full-clickable-overlay" target="_blank"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Tire Reviews Show</h4>
+<ul><li>Переклад відео і додавання окремих елементів</li></ul>
+</div>
+</div>
+</div>
+        </div>
+    </section>
+    <!-- Work Section End -->
+
+    <!-- Counter Section Begin -->
+    <section class="counter">
+        <div class="container">
+            <div class="counter__content">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="counter__item">
+                            <div class="counter__item__text">
+                                <img src="../img/icons/ci-1.png" alt="">
+                                <h2 class="counter_num" data-suffix="%">100</h2>
+                                <p>Дотримання дедлайнів</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="counter__item second__item">
+                            <div class="counter__item__text">
+                                <img src="../img/icons/ci-2.png" alt="">
+                                <h2 class="counter_num" data-suffix="+">40</h2>
+                                <p>Успішних проєктів</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="counter__item third__item">
+                            <div class="counter__item__text">
+                                <img src="../img/icons/ci-3.png" alt="">
+                                <h2 class="counter_num" data-suffix="+">500</h2>
+                                <p>Годин суцільного монтажу</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="counter__item four__item">
+                            <div class="counter__item__text">
+                                <img src="../img/icons/ci-4.png" alt="">
+                                <h2>∞</h2>
+                                <p>Відео під ключ (з нуля)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Counter Section End -->
+
+    <!-- Footer Section Begin -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__copyright">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        <p class="footer__copyright__text">Copyright &copy;
+                            <script>
+                                document.write(new Date().getFullYear());
+                            </script>
+                            Всі права захищено | Персональне портфоліо Карташова Олексія. Дизайн шаблону створено <a
+                                href="https://colorlib.com" target="_blank"
+                                style="color:#fff; text-decoration: underline;">Colorlib</a>
+                        </p>
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Footer Section End -->
+
+    <!-- Js Plugins -->
+    <script src="../js/jquery-3.3.1.min.js?v=24"></script>
+    <script src="../js/bootstrap.min.js?v=24"></script>
+    <script src="../js/jquery.magnific-popup.min.js?v=24"></script>
+    <script src="../js/masonry.pkgd.min.js?v=24"></script>
+    <script src="../js/jquery.slicknav.js?v=24"></script>
+    <script src="../js/owl.carousel.min.js?v=24"></script>
+    <script>
+'use strict';
+(function ($) {
+
+    // Disable browser automatic scroll restoration
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+
+    /*------------------
+        Preloader V6
+    --------------------*/
+    var $percentage = $('#loader-percentage');
+    var currentPercent = 0;
+    
+    // --- V11 UI Elements ---
+    const ringFill = document.getElementById('ringFill');
+    const bgText = document.getElementById('bgText');
+    const hudWrapper = document.getElementById('hudWrapper');
+    const c1 = document.getElementById('c1');
+    const c3 = document.getElementById('c3');
+    const icons = document.querySelectorAll('.floating-element');
+    const consoleEl = document.getElementById('rapidConsole');
+    const aiStatus = document.getElementById('aiStatus');
+    const circumference = 1068;
+    let matrixColor = '#00ffcc';
+    var matrixTimer, consoleTimer;
+
+    // Matrix Background
+    const canvas = document.getElementById('matrixCanvas');
+    if(canvas) {
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const matrixChars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%""\'#&_(),.;:?!\\|{}<>[]^~';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        for(let x = 0; x < columns; x++) drops[x] = 1;
+        matrixTimer = setInterval(() => {
+            ctx.fillStyle = 'rgba(2, 2, 5, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = matrixColor;
+            ctx.font = fontSize + 'px monospace';
+            for(let i = 0; i < drops.length; i++) {
+                const text = matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }, 33);
+    }
+
+    // Console logs
+    if(consoleEl) {
+        const logs = [
+            "Compiling WebGL shaders...", "Analyzing video metadata...", "Applying heuristic filters...",
+            "Decrypting Cloudinary tokens...", "Establishing secure CDN link...", "Syncing keyframes...",
+            "Optimizing H.265 streams...", "Loading AI upscaler model...", "Injecting CSS variables..."
+        ];
+        consoleTimer = setInterval(() => {
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            line.innerText = `> ${logs[Math.floor(Math.random() * logs.length)]} [OK]`;
+            consoleEl.prepend(line);
+            if(consoleEl.children.length > 3) consoleEl.removeChild(consoleEl.lastChild);
+        }, 200);
+    }
+
+    // Scramble logic
+    const scrambleChars = '0123456789!@#$%^&*()';
+    function scrambleStatus(finalValue) {
+        if(!aiStatus) return;
+        let iterations = 0;
+        const interval = setInterval(() => {
+            aiStatus.innerText = finalValue.split('').map((char, index) => {
+                if(index < iterations) return char;
+                return scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+            }).join('');
+            if(iterations >= finalValue.length) clearInterval(interval);
+            iterations += 1/2;
+        }, 30);
+    }
+
+    let activePhase = 0;
+    function setPhase(phase) {
+        if (activePhase === phase || !bgText) return;
+        activePhase = phase;
+        if (phase === 1) { // 0-33%
+            matrixColor = '#00ffcc'; bgText.innerText = 'DOWNLOADING MEDIA';
+            if(ringFill) { ringFill.style.stroke = '#00ffcc'; ringFill.style.filter = 'drop-shadow(0 0 10px #00ffcc)'; }
+            if($percentage.length) $percentage[0].style.textShadow = '0 0 20px rgba(0, 255, 204, 0.8)';
+            if(consoleEl) consoleEl.style.color = 'rgba(0,255,204,0.7)';
+            if(c1) c1.style.borderColor = 'rgba(0, 255, 204, 0.4)';
+            if(c3) { c3.style.borderColor = '#00ffcc transparent #00ffcc transparent'; c3.style.boxShadow = '0 0 15px rgba(0,255,204,0.2) inset, 0 0 15px rgba(0,255,204,0.2)'; }
+            if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1)' : 'scale(0.65)';
+            if(bgText) bgText.style.transform = 'translate(-50%, -50%) scale(1)';
+            scrambleStatus("UPLOADING NEURAL DATA");
+        } else if (phase === 2) { // 33-66%
+            matrixColor = '#ffaa00'; bgText.innerText = 'PROCESSING AI';
+            if(bgText) bgText.style.transform = 'translate(-50%, -50%) scale(1.1)';
+            if(ringFill) { ringFill.style.stroke = '#ffaa00'; ringFill.style.filter = 'drop-shadow(0 0 15px #ffaa00)'; }
+            if($percentage.length) $percentage[0].style.textShadow = '0 0 25px rgba(255, 170, 0, 0.9)';
+            if(consoleEl) consoleEl.style.color = 'rgba(255, 170, 0, 0.7)';
+            if(c1) c1.style.borderColor = 'rgba(255, 170, 0, 0.4)';
+            if(c3) { c3.style.borderColor = '#ffaa00 transparent #ffaa00 transparent'; c3.style.boxShadow = '0 0 25px rgba(255, 170, 0, 0.4) inset, 0 0 25px rgba(255,170,0,0.4)'; }
+            if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1.1)' : 'scale(0.75)';
+            icons.forEach(i => i.style.color = 'rgba(255, 170, 0, 0.1)');
+            scrambleStatus("APPLYING VFX FILTERS");
+        } else if (phase === 3) { // 66-95%
+            matrixColor = '#ff003c'; bgText.innerText = 'CRITICAL LOAD';
+            if(bgText) bgText.style.transform = 'translate(-50%, -50%) scale(1.2)';
+            if(ringFill) { ringFill.style.stroke = '#ff003c'; ringFill.style.filter = 'drop-shadow(0 0 20px #ff003c)'; }
+            if($percentage.length) $percentage[0].style.textShadow = '0 0 30px rgba(255, 0, 60, 1)';
+            if(consoleEl) consoleEl.style.color = 'rgba(255, 0, 60, 0.7)';
+            if(c1) c1.style.borderColor = 'rgba(255, 0, 60, 0.4)';
+            if(c3) { c3.style.borderColor = '#ff003c transparent #ff003c transparent'; c3.style.boxShadow = '0 0 30px rgba(255, 0, 60, 0.6) inset, 0 0 30px rgba(255,0,60,0.6)'; }
+            if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1.2)' : 'scale(0.85)';
+            icons.forEach(i => i.style.color = 'rgba(255, 0, 60, 0.1)');
+            document.body.style.background = '#1a0005';
+            scrambleStatus("FINALIZING RENDER");
+        } else if (phase === 4) { // 96-99% Hyper-drive
+            matrixColor = '#ffffff'; bgText.innerText = 'SYSTEM READY';
+            if(bgText) { bgText.style.color = 'rgba(255,255,255,0.1)'; bgText.style.transform = 'translate(-50%, -50%) scale(1.3)'; }
+            if(ringFill) { ringFill.style.stroke = '#ffffff'; ringFill.style.filter = 'drop-shadow(0 0 30px #ffffff)'; }
+            if($percentage.length) { $percentage[0].style.textShadow = '0 0 40px rgba(255, 255, 255, 1)'; $percentage[0].style.transform = 'scale(1.1)'; }
+            if(consoleEl) consoleEl.style.opacity = '0';
+            if(c1) c1.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+            if(c3) { c3.style.borderColor = '#ffffff transparent #ffffff transparent'; c3.style.boxShadow = '0 0 40px rgba(255, 255, 255, 0.8) inset, 0 0 40px rgba(255,255,255,0.8)'; }
+            if(hudWrapper) hudWrapper.style.transform = window.innerWidth > 768 ? 'scale(1.3)' : 'scale(0.95)';
+            icons.forEach(i => i.style.color = 'rgba(255, 255, 255, 0.3)');
+            scrambleStatus("INITIATING LAUNCH");
+        }
+    }
+
+    setPhase(1);
+
+    function updatePreloaderUI(pct) {
+        if(ringFill) {
+            const offset = circumference - (pct / 100) * circumference;
+            ringFill.style.strokeDashoffset = offset;
+        }
+        $percentage.text(Math.floor(pct) + '%');
+        
+        if (pct >= 33 && pct < 66) setPhase(2);
+        if (pct >= 66 && pct < 96) setPhase(3);
+        if (pct >= 96 && pct <= 100) setPhase(4);
+    }
+
+
+    var currentPercent = 0, targetPercent = 0, lastTime = performance.now(), finished = false;
+    window.preloadProgress = function (v) { targetPercent = Math.max(targetPercent, v); };
+    setTimeout(function () { targetPercent = 100; }, 15000);
+
+    function finishPreloader() {
+        if (finished) return;
+        finished = true;
+        updatePreloaderUI(100);
+        scrambleStatus("SYSTEM ONLINE");
+        if (hudWrapper) $(hudWrapper).fadeTo(400, 0);
+        if (bgText) $(bgText).fadeTo(400, 0);
+        $percentage.fadeTo(400, 0);
+        $("#preloder").delay(600).fadeTo(700, 0, function () {
+            $(this).css({ 'pointer-events': 'none', 'display': 'none' });
+            clearInterval(matrixTimer);
+            clearInterval(consoleTimer);
+        });
+    }
+
+    function animatePreloader(time) {
+        var dt = Math.min(time - lastTime, 250);
+        lastTime = time;
+        currentPercent += (targetPercent - currentPercent) * Math.min(1, dt / 300);
+        if (targetPercent >= 100 && currentPercent > 99.4) { finishPreloader(); return; }
+        updatePreloaderUI(currentPercent);
+        requestAnimationFrame(animatePreloader);
+    }
+    requestAnimationFrame(animatePreloader);
+
+    /*------------------
+        Smooth Scroll
+    --------------------*/
+    $("a[href^='#']").on('click', function(e) {
+        var hash = this.hash;
+        if (hash !== "") {
+            e.preventDefault();
+            $('html, body').animate({
+                scrollTop: $(hash).offset().top - 50
+            }, 800);
+        }
+    });
+
+
+    /*------------------
+        Background Set
+    --------------------*/
+    $('.set-bg').each(function () {
+        var bg = $(this).data('setbg');
+        $(this).css('background-image', 'url(' + bg + ')');
+    });
+
+    //Masonary
+    $('.work__gallery').masonry({
+        itemSelector: '.work__item',
+        columnWidth: '.grid-sizer',
+        gutter: 10
+    });
+
+    /*------------------
+		Navigation
+	--------------------*/
+    $(".mobile-menu").slicknav({
+        prependTo: '#mobile-menu-wrap',
+        allowParentLinks: true
+    });
+
+    /*------------------
+		Hero Slider
+	--------------------*/
+    $('.hero__slider').owlCarousel({
+        loop: true,
+        dots: true,
+        mouseDrag: false,
+        animateOut: 'fadeOut',
+        animateIn: 'fadeIn',
+        items: 1,
+        margin: 0,
+        smartSpeed: 1200,
+        autoHeight: false,
+        autoplay: true,
+    });
+
+    var dot = $('.hero__slider .owl-dot');
+    dot.each(function () {
+        var index = $(this).index() + 1;
+        if (index < 10) {
+            $(this).html('0').append(index);
+        } else {
+            $(this).html(index);
+        }
+    });
+
+    /*------------------
+        Testimonial Slider
+    --------------------*/
+    $(".testimonial__slider").owlCarousel({
+        loop: true,
+        margin: 0,
+        items: 3,
+        dots: true,
+        dotsEach: 2,
+        smartSpeed: 1200,
+        autoHeight: false,
+        autoplay: true,
+        responsive: {
+            992: {
+                items: 3
+            },
+            768: {
+                items: 2
+            },
+            320: {
+                items: 1
+            }
+        }
+    });
+
+    /*------------------
+        Latest Slider
+    --------------------*/
+    $(".latest__slider").owlCarousel({
+        loop: true,
+        margin: 0,
+        items: 3,
+        dots: true,
+        dotsEach: 2,
+        smartSpeed: 1200,
+        autoHeight: false,
+        autoplay: true,
+        responsive: {
+            992: {
+                items: 3
+            },
+            768: {
+                items: 2
+            },
+            320: {
+                items: 1
+            }
+        }
+    });
+
+    /*------------------
+        Logo Slider
+    --------------------*/
+    $(".logo__carousel").owlCarousel({
+        loop: true,
+        margin: 100,
+        items: 6,
+        dots: false,
+        smartSpeed: 1200,
+        autoHeight: false,
+        autoplay: true,
+        responsive: {
+            992: {
+                items: 5
+            },
+            768: {
+                items: 4
+            },
+            480: {
+                items: 3
+            },
+            320: {
+                items: 2
+            }
+        }
+    });
+
+    /*------------------
+        Video Popup
+    --------------------*/
+    $('.video-popup').magnificPopup({
+        type: 'iframe',
+        callbacks: {
+            beforeOpen: function() {
+                var url = this.st.el.attr('href');
+                if (url && url.indexOf('.mp4') !== -1) {
+                    this.st.iframe.markup = '<div class="mfp-iframe-scaler"><div class="mfp-close"></div><video class="mfp-iframe" autoplay controls playsinline style="object-fit: contain; background: #000;"></video></div>';
+                } else {
+                    this.st.iframe.markup = '<div class="mfp-iframe-scaler"><div class="mfp-close"></div><iframe class="mfp-iframe" frameborder="0" allowfullscreen></iframe></div>';
+                }
+                
+                if (this.st.el.hasClass('vertical-video')) {
+                    this.st.mainClass = 'mfp-vertical-video';
+                } else {
+                    this.st.mainClass = '';
+                }
+            }
+        }
+    });
+
+    /*------------------
+        Counter
+    --------------------*/
+    $('.counter_num').each(function () {
+        var $this = $(this);
+        var targetValue = parseInt($this.text());
+        var suffix = $this.data('suffix') || '';
+        
+        $this.prop('Counter', 0).animate({
+            Counter: targetValue
+        }, {
+            duration: 4000,
+            easing: 'swing',
+            step: function (now) {
+                var currentVal = Math.ceil(now);
+                var displayVal = currentVal >= 1000 ? currentVal.toLocaleString('uk-UA') : currentVal;
+                $this.text(displayVal + suffix);
+            }
+        });
+    });
+
+    /*------------------
+        Password Lock
+    --------------------*/
+    if (typeof USE_PASSWORD !== 'undefined' && USE_PASSWORD) {
+        // Перевіряємо, чи введений раніше пароль співпадає з поточним PAGE_PASSWORD.
+        // Це змусить просити пароль знову, якщо ви його зміните в HTML.
+        if (localStorage.getItem('portfolio_unlocked_password') !== PAGE_PASSWORD) {
+            var overlay = document.getElementById('password-overlay');
+            var pInput = document.getElementById('password-input');
+            var pSubmit = document.getElementById('password-submit-btn');
+            var pError = document.getElementById('password-error');
+            var pBox = document.querySelector('.password-box');
+            var originalOverflow = document.body.style.overflow;
+            
+            if (overlay) {
+                overlay.style.display = 'flex';
+                document.body.style.overflow = 'hidden'; // Блокуємо скрол
+
+                function checkPassword() {
+                    if (pInput.value === PAGE_PASSWORD) {
+                        localStorage.setItem('portfolio_unlocked_password', PAGE_PASSWORD);
+                        overlay.style.opacity = '0'; // Плавне зникнення
+                        setTimeout(function() {
+                            overlay.style.display = 'none';
+                            document.body.style.overflow = originalOverflow;
+                        }, 500);
+                    } else {
+                        pError.style.display = 'block';
+                        pBox.classList.remove('shake-error');
+                        void pBox.offsetWidth; // trigger reflow
+                        pBox.classList.add('shake-error');
+                        pInput.value = ''; // Очистити поле
+                    }
+                }
+
+                pSubmit.addEventListener('click', checkPassword);
+                pInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') checkPassword();
+                });
+            }
+        }
+    }
+
+})(jQuery);
+</script>
+
+<script>
+(function () {
+    var mobile = matchMedia('(max-width: 767px)').matches;
+    var width = mobile ? 480 : 720;
+    var CL = 'https://res.cloudinary.com/evdoyndv/video/upload/';
+    var items = [].slice.call(document.querySelectorAll('[data-media]'));
+    var firstCount = Math.min(items.length, +document.body.dataset.first || 1);
+    var done = 0, index = 0, itemStart = performance.now();
+
+    var visible = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+            if (e.isIntersecting) { var p = e.target.play(); if (p && p.catch) p.catch(function () {}); }
+            else e.target.pause();
+        });
+    }, { rootMargin: '150px' });
+
+    items.forEach(function (el) {
+        var id = el.dataset.media;
+        if (el.tagName === 'VIDEO') el.poster = CL + 'so_1,w_' + width + ',q_auto/' + id + '.jpg';
+        else el.parentNode.style.backgroundImage = 'url(https://img.youtube.com/vi/' + id + '/hqdefault.jpg)';
+    });
+
+    function report() {
+        if (!window.preloadProgress) return;
+        if (done >= firstCount) { preloadProgress(100); return; }
+        var part = Math.min(.9, (performance.now() - itemStart) / 5000);
+        preloadProgress((done + part) / firstCount * 100);
+    }
+    var ticker = setInterval(function () { report(); if (done >= firstCount) clearInterval(ticker); }, 200);
+
+    function next() {
+        if (index >= items.length) return;
+        var el = items[index++], id = el.dataset.media, finished = false, timer;
+        itemStart = performance.now();
+        function ready() {
+            if (finished) return;
+            finished = true;
+            clearTimeout(timer);
+            el.classList.add('is-loaded');
+            if (el.tagName === 'VIDEO') visible.observe(el);
+            done++;
+            report();
+            next();
+        }
+        if (el.tagName === 'VIDEO') {
+            timer = setTimeout(ready, 12000);
+            el.addEventListener('canplaythrough', ready, { once: true });
+            el.addEventListener('error', ready, { once: true });
+            el.preload = 'auto';
+            el.src = CL + 'f_auto,q_auto,w_' + width + '/' + id + '.mp4';
+            el.load();
+        } else {
+            timer = setTimeout(ready, 8000);
+            el.addEventListener('load', ready, { once: true });
+            el.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&mute=1&loop=1&playlist=' + id + '&controls=0&rel=0&playsinline=1';
+        }
+    }
+    next();
+})();
+</script>
+
+
+
+</body>
+
+</html>
+
