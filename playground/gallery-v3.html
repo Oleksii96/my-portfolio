@@ -93,7 +93,7 @@ iframe.is-loaded { opacity: 1; }
 .cover__bar i { position: absolute; left: 0; top: 0; bottom: 0; width: var(--p, 0%); background: #00bfe7; }
 .cover__pct { display: block; margin-top: 10px; color: #8a86a3; font-size: 14px; letter-spacing: 2px; }
 
-.cover--render { background: radial-gradient(70% 90% at 50% 50%, #1d0a44 0%, #100028 70%); display: flex; align-items: center; justify-content: center; clip-path: inset(0 0 0 0); transition: clip-path .9s cubic-bezier(.7,0,.2,1); }
+.cover--render { background: radial-gradient(70% 90% at 50% 50%, rgba(29,10,68,.93) 0%, rgba(16,0,40,.9) 70%); display: flex; align-items: center; justify-content: center; clip-path: inset(0 0 0 0); transition: clip-path .9s cubic-bezier(.7,0,.2,1); }
 .is-open .cover--render { clip-path: inset(0 0 100% 0); }
 
 .cover--clap { background: rgba(16,0,40,.86); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; transition: opacity .6s .45s; }
@@ -108,7 +108,19 @@ iframe.is-loaded { opacity: 1; }
 .is-open .clap { transform: translateY(30%); opacity: 0; }
 
 .cover--cut { pointer-events: none; }
-.cut { position: absolute; top: 0; bottom: 0; width: 50%; background: #100028; overflow: hidden; transition: transform .8s cubic-bezier(.7,0,.2,1); }
+.cover::before { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,191,231,.05) 0 1px, transparent 1px 3px); }
+.cover.is-flicker { animation: flicker .32s steps(1) 1; }
+.cover.is-flicker .cover__title { text-shadow: 3px 0 rgba(0,191,231,.9), -3px 0 rgba(255,46,99,.7); }
+.cover.is-flicker::after { content: ""; position: absolute; left: 0; right: 0; top: var(--band, 40%); height: 14%; z-index: 3; pointer-events: none; background: rgba(0,191,231,.08); -webkit-backdrop-filter: invert(.15) saturate(2); backdrop-filter: invert(.15) saturate(2); }
+@keyframes flicker {
+  0% { opacity: .35; transform: translateX(-4px); }
+  20% { opacity: 1; transform: none; }
+  40% { opacity: .15; transform: translateX(3px); }
+  55% { opacity: .85; transform: none; }
+  75% { opacity: .45; }
+  100% { opacity: 1; }
+}
+.cut { position: absolute; top: 0; bottom: 0; width: 50%; background: rgba(16,0,40,.9); overflow: hidden; transition: transform .8s cubic-bezier(.7,0,.2,1); }
 .cut--l { left: 0; }
 .cut--r { right: 0; }
 .cut .cover__box { position: absolute; top: 50%; width: 100cqw; transform: translateY(-50%); padding: 26px 0 24px; }
@@ -285,7 +297,7 @@ iframe.is-loaded { opacity: 1; }
 
     <section class="work" id="portfolio">
 <div class="vblock" data-cover="render">
-<div class="section-title"><span>Роботи · 01</span><h2>Назва 1</h2></div>
+<div class="section-title"><span>Роботи · 01</span><h2>Reel 01</h2></div>
 <div class="stage">
 <div class="vrow">
 <div class="tile r169" style="background-image: url(../video/preview/kytayski-shini.jpg);">
@@ -324,11 +336,11 @@ iframe.is-loaded { opacity: 1; }
 </div>
 </div>
 </div>
-<div class="cover cover--render"><div class="cover__box"><span class="cover__kicker">Роботи · 01</span><div class="cover__title">Назва 1</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div>
+<div class="cover cover--render"><div class="cover__box"><span class="cover__kicker">Роботи · 01</span><div class="cover__title">Reel 01</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div>
 </div>
 </div>
 <div class="vblock" data-cover="clap">
-<div class="section-title"><span>Роботи · 02</span><h2>Назва 2</h2></div>
+<div class="section-title"><span>Роботи · 02</span><h2>Reel 02</h2></div>
 <div class="stage">
 <div class="vrow">
 <div class="tile r916">
@@ -361,11 +373,11 @@ iframe.is-loaded { opacity: 1; }
 </div>
 </div>
 </div>
-<div class="cover cover--clap"><div class="clap"><div class="clap__stick"></div><div class="clap__base"></div><div class="clap__body"><span class="cover__kicker">Роботи · 02</span><div class="cover__title">Назва 2</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div></div>
+<div class="cover cover--clap"><div class="clap"><div class="clap__stick"></div><div class="clap__base"></div><div class="clap__body"><span class="cover__kicker">Роботи · 02</span><div class="cover__title">Reel 02</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div></div>
 </div>
 </div>
 <div class="vblock" data-cover="cut">
-<div class="section-title"><span>Роботи · 03</span><h2>Назва 3</h2></div>
+<div class="section-title"><span>Роботи · 03</span><h2>Reel 03</h2></div>
 <div class="stage">
 <div class="vrow">
 <div class="tile r916">
@@ -386,7 +398,7 @@ iframe.is-loaded { opacity: 1; }
 <div class="tile tile--empty r916"><span><b>Нове відео 3</b>місце під вертикальне</span></div>
 <div class="tile tile--empty r169"><span><b>Нове відео 4</b>місце під горизонтальне</span></div>
 </div>
-<div class="cover cover--cut"><div class="cut cut--l"><div class="cover__box"><span class="cover__kicker">Роботи · 03</span><div class="cover__title">Назва 3</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div><div class="cut cut--r"><div class="cover__box"><span class="cover__kicker">Роботи · 03</span><div class="cover__title">Назва 3</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div><span class="seam"></span></div>
+<div class="cover cover--cut"><div class="cut cut--l"><div class="cover__box"><span class="cover__kicker">Роботи · 03</span><div class="cover__title">Reel 03</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div><div class="cut cut--r"><div class="cover__box"><span class="cover__kicker">Роботи · 03</span><div class="cover__title">Reel 03</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div><span class="seam"></span></div>
 </div>
 </div>
     </section>
@@ -972,6 +984,16 @@ iframe.is-loaded { opacity: 1; }
       paint(Math.min(ready && settled ? 100 : 99, shown));
       raf = requestAnimationFrame(tick);
     }
+    var cover = blk.querySelector('.cover'), still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    (function flicker() {
+      if (opened || still) return;
+      setTimeout(function () {
+        if (opened) return;
+        cover.style.setProperty('--band', (10 + Math.random() * 70) + '%');
+        cover.classList.add('is-flicker');
+        setTimeout(function () { cover.classList.remove('is-flicker'); flicker(); }, 330);
+      }, 900 + Math.random() * 2200);
+    })();
     document.addEventListener('media-ready', function (e) {
       if (media.indexOf(e.detail) < 0) return;
       done++;

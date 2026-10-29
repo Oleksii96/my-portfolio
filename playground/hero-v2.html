@@ -218,11 +218,16 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', s
     else { el.preload = 'auto'; el.src = CL + 'so_' + c.from + ',eo_' + (c.from + c.len + .5) + ',f_auto,q_auto,w_' + WIDTH + '/' + c.id + '.mp4'; }
   }
 
-  function ytSeek(i) {
+  function yt(i, func, args) {
     var el = media[i];
-    if (!el.contentWindow) return;
-    el.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'seekTo', args: [clips[i].from, true] }), '*');
-    el.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*');
+    if (el.contentWindow) el.contentWindow.postMessage(JSON.stringify({ event: 'command', func: func, args: args || [] }), '*');
+  }
+
+  function cue(i) {
+    if (!clips[i].yt) return;
+    yt(i, 'mute');
+    yt(i, 'seekTo', [clips[i].from, true]);
+    yt(i, 'pauseVideo');
   }
 
   function setActive(i) {
@@ -234,10 +239,13 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', s
     }
     active = i;
     load(i);
-    load((i + 1) % clips.length);
+    var nextIndex = (i + 1) % clips.length;
+    load(nextIndex);
+    cue(nextIndex);
+    setTimeout(function () { if (active === i) cue(nextIndex); }, 1200);
     var el = media[i];
     if (el.tagName === 'VIDEO') { el.currentTime = 0; if (visible) play(el); }
-    else ytSeek(i);
+    else yt(i, 'playVideo');
     el.classList.add('on');
     blocks[i].classList.add('on');
     clipName.textContent = clips[i].name;
@@ -303,7 +311,12 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', s
     if (el.tagName === 'VIDEO') el.currentTime = t - clips[active].start;
   });
   addEventListener('resize', render);
+  clips.forEach(function (c, i) { if (c.yt) load(i); });
+  holdUntil = Infinity;
+  function startTimeline() { if (holdUntil === Infinity && !dragging) holdUntil = 0; }
   render();
+  media[0].addEventListener('canplaythrough', startTimeline, { once: true });
+  setTimeout(startTimeline, 5000);
 
   new IntersectionObserver(function (e) {
     visible = e[0].isIntersecting;
