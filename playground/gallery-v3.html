@@ -79,55 +79,61 @@ iframe.is-loaded { opacity: 1; }
   .tile .work__item__hover ul { display: none; }
 }
 
+.vblock .section-title { margin-bottom: 26px; }
+.vblock .section-title h2 { color: #fff; }
 .stage { position: relative; container-type: inline-size; overflow: hidden; }
 .cover { position: absolute; inset: 0; z-index: 6; }
-.cover--render { background: repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 4px), #07000f; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; clip-path: inset(0 0 0 0); transition: clip-path .9s cubic-bezier(.7,0,.2,1); }
-.cover--render .big { font: 900 7.5cqw/1 'Unbounded', sans-serif; letter-spacing: -.02em; text-transform: uppercase; color: #fff; white-space: nowrap; }
-.cover--render .status { display: flex; justify-content: space-between; width: min(420px, 70%); font: 14px 'Share Tech Mono', monospace; color: #a39fbf; letter-spacing: 2px; }
-.cover--render .bar { width: min(420px, 70%); height: 3px; background: rgba(255,255,255,.12); }
-.cover--render .bar i { display: block; height: 100%; width: var(--p, 0%); background: #00bfe7; box-shadow: 0 0 12px #00bfe7; }
+.cover__box { position: relative; padding: 26px 34px 24px; text-align: center; }
+.cover__box::before, .cover__box::after { content: ""; position: absolute; width: 30px; height: 30px; }
+.cover__box::before { left: 0; top: 0; border-left: 2px solid #00bfe7; border-top: 2px solid #00bfe7; }
+.cover__box::after { right: 0; bottom: 0; border-right: 2px solid #00bfe7; border-bottom: 2px solid #00bfe7; }
+.cover__kicker { display: block; color: #fff; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; opacity: .8; }
+.cover__title { font-family: 'Play', sans-serif; font-weight: 700; font-size: clamp(26px, 3.6cqw, 46px); line-height: 1.1; color: #fff; text-transform: uppercase; letter-spacing: 2px; white-space: nowrap; }
+.cover__bar { width: 70px; height: 5px; margin: 18px auto 0; background: rgba(255,255,255,.12); position: relative; overflow: hidden; }
+.cover__bar i { position: absolute; left: 0; top: 0; bottom: 0; width: var(--p, 0%); background: #00bfe7; }
+.cover__pct { display: block; margin-top: 10px; color: #8a86a3; font-size: 14px; letter-spacing: 2px; }
+
+.cover--render { background: radial-gradient(70% 90% at 50% 50%, #1d0a44 0%, #100028 70%); display: flex; align-items: center; justify-content: center; clip-path: inset(0 0 0 0); transition: clip-path .9s cubic-bezier(.7,0,.2,1); }
 .is-open .cover--render { clip-path: inset(0 0 100% 0); }
-.cover--clap { background: rgba(7,0,15,.82); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; transition: opacity .6s .5s; }
-.clap { width: min(380px, 30cqw, 80%); padding-top: 6cqw; transition: transform .6s .45s cubic-bezier(.6,0,.4,1), opacity .5s .5s; }
-.clap__stick { height: 38px; background: repeating-linear-gradient(-55deg, #fff 0 26px, #111 26px 52px); border: 3px solid #111; transform-origin: 0 100%; transform: rotate(-14deg); transition: transform .14s ease-in; }
-.clap__base { height: 18px; background: repeating-linear-gradient(55deg, #fff 0 26px, #111 26px 52px); border: 3px solid #111; border-top: 0; }
-.clap__body { background: #111; border: 3px solid #111; color: #fff; }
-.clap__row { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid rgba(255,255,255,.35); }
-.clap__row:first-child { border-top: 0; }
-.clap__cell { padding: 5px 12px; font-size: 13px; letter-spacing: 1px; color: #bbb; }
-.clap__cell + .clap__cell { border-left: 1px solid rgba(255,255,255,.35); }
-.clap__cell b { display: block; font: 700 16px/1.2 'Unbounded', sans-serif; color: #fff; margin-top: 4px; letter-spacing: 0; }
-.clap__cell--full { grid-column: 1 / -1; }
+
+.cover--clap { background: rgba(16,0,40,.86); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; transition: opacity .6s .45s; }
+.clap { width: min(340px, 30cqw, 80%); padding-top: 5cqw; transition: transform .6s .4s cubic-bezier(.6,0,.4,1), opacity .5s .45s; }
+.clap__stick, .clap__base { border: 2px solid #00bfe7; background: repeating-linear-gradient(-55deg, rgba(0,191,231,.85) 0 18px, transparent 18px 36px); }
+.clap__stick { height: 30px; transform-origin: 0 100%; transform: rotate(-14deg); transition: transform .14s ease-in; }
+.clap__base { height: 16px; border-top: 0; background: repeating-linear-gradient(55deg, rgba(0,191,231,.85) 0 18px, transparent 18px 36px); }
+.clap__body { border: 2px solid #00bfe7; border-top: 0; background: rgba(16,0,40,.9); padding: 16px 18px 14px; text-align: center; }
+.clap__body .cover__title { font-size: clamp(22px, 2.6cqw, 34px); }
 .is-snap .clap__stick { transform: rotate(0); }
 .is-open .cover--clap { opacity: 0; pointer-events: none; }
-.is-open .clap { transform: translateY(40%) scale(.9); opacity: 0; }
+.is-open .clap { transform: translateY(30%); opacity: 0; }
+
 .cover--cut { pointer-events: none; }
-.cut { position: absolute; top: 0; bottom: 0; width: 50%; background: #07000f; overflow: hidden; transition: transform .8s cubic-bezier(.7,0,.2,1); }
+.cut { position: absolute; top: 0; bottom: 0; width: 50%; background: #100028; overflow: hidden; transition: transform .8s cubic-bezier(.7,0,.2,1); }
 .cut--l { left: 0; }
 .cut--r { right: 0; }
-.cut .big { position: absolute; top: 50%; width: 100cqw; text-align: center; transform: translateY(-50%); font: 900 7cqw/1 'Unbounded', sans-serif; letter-spacing: -.02em; text-transform: uppercase; white-space: nowrap; color: #fff; }
-.cut--l .big { left: 0; }
-.cut--r .big { right: 0; }
-.cover--cut .seam { position: absolute; left: 50%; top: 0; width: 2px; margin-left: -1px; height: var(--p, 0%); background: #ff2e63; box-shadow: 0 0 14px #ff2e63; transition: opacity .2s; }
-.is-glitch .cut .big { animation: glitch .35s steps(2) 1; }
-.is-glitch .cut--l { transform: translateX(-2%); }
-.is-glitch .cut--r { transform: translateX(2%); }
+.cut .cover__box { position: absolute; top: 50%; width: 100cqw; transform: translateY(-50%); padding: 26px 0 24px; }
+.cut .cover__box::before { left: calc(50cqw - 220px); }
+.cut .cover__box::after { right: calc(50cqw - 220px); }
+.cut--l .cover__box { left: 0; }
+.cut--r .cover__box { right: 0; }
+.cover--cut .seam { position: absolute; left: 50%; top: 0; width: 2px; margin-left: -1px; height: var(--p, 0%); background: #00bfe7; box-shadow: 0 0 12px rgba(0,191,231,.8); transition: opacity .2s; }
+.is-glitch .cut .cover__title { animation: glitch .3s steps(2) 1; }
 .is-open .cut--l { transform: translateX(-101%); }
 .is-open .cut--r { transform: translateX(101%); }
 .is-open .cover--cut .seam { opacity: 0; }
 @keyframes glitch {
-  0% { text-shadow: 4px 0 #ff2e63, -4px 0 #00bfe7; transform: translate(-3px, -50%); }
-  50% { text-shadow: -6px 0 #ff2e63, 6px 0 #00bfe7; transform: translate(4px, -52%); }
-  100% { text-shadow: 2px 0 #ff2e63, -2px 0 #00bfe7; transform: translate(0, -50%); }
+  0% { text-shadow: 3px 0 rgba(0,191,231,.9), -3px 0 rgba(255,255,255,.5); transform: translateX(-2px); }
+  50% { text-shadow: -4px 0 rgba(0,191,231,.9), 4px 0 rgba(255,255,255,.5); transform: translateX(3px); }
+  100% { text-shadow: none; transform: none; }
 }
 @media (max-width: 767px) {
-  .cover--render .big { font-size: 11cqw; }
-  .cut .big { font-size: 10cqw; }
   .clap { width: 78%; }
+  .cut .cover__box::before { left: 16px; }
+  .cut .cover__box::after { right: 16px; }
+  .cover__title { white-space: normal; }
 }
 
     </style>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;900&display=swap" rel="stylesheet">
 </head>
 
 <body data-first="4">
@@ -279,7 +285,7 @@ iframe.is-loaded { opacity: 1; }
 
     <section class="work" id="portfolio">
 <div class="vblock" data-cover="render">
-<div class="vblock__head"><span class="vblock__num">01</span><h3 class="vblock__title">Перший кадр</h3><span class="vblock__note"></span></div>
+<div class="section-title"><span>Роботи · 01</span><h2>Назва 1</h2></div>
 <div class="stage">
 <div class="vrow">
 <div class="tile r169" style="background-image: url(../video/preview/kytayski-shini.jpg);">
@@ -318,11 +324,11 @@ iframe.is-loaded { opacity: 1; }
 </div>
 </div>
 </div>
-<div class="cover cover--render"><div class="big">Перший кадр</div><div class="status"><span>РЕНДЕР</span><span class="pct">0%</span></div><div class="bar"><i></i></div></div>
+<div class="cover cover--render"><div class="cover__box"><span class="cover__kicker">Роботи · 01</span><div class="cover__title">Назва 1</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div>
 </div>
 </div>
 <div class="vblock" data-cover="clap">
-<div class="vblock__head"><span class="vblock__num">02</span><h3 class="vblock__title">Дубль 02</h3><span class="vblock__note"></span></div>
+<div class="section-title"><span>Роботи · 02</span><h2>Назва 2</h2></div>
 <div class="stage">
 <div class="vrow">
 <div class="tile r916">
@@ -355,11 +361,11 @@ iframe.is-loaded { opacity: 1; }
 </div>
 </div>
 </div>
-<div class="cover cover--clap"><div class="clap"><div class="clap__stick"></div><div class="clap__base"></div><div class="clap__body"><div class="clap__row"><div class="clap__cell">СЦЕНА<b>02</b></div><div class="clap__cell">ДУБЛЬ<b class="pct">0%</b></div></div><div class="clap__row"><div class="clap__cell clap__cell--full">НАЗВА<b>Дубль 02</b></div></div><div class="clap__row"><div class="clap__cell">МОНТАЖ<b>Олексій</b></div><div class="clap__cell">РІК<b>2026</b></div></div></div></div></div>
+<div class="cover cover--clap"><div class="clap"><div class="clap__stick"></div><div class="clap__base"></div><div class="clap__body"><span class="cover__kicker">Роботи · 02</span><div class="cover__title">Назва 2</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div></div>
 </div>
 </div>
 <div class="vblock" data-cover="cut">
-<div class="vblock__head"><span class="vblock__num">03</span><h3 class="vblock__title">Фінальний кадр</h3><span class="vblock__note"></span></div>
+<div class="section-title"><span>Роботи · 03</span><h2>Назва 3</h2></div>
 <div class="stage">
 <div class="vrow">
 <div class="tile r916">
@@ -380,7 +386,7 @@ iframe.is-loaded { opacity: 1; }
 <div class="tile tile--empty r916"><span><b>Нове відео 3</b>місце під вертикальне</span></div>
 <div class="tile tile--empty r169"><span><b>Нове відео 4</b>місце під горизонтальне</span></div>
 </div>
-<div class="cover cover--cut"><div class="cut cut--l"><div class="big">Фінальний кадр</div></div><div class="cut cut--r"><div class="big">Фінальний кадр</div></div><span class="seam"></span></div>
+<div class="cover cover--cut"><div class="cut cut--l"><div class="cover__box"><span class="cover__kicker">Роботи · 03</span><div class="cover__title">Назва 3</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div><div class="cut cut--r"><div class="cover__box"><span class="cover__kicker">Роботи · 03</span><div class="cover__title">Назва 3</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div><span class="seam"></span></div>
 </div>
 </div>
     </section>
@@ -945,7 +951,7 @@ iframe.is-loaded { opacity: 1; }
     var pcts = blk.querySelectorAll('.pct'), type = blk.dataset.cover, raf = 0;
     function paint(p) {
       blk.style.setProperty('--p', p + '%');
-      blk.querySelectorAll('.bar i, .seam').forEach(function (el) { el.style.setProperty('--p', p + '%'); });
+      blk.querySelectorAll('.cover__bar i, .seam').forEach(function (el) { el.style.setProperty('--p', p + '%'); });
       pcts.forEach(function (el) { el.textContent = Math.round(p) + '%'; });
     }
     function open() {

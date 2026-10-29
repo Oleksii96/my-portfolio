@@ -46,7 +46,7 @@ button.test.on { background: var(--hot); border-color: var(--hot); }
 (function () {
   var CL = 'https://res.cloudinary.com/evdoyndv/video/upload/';
   var clips = [
-    { id: 'sailun', name: 'Sailun Tires', len: 4 },
+    { id: 'sailun', name: 'Sailun Tires', len: 4, from: 1.5 },
     { yt: '5Hl6TwF55oc', name: 'Tire Reviews Show', len: 3 },
     { id: 'me-1', name: 'Серія відео', len: 3 },
     { yt: '8_LSFVe5i5E', name: 'Шини Ф1', len: 3 },
@@ -62,13 +62,13 @@ button.test.on { background: var(--hot); border-color: var(--hot); }
   }
 
   clips.forEach(function (c, i) {
-    c.from = 0; c.time = 0;
+    c.from = c.from || 0; c.time = 0;
     var card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = '<h3>' + c.name + '</h3><small>Фрагмент ' + c.len + ' с</small>' +
       '<div class="player"></div><div class="now">зараз: 0.0 с</div>' +
       '<button class="take">Початок тут</button>' +
-      '<div class="row"><label>Старт, с</label><input type="number" min="0" step="0.1" value="0"></div>' +
+      '<div class="row"><label>Старт, с</label><input type="number" min="0" step="0.1" value="' + c.from + '"></div>' +
       '<button class="test">Перевірити</button>';
     grid.appendChild(card);
     var player = card.querySelector('.player'), now = card.querySelector('.now'),
