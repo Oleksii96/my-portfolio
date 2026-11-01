@@ -134,7 +134,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', s
   var WIDTH = matchMedia('(max-width: 767px)').matches ? 480 : 720;
   var clips = [
     { id: 'sailun', name: 'Sailun Tires', len: 4, from: 1.5, grade: true, now: 'Кольорокорекція — потягніть повзунок на кадрі' },
-    { yt: '5Hl6TwF55oc', name: 'Tire Reviews Show', len: 3, from: 0, now: 'Переклад і графіка для шоу' },
+    { id: 'tire-reviews', src: '../video/hero/tire-reviews-flex.mp4', poster: '../video/hero/tire-reviews-flex.jpg', name: 'Tire Reviews Show', len: 3, from: 0, now: 'Переклад і графіка для шоу' },
     { id: 'me-1', name: 'Серія відео', len: 3, from: 0, now: 'Монтаж розмовного відео' },
     { yt: '8_LSFVe5i5E', name: 'Шини Ф1', len: 3, from: 0, now: 'VFX для шортсів' },
     { id: 'karting', name: 'Картинг', len: 3, from: 0, now: 'Motion-графіка й телеметрія' }
@@ -156,7 +156,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', s
       clipName = document.getElementById('clipName'), nowText = document.getElementById('nowText');
   var media = [], blocks = [], active = -1, t = 0, last = 0, running = false, visible = false, holdUntil = 0;
 
-  function thumb(c, h) { return c.yt ? 'https://img.youtube.com/vi/' + c.yt + '/hqdefault.jpg' : CL + 'so_1,h_' + h + ',q_auto/' + c.id + '.jpg'; }
+  function thumb(c, h) { if (c.poster) return c.poster; return c.yt ? 'https://img.youtube.com/vi/' + c.yt + '/hqdefault.jpg' : CL + 'so_1,h_' + h + ',q_auto/' + c.id + '.jpg'; }
   function pct(s) { return (s / TOTAL * 100) + '%'; }
   function play(el) { if (el && el.play) { var p = el.play(); if (p && p.catch) p.catch(function () {}); } }
 
@@ -176,7 +176,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', s
     } else {
       el = document.createElement('video');
       el.muted = true; el.loop = true; el.playsInline = true; el.preload = 'none';
-      el.poster = CL + 'so_1,w_' + WIDTH + ',q_auto/' + c.id + '.jpg';
+      el.poster = c.poster || CL + 'so_1,w_' + WIDTH + ',q_auto/' + c.id + '.jpg';
     }
     screen.appendChild(el);
     media.push(el);
@@ -215,6 +215,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', s
     if (el.dataset.ready) return;
     el.dataset.ready = 1;
     if (c.yt) el.src = 'https://www.youtube.com/embed/' + c.yt + '?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&enablejsapi=1&start=' + Math.floor(c.from);
+    else if (c.src) { el.preload = 'auto'; el.src = c.src; }
     else { el.preload = 'auto'; el.src = CL + 'so_' + c.from + ',eo_' + (c.from + c.len + .5) + ',f_auto,q_auto,w_' + WIDTH + '/' + c.id + '.mp4'; }
   }
 

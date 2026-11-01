@@ -791,7 +791,7 @@ iframe.is-loaded { opacity: 1; }
 
     items.forEach(function (el) {
         var id = el.dataset.media;
-        if (el.tagName === 'VIDEO') el.poster = CL + 'so_1,w_' + width + ',q_auto/' + id + '.jpg';
+        if (el.tagName === 'VIDEO') el.poster = el.dataset.poster || CL + 'so_1,w_' + width + ',q_auto/' + id + '.jpg';
         else el.parentNode.style.backgroundImage = 'url(https://img.youtube.com/vi/' + id + '/hqdefault.jpg)';
     });
 
@@ -823,7 +823,7 @@ iframe.is-loaded { opacity: 1; }
             el.addEventListener('canplaythrough', ready, { once: true });
             el.addEventListener('error', ready, { once: true });
             el.preload = 'auto';
-            el.src = CL + 'f_auto,q_auto,w_' + width + '/' + id + '.mp4';
+            el.src = el.dataset.src || CL + 'f_auto,q_auto,w_' + width + '/' + id + '.mp4';
             el.load();
         } else {
             timer = setTimeout(ready, 8000);

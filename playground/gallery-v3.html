@@ -350,7 +350,13 @@ iframe.is-loaded { opacity: 1; }
 <h4>Гоночний трек</h4>
 </div>
 </div>
-<div class="tile tile--empty r916"><span><b>Нове відео 1</b>місце під вертикальне</span></div>
+<div class="tile r916">
+<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="bar" data-src="../video/bar.mp4" data-poster="../video/preview/bar.jpg" muted loop playsinline preload="none"></video>
+<a href="../video/bar.mp4" class="full-clickable-overlay video-popup vertical-video"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Бар</h4>
+</div>
+</div>
 <div class="tile r169" style="background-image: url('../video/preview/tyre-reviews-ferst test.jpg');">
 <a href="https://www.youtube.com/watch?v=0F07RLcIYx4" class="full-clickable-overlay" target="_blank"></a>
 <span class="tile__play"><i class="fa fa-play"></i></span>
@@ -394,9 +400,27 @@ iframe.is-loaded { opacity: 1; }
 <h4>Austone Tires</h4>
 </div>
 </div>
-<div class="tile tile--empty r916"><span><b>Нове відео 2</b>місце під вертикальне</span></div>
-<div class="tile tile--empty r916"><span><b>Нове відео 3</b>місце під вертикальне</span></div>
-<div class="tile tile--empty r169"><span><b>Нове відео 4</b>місце під горизонтальне</span></div>
+<div class="tile r916">
+<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="coffee" data-src="../video/coffee.mp4" data-poster="../video/preview/coffee.jpg" muted loop playsinline preload="none"></video>
+<a href="../video/coffee.mp4" class="full-clickable-overlay video-popup vertical-video"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Кава</h4>
+</div>
+</div>
+<div class="tile r916">
+<video style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" data-media="georgian-cuisine" data-src="../video/georgian-cuisine.mp4" data-poster="../video/preview/georgian-cuisine.jpg" muted loop playsinline preload="none"></video>
+<a href="../video/georgian-cuisine.mp4" class="full-clickable-overlay video-popup vertical-video"></a>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Грузинська кухня</h4>
+</div>
+</div>
+<div class="tile r169" style="background-image: url(../video/preview/ev-tires.jpg);">
+<a href="https://www.youtube.com/watch?v=ksSgRNKBuvg" class="full-clickable-overlay" target="_blank"></a>
+<span class="tile__play"><i class="fa fa-play"></i></span>
+<div class="work__item__hover" style="z-index: 4;">
+<h4>Особливості EV-шин</h4>
+</div>
+</div>
 </div>
 <div class="cover cover--cut"><div class="cut cut--l"><div class="cover__box"><span class="cover__kicker">Роботи · 03</span><div class="cover__title">Reel 03</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div><div class="cut cut--r"><div class="cover__box"><span class="cover__kicker">Роботи · 03</span><div class="cover__title">Reel 03</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div><span class="seam"></span></div>
 </div>
@@ -907,7 +931,7 @@ iframe.is-loaded { opacity: 1; }
 
     items.forEach(function (el) {
         var id = el.dataset.media;
-        if (el.tagName === 'VIDEO') el.poster = CL + 'so_1,w_' + width + ',q_auto/' + id + '.jpg';
+        if (el.tagName === 'VIDEO') el.poster = el.dataset.poster || CL + 'so_1,w_' + width + ',q_auto/' + id + '.jpg';
         else el.parentNode.style.backgroundImage = 'url(https://img.youtube.com/vi/' + id + '/hqdefault.jpg)';
     });
 
@@ -939,7 +963,7 @@ iframe.is-loaded { opacity: 1; }
             el.addEventListener('canplaythrough', ready, { once: true });
             el.addEventListener('error', ready, { once: true });
             el.preload = 'auto';
-            el.src = CL + 'f_auto,q_auto,w_' + width + '/' + id + '.mp4';
+            el.src = el.dataset.src || CL + 'f_auto,q_auto,w_' + width + '/' + id + '.mp4';
             el.load();
         } else {
             timer = setTimeout(ready, 8000);
