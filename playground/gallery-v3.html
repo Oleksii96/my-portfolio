@@ -998,7 +998,16 @@ iframe.is-loaded { opacity: 1; }
       else if (type === 'cut') { blk.classList.add('is-glitch'); setTimeout(function () { blk.classList.add('is-open'); }, 380); }
       else blk.classList.add('is-open');
     }
+    var stage = blk.querySelector('.stage');
+    function inView() {
+      var r = stage.getBoundingClientRect(), h = innerHeight;
+      var seen = Math.min(r.bottom, h) - Math.max(r.top, 0);
+      return seen >= Math.min(r.height, h) * .6;
+    }
     function tick(now) {
+      var wasVisible = visible;
+      visible = inView();
+      if (visible && !wasVisible) seenAt = now;
       var ready = done >= total;
       if (ready) target = 100;
       else target = Math.max(target, (done + Math.min(.85, (now - started) / 6000)) / total * 100);
@@ -1024,7 +1033,6 @@ iframe.is-loaded { opacity: 1; }
       done++;
       started = performance.now();
     });
-    new IntersectionObserver(function (e) { visible = e[0].isIntersecting; if (visible) seenAt = performance.now(); }, { threshold: .35 }).observe(blk.querySelector('.stage'));
     raf = requestAnimationFrame(tick);
   });
 })();
