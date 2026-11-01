@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Пісочниця · послуги й лічильники</title>
+<link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&family=Josefin+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #100028; --deep: #07000f; --panel: #170636; --line: rgba(255,255,255,.12); --muted: #a39fbf; --accent: #00bfe7; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: #fff; font: 16px/1.6 'Josefin Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+.divider { height: 90px; background: #2a2340; display: flex; align-items: center; justify-content: center; font: 600 15px/1.4 'Josefin Sans', sans-serif; letter-spacing: 2px; text-transform: uppercase; color: #cfc9ea; text-align: center; padding: 0 16px; }
+.wrap { max-width: 1170px; margin: 0 auto; padding: 0 15px; }
+.section-title span { display: block; font-size: 16px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+.section-title h2 { font: 700 36px/1.15 'Play', sans-serif; text-transform: uppercase; position: relative; padding-bottom: 25px; }
+.section-title h2::after { content: ""; position: absolute; left: 0; bottom: 0; width: 70px; height: 5px; background: var(--accent); }
+.primary-btn { display: inline-block; position: relative; font: 700 15px/1 'Play', sans-serif; letter-spacing: 2px; text-transform: uppercase; color: #fff; text-decoration: none; padding: 14px 32px 12px; }
+.primary-btn::before, .primary-btn::after { content: ""; position: absolute; width: 30px; height: 30px; transition: all .7s; }
+.primary-btn::before { left: 0; top: 0; border-left: 2px solid var(--accent); border-top: 2px solid var(--accent); }
+.primary-btn::after { right: 0; bottom: 0; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); }
+.primary-btn:hover::before, .primary-btn:hover::after { width: 100%; height: 100%; }
+
+/* Services */
+.services { padding: 100px 0; }
+.services__grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 30px; align-items: start; }
+.services__intro p { color: var(--muted); margin: 26px 0 36px; }
+.services__cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.svc { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--panel); border: 1px solid var(--line); cursor: default; }
+.svc video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .22; filter: grayscale(1); transform: scale(1.06); transition: opacity .5s, transform 1.2s, filter .5s; }
+.svc::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(16,0,40,.15) 0%, rgba(16,0,40,.92) 75%); opacity: 0; transition: opacity .5s; }
+.svc.is-live video { opacity: 1; filter: none; transform: none; }
+.svc.is-live::after { opacity: 1; }
+.svc__body { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 24px; z-index: 3; }
+.svc__num { font: 700 14px/1 'Play', sans-serif; color: var(--accent); letter-spacing: 2px; }
+.svc h4 { font: 700 22px/1.2 'Play', sans-serif; margin: 10px 0 8px; }
+.svc p { color: var(--muted); font-size: 15px; line-height: 1.5; transition: color .4s; }
+.svc.is-live p { color: #d9d5ee; }
+.svc__corner { position: absolute; width: 26px; height: 26px; z-index: 3; transition: width .5s, height .5s; }
+.svc__corner--tl { left: 0; top: 0; border-left: 2px solid var(--accent); border-top: 2px solid var(--accent); }
+.svc__corner--br { right: 0; bottom: 0; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); }
+.svc.is-live .svc__corner { width: 46px; height: 46px; }
+.svc__raw { position: absolute; top: 0; bottom: 0; left: 0; width: 50%; z-index: 1; opacity: 0; transition: opacity .5s; -webkit-backdrop-filter: saturate(.22) contrast(.7) brightness(1.12); backdrop-filter: saturate(.22) contrast(.7) brightness(1.12); border-right: 2px solid #fff; }
+.svc.is-live .svc__raw { opacity: 1; animation: sweep 3.2s ease-in-out infinite alternate; }
+@keyframes sweep { from { width: 30%; } to { width: 70%; } }
+.svc__eq { position: absolute; right: 22px; top: 22px; z-index: 3; display: flex; gap: 4px; align-items: flex-end; height: 34px; opacity: 0; transition: opacity .4s; }
+.svc__eq i { width: 5px; background: var(--accent); height: 30%; }
+.svc.is-live .svc__eq { opacity: 1; }
+.svc.is-live .svc__eq i { animation: eq .9s ease-in-out infinite alternate; }
+.svc__eq i:nth-child(2) { animation-delay: -.3s !important; }
+.svc__eq i:nth-child(3) { animation-delay: -.6s !important; }
+.svc__eq i:nth-child(4) { animation-delay: -.15s !important; }
+.svc__eq i:nth-child(5) { animation-delay: -.45s !important; }
+@keyframes eq { from { height: 15%; } to { height: 100%; } }
+.svc__hint { font-size: 13px; color: var(--muted); margin-top: 14px; }
+
+/* Counters */
+.counter { padding: 80px 0 100px; }
+.counter__row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.stat { padding: 34px 28px; position: relative; }
+.stat + .stat { border-left: 1px solid var(--line); }
+.stat__num { font: 700 64px/1 'Play', sans-serif; letter-spacing: -1px; }
+.stat__num small { font-size: .55em; color: var(--accent); margin-left: 2px; }
+.stat__bar { width: 40px; height: 3px; background: var(--accent); margin: 18px 0 14px; transform-origin: left; transform: scaleX(0); transition: transform .9s .2s; }
+.stat.is-in .stat__bar { transform: scaleX(1); }
+.stat__label { color: var(--muted); font-size: 16px; line-height: 1.4; }
+
+@media (max-width: 991px) {
+  .services__grid { grid-template-columns: minmax(0, 1fr); }
+  .counter__row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat:nth-child(3) { border-left: 0; }
+  .stat:nth-child(n+3) { border-top: 1px solid var(--line); }
+}
+@media (max-width: 600px) {
+  .services { padding: 60px 0; }
+  .section-title h2 { font-size: 28px; }
+  .services__cards { grid-template-columns: minmax(0, 1fr); }
+  .svc { aspect-ratio: 16 / 11; }
+  .stat { padding: 24px 16px; }
+  .stat__num { font-size: 44px; }
+  .stat__label { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+
+<div class="divider">«Що я роблю?» · картки оживають при наведенні (на телефоні — коли картка в центрі екрана)</div>
+
+<section class="services">
+  <div class="wrap services__grid">
+    <div class="services__intro">
+      <div class="section-title"><span>Мої послуги</span><h2>Що я роблю?</h2></div>
+      <p>Беру відзнятий матеріал і роблю з нього готовий ролик: монтаж, графіка, звук і колір — для бізнесу й особистого бренду.</p>
+      <a href="#" class="primary-btn">Дивитись роботи</a>
+      <p class="svc__hint">Наведіть на картку →</p>
+    </div>
+    <div class="services__cards">
+      <div class="svc" data-clip="nba">
+        <video muted loop playsinline preload="none"></video>
+        <span class="svc__corner svc__corner--tl"></span><span class="svc__corner svc__corner--br"></span>
+        <div class="svc__body"><div class="svc__num">01</div><h4>Motion Design & VFX</h4><p>Графіка й візуальні ефекти, які роблять ролик помітним.</p></div>
+      </div>
+      <div class="svc" data-clip="me-1">
+        <video muted loop playsinline preload="none"></video>
+        <span class="svc__corner svc__corner--tl"></span><span class="svc__corner svc__corner--br"></span>
+        <div class="svc__body"><div class="svc__num">02</div><h4>Монтаж</h4><p>Ритм, склейки й історія, яку дивляться до кінця.</p></div>
+      </div>
+      <div class="svc" data-clip="sailun">
+        <video muted loop playsinline preload="none"></video>
+        <div class="svc__raw"></div>
+        <span class="svc__corner svc__corner--tl"></span><span class="svc__corner svc__corner--br"></span>
+        <div class="svc__body"><div class="svc__num">03</div><h4>Кольорокорекція</h4><p>Єдиний кінематографічний вигляд для всього проєкту.</p></div>
+      </div>
+      <div class="svc" data-clip="karting">
+        <video muted loop playsinline preload="none"></video>
+        <div class="svc__eq"><i></i><i></i><i></i><i></i><i></i></div>
+        <span class="svc__corner svc__corner--tl"></span><span class="svc__corner svc__corner--br"></span>
+        <div class="svc__body"><div class="svc__num">04</div><h4>Саунд-дизайн</h4><p>Зведення звуку й шуми, щоб глядач був усередині кадру.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider">Лічильники · простий рядок, цифри рахуються, коли до них догортали</div>
+
+<section class="counter">
+  <div class="wrap">
+    <div class="counter__row">
+      <div class="stat"><div class="stat__num" data-to="100" data-suffix="%">0</div><div class="stat__bar"></div><div class="stat__label">Дотримання дедлайнів</div></div>
+      <div class="stat"><div class="stat__num" data-to="40" data-suffix="+">0</div><div class="stat__bar"></div><div class="stat__label">Успішних проєктів</div></div>
+      <div class="stat"><div class="stat__num" data-to="500" data-suffix="+">0</div><div class="stat__bar"></div><div class="stat__label">Годин суцільного монтажу</div></div>
+      <div class="stat"><div class="stat__num">∞</div><div class="stat__bar"></div><div class="stat__label">Відео під ключ (з нуля)</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider">Шрифти в цій пісочниці: лише Play (заголовки, цифри) і Josefin Sans (текст)</div>
+<div style="height:120px"></div>
+
+<script>
+(function () {
+  var CL = 'https://res.cloudinary.com/evdoyndv/video/upload/';
+  var touch = matchMedia('(hover: none)').matches;
+  var cards = [].slice.call(document.querySelectorAll('.svc'));
+  cards.forEach(function (c) { c.querySelector('video').poster = CL + 'so_1,w_480,q_auto/' + c.dataset.clip + '.jpg'; });
+
+  function live(card, on) {
+    var v = card.querySelector('video');
+    if (on && !v.src) { v.src = CL + 'so_1,eo_6,f_auto,q_auto,w_480/' + card.dataset.clip + '.mp4'; v.preload = 'auto'; }
+    card.classList.toggle('is-live', on);
+    if (on) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause();
+  }
+
+  if (touch) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { live(e.target, e.isIntersecting); });
+    }, { rootMargin: '-35% 0px -35% 0px' });
+    cards.forEach(function (c) { io.observe(c); });
+    document.querySelector('.svc__hint').textContent = 'Гортайте — картки оживають по черзі ↓';
+  } else {
+    cards.forEach(function (c) {
+      c.addEventListener('mouseenter', function () { live(c, true); });
+      c.addEventListener('mouseleave', function () { live(c, false); });
+    });
+  }
+
+  var stats = [].slice.call(document.querySelectorAll('.stat'));
+  var seen = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      seen.unobserve(e.target);
+      e.target.classList.add('is-in');
+      var num = e.target.querySelector('[data-to]');
+      if (!num) return;
+      var to = +num.dataset.to, suffix = num.dataset.suffix || '', start = performance.now(), dur = 1600;
+      (function step(now) {
+        var k = Math.min(1, (now - start) / dur), eased = 1 - Math.pow(1 - k, 3);
+        num.innerHTML = Math.round(to * eased) + '<small>' + suffix + '</small>';
+        if (k < 1) requestAnimationFrame(step);
+      })(start);
+    });
+  }, { threshold: .5 });
+  stats.forEach(function (s) { seen.observe(s); });
+})();
+</script>
+</body>
+</html>

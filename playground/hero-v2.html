@@ -92,9 +92,9 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', s
 <section class="hero" id="hero">
   <div class="hero__top">
     <div>
-      <div class="kicker">Відеомонтаж · Motion · VFX · Колір</div>
-      <h1 class="title">Монтаж, який тримає до&nbsp;останнього кадру</h1>
-      <p class="lead">Реклама, шортси й анімація для брендів. Клікніть на кліп на таймлайні, щоб перемотати.</p>
+      <div class="kicker" id="hKicker">Відеомонтаж · Motion · VFX · Колір</div>
+      <h1 class="title" id="hTitle">Монтаж, який тримає до&nbsp;останнього кадру</h1>
+      <p class="lead" id="hLead">Реклама, шортси й анімація для брендів. Клікніть на кліп на таймлайні, щоб перемотати.</p>
       <div class="now">
         <span class="now__dot"></span>
         <div><div class="now__label" id="nowLabel">Зараз на таймлайні</div><div class="now__text" id="nowText">Кольорокорекція</div></div>
@@ -330,6 +330,43 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', s
       if (media[active].pause) media[active].pause();
     }
   }, { threshold: .15 }).observe(document.getElementById('hero'));
+})();
+</script>
+
+<style>
+.lab { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 9000; background: #ccf042; color: #14161a; padding: 10px 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font: 600 14px/1.2 'Josefin Sans', sans-serif; box-shadow: 0 8px 30px rgba(0,0,0,.5); max-width: 980px; margin: 0 auto; }
+.lab button { background: #fff; border: 1px solid #14161a; color: #14161a; font: 600 14px/1 'Josefin Sans', sans-serif; padding: 8px 10px; cursor: pointer; }
+.lab button.on { background: #14161a; color: #ccf042; }
+.lab__x { margin-left: auto; }
+</style>
+<div class="lab" id="textLab"><b>Тексти:</b></div>
+<script>
+(function () {
+  var sets = [
+    { name: 'Про результат', kicker: 'Відеомонтаж · Motion · VFX · Колір', title: 'Монтаж, який тримає до&nbsp;останнього кадру', lead: 'Реклама, шортси й анімація для брендів. Клікніть на кліп на таймлайні, щоб перемотати.' },
+    { name: 'Особисто', kicker: 'Олексій · відеомонтажер', title: 'Роблю відео, які дивляться до&nbsp;кінця', lead: 'Монтаж, моушн-графіка й кольорокорекція для реклами, шортсів і YouTube.' },
+    { name: 'Коротко', kicker: 'Портфоліо · 2026', title: 'Монтаж. Моушн. Колір.', lead: 'Від сирого матеріалу до готового ролика: склейка, графіка, звук і кольорокорекція.' },
+    { name: 'Через таймлайн', kicker: 'Відкритий проєкт', title: 'Ось так виглядає мій робочий стіл', lead: 'Це справжні шматки моїх робіт. Клікніть на будь-який кліп на таймлайні або потягніть повзунок кольору.' }
+  ];
+  var lab = document.getElementById('textLab');
+  function apply(k) {
+    var t = sets[k];
+    document.getElementById('hKicker').innerHTML = t.kicker;
+    document.getElementById('hTitle').innerHTML = t.title;
+    document.getElementById('hLead').innerHTML = t.lead;
+    [].forEach.call(lab.querySelectorAll('button[data-k]'), function (b) { b.classList.toggle('on', +b.dataset.k === k); });
+  }
+  sets.forEach(function (t, k) {
+    var b = document.createElement('button');
+    b.dataset.k = k; b.textContent = t.name;
+    b.addEventListener('click', function () { apply(k); });
+    lab.appendChild(b);
+  });
+  var x = document.createElement('button');
+  x.className = 'lab__x'; x.textContent = '✕';
+  x.addEventListener('click', function () { lab.remove(); });
+  lab.appendChild(x);
+  apply(0);
 })();
 </script>
 </body>

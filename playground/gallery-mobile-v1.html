@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Пісочниця · мобільна галерея</title>
+<link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&family=Josefin+Sans:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #100028; --deep: #07000f; --line: rgba(255,255,255,.14); --muted: #a39fbf; --accent: #00bfe7; --lab: 46px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #05000c; color: #fff; font-family: 'Josefin Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+.lab { position: fixed; top: 0; left: 0; right: 0; height: var(--lab); z-index: 50; background: #ccf042; color: #14161a; display: flex; align-items: center; gap: 6px; padding: 0 8px; font: 600 13px/1 'Josefin Sans', sans-serif; }
+.lab button { background: #fff; border: 1px solid #14161a; color: #14161a; font: 600 13px/1 'Josefin Sans', sans-serif; padding: 8px 9px; cursor: pointer; }
+.lab button.on { background: #14161a; color: #ccf042; }
+.lab span { margin-left: auto; font-size: 12px; opacity: .7; white-space: nowrap; }
+.phone { max-width: 430px; margin: 0 auto; background: var(--bg); min-height: 100vh; padding-top: var(--lab); position: relative; }
+.note { display: none; }
+@media (min-width: 700px) {
+  .phone { box-shadow: 0 0 0 1px var(--line), 0 30px 80px rgba(0,0,0,.6); }
+  .note { display: block; position: fixed; left: 24px; top: 70px; width: calc(50vw - 260px); color: var(--muted); font-size: 15px; line-height: 1.5; }
+  .note b { color: #fff; }
+}
+
+.card { position: relative; overflow: hidden; background: var(--deep); }
+.card__bg { position: absolute; inset: -20px; background: center / cover no-repeat; filter: blur(22px) brightness(.45); transform: scale(1.1); }
+.card__media { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.card__frame { position: relative; max-width: 100%; max-height: 100%; width: 100%; aspect-ratio: var(--a); background: #000 center / cover no-repeat; }
+.card__frame video, .card__frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; opacity: 0; transition: opacity .4s; }
+.card__frame .is-ready { opacity: 1; }
+.card__info { position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 16px 16px; background: linear-gradient(transparent, rgba(0,0,0,.85)); z-index: 3; }
+.card__meta { font: 12px 'Share Tech Mono', monospace; letter-spacing: 2px; color: var(--accent); }
+.card__title { font: 700 19px/1.25 'Play', sans-serif; margin-top: 4px; }
+.card__yt { display: inline-block; margin-top: 10px; padding: 9px 12px; border: 1px solid var(--accent); color: #fff; text-decoration: none; font: 600 13px/1 'Josefin Sans', sans-serif; letter-spacing: 1px; text-transform: uppercase; }
+.badge { position: absolute; top: 12px; right: 12px; z-index: 4; font: 12px 'Share Tech Mono', monospace; letter-spacing: 1px; padding: 5px 8px; background: rgba(0,0,0,.6); border: 1px solid var(--line); display: flex; align-items: center; gap: 6px; transition: opacity .3s; }
+.badge i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.badge.loading i { background: var(--accent); animation: pulse .8s infinite; }
+.badge.priority { border-color: var(--accent); }
+.badge.done { opacity: 0; }
+@keyframes pulse { 50% { opacity: .2; } }
+.paused::after { content: "❚❚"; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 4; font-size: 26px; width: 64px; height: 64px; border-radius: 50%; background: rgba(0,0,0,.55); display: flex; align-items: center; justify-content: center; }
+
+/* Feed */
+.feed { height: calc(100vh - var(--lab)); height: calc(100svh - var(--lab)); overflow-y: auto; scroll-snap-type: y mandatory; overscroll-behavior: contain; }
+.feed .card { height: 100%; scroll-snap-align: start; scroll-snap-stop: always; }
+.feed__top { position: absolute; top: calc(var(--lab) + 10px); left: 12px; z-index: 6; font: 12px 'Share Tech Mono', monospace; letter-spacing: 2px; padding: 6px 9px; background: rgba(0,0,0,.55); border: 1px solid var(--line); pointer-events: none; }
+.feed__divider { height: 100%; scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: radial-gradient(70% 60% at 50% 50%, #1d0a44, var(--bg)); }
+
+/* Blocks */
+.blocks { padding: 26px 0 40px; }
+.blk + .blk { margin-top: 40px; }
+.section-title { padding: 0 16px; margin-bottom: 18px; }
+.section-title span { display: block; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+.section-title h2 { font: 700 26px/1.1 'Play', sans-serif; text-transform: uppercase; position: relative; padding-bottom: 16px; }
+.section-title h2::after { content: ""; position: absolute; left: 0; bottom: 0; width: 70px; height: 5px; background: var(--accent); }
+.strip { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 16px; scroll-padding: 0 16px; scrollbar-width: none; }
+.strip::-webkit-scrollbar { display: none; }
+.strip .card { flex: 0 0 78%; aspect-ratio: 9 / 16; scroll-snap-align: start; border-radius: 6px; }
+.strip .card__title { font-size: 16px; }
+.dots { display: flex; gap: 6px; padding: 12px 16px 0; }
+.dots i { width: 18px; height: 3px; background: rgba(255,255,255,.2); transition: background .3s, width .3s; }
+.dots i.on { background: var(--accent); width: 30px; }
+
+.cover-title { font: 700 30px/1.1 'Play', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
+.cover-kicker { font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.cover-hint { margin-top: 18px; font-size: 14px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="lab"><button data-mode="feed">Стрічка</button><button data-mode="blocks">Блоки</button><span id="queueInfo"></span></div>
+<p class="note">Це пісочниця для <b>телефона</b>. На ПК вона показана у вузькій колонці, як на екрані смартфона. Відкрийте посилання на телефоні, щоб відчути свайпи.<br><br>Відео вантажаться <b>строго по одному</b>, по черзі. Те, на яке ви натиснули або до якого догортали, стає першим у черзі. Значок у правому куті картки показує стан: «в черзі», «вантажиться» або «пріоритет».</p>
+<div class="phone" id="phone"></div>
+
+<script>
+(function () {
+  var CL = 'https://res.cloudinary.com/evdoyndv/video/upload/';
+  var BLOCKS = ['Ритм', 'Деталі', 'Атмосфера'];
+  var items = [
+    { b: 0, t: 'Про китайські шини', r: 16 / 9, yt: 'fUTRHN1MBEY', long: true, poster: '../video/preview/kytayski-shini.jpg' },
+    { b: 0, t: 'Шини Ф1', r: 9 / 16, yt: '8_LSFVe5i5E' },
+    { b: 0, t: 'Sailun Tires', r: 9 / 16, cl: 'sailun' },
+    { b: 0, t: 'NBA Stars', r: 9 / 16, cl: 'nba' },
+    { b: 0, t: 'Порівняння двох шин', r: 9 / 16, yt: 'vGC3vZwDooM' },
+    { b: 1, t: 'Гоночний трек', r: 9 / 16, cl: 'track' },
+    { b: 1, t: 'Бар', r: 9 / 16, src: '../video/bar.mp4', poster: '../video/preview/bar.jpg' },
+    { b: 1, t: 'Tire Reviews Show', r: 16 / 9, yt: '0F07RLcIYx4', long: true, poster: '../video/preview/tyre-reviews-ferst%20test.jpg' },
+    { b: 1, t: 'Картинг телеметрія', r: 9 / 16, cl: 'karting' },
+    { b: 1, t: 'Серія відео (ролик 1)', r: 9 / 16, cl: 'me-1' },
+    { b: 2, t: 'Tire Reviews Show', r: 9 / 16, yt: '5Hl6TwF55oc' },
+    { b: 2, t: 'Austone Tires', r: 3 / 4, cl: 'austone' },
+    { b: 2, t: 'Кава', r: 9 / 16, src: '../video/coffee.mp4', poster: '../video/preview/coffee.jpg' },
+    { b: 2, t: 'Грузинська кухня', r: 9 / 16, src: '../video/georgian-cuisine.mp4', poster: '../video/preview/georgian-cuisine.jpg' },
+    { b: 2, t: 'Особливості EV-шин', r: 16 / 9, yt: 'ksSgRNKBuvg', long: true, poster: '../video/preview/ev-tires.jpg' }
+  ];
+  items.forEach(function (it, i) {
+    it.i = i;
+    if (!it.poster) it.poster = it.cl ? CL + 'so_1,w_480,q_auto/' + it.cl + '.jpg' : 'https://img.youtube.com/vi/' + it.yt + '/hqdefault.jpg';
+    it.loadable = !it.long;
+  });
+
+  var phone = document.getElementById('phone'), queueInfo = document.getElementById('queueInfo');
+  var mode = new URLSearchParams(location.search).get('mode') === 'blocks' ? 'blocks' : 'feed';
+  document.querySelectorAll('.lab button').forEach(function (b) {
+    b.classList.toggle('on', b.dataset.mode === mode);
+    b.addEventListener('click', function () { location.search = '?mode=' + b.dataset.mode; });
+  });
+
+  function cardHTML(it) {
+    var counter = 'REEL 0' + (it.b + 1) + ' · ' + BLOCKS[it.b].toUpperCase();
+    return '<div class="card" data-i="' + it.i + '">' +
+      '<div class="card__bg" style="background-image:url(\'' + it.poster + '\')"></div>' +
+      '<div class="card__media"><div class="card__frame" style="--a:' + it.r + ';background-image:url(\'' + it.poster + '\')"></div></div>' +
+      (it.loadable ? '<div class="badge"><i></i><span>в черзі</span></div>' : '') +
+      '<div class="card__info"><div class="card__meta">' + counter + '</div><div class="card__title">' + it.t + '</div>' +
+      (it.long ? '<a class="card__yt" href="https://www.youtube.com/watch?v=' + it.yt + '" target="_blank">Дивитись на YouTube ↗</a>' : '') +
+      '</div></div>';
+  }
+
+  var html = '';
+  if (mode === 'feed') {
+    html += '<div class="feed" id="scroller">';
+    items.forEach(function (it, k) {
+      if (k === 0 || items[k - 1].b !== it.b) {
+        html += '<div class="feed__divider"><div class="cover-kicker">Роботи · 0' + (it.b + 1) + '</div><div class="cover-title">' + BLOCKS[it.b] + '</div>' +
+          '<div class="cover-hint">' + items.filter(function (x) { return x.b === it.b; }).length + ' робіт · гортайте вгору ↑</div></div>';
+      }
+      html += cardHTML(it);
+    });
+    html += '</div><div class="feed__top" id="feedTop">REEL 01</div>';
+  } else {
+    html += '<div class="blocks">';
+    BLOCKS.forEach(function (name, b) {
+      var list = items.filter(function (x) { return x.b === b; });
+      html += '<section class="blk"><div class="section-title"><span>Роботи · 0' + (b + 1) + '</span><h2>' + name + '</h2></div>' +
+        '<div class="strip">' + list.map(cardHTML).join('') + '</div>' +
+        '<div class="dots">' + list.map(function () { return '<i></i>'; }).join('') + '</div></section>';
+    });
+    html += '</div>';
+  }
+  phone.innerHTML = html;
+
+  var cards = [].slice.call(document.querySelectorAll('.card'));
+  cards.forEach(function (c) { var it = items[+c.dataset.i]; it.card = c; it.frame = c.querySelector('.card__frame'); it.badge = c.querySelector('.badge'); });
+
+  var loading = null, priority = [], visible = {};
+
+  function setBadge(it, state, text) {
+    if (!it.badge) return;
+    it.badge.className = 'badge ' + state;
+    it.badge.querySelector('span').textContent = text;
+  }
+
+  function createMedia(it) {
+    var el;
+    if (it.yt) {
+      el = document.createElement('iframe');
+      el.allow = 'autoplay; encrypted-media';
+      el.src = 'https://www.youtube.com/embed/' + it.yt + '?autoplay=1&mute=1&loop=1&playlist=' + it.yt + '&controls=0&rel=0&playsinline=1';
+    } else {
+      el = document.createElement('video');
+      el.muted = true; el.loop = true; el.playsInline = true; el.preload = 'auto';
+      el.src = it.src || CL + 'f_auto,q_auto,w_480/' + it.cl + '.mp4';
+    }
+    it.el = el;
+    it.frame.appendChild(el);
+    return el;
+  }
+
+  function finish(it) {
+    if (it.ready) return;
+    it.ready = true;
+    clearTimeout(it.timer);
+    it.el.classList.add('is-ready');
+    setBadge(it, 'done', 'готово');
+    if (loading === it) loading = null;
+    syncPlayback();
+    pump();
+  }
+
+  function startLoad(it) {
+    loading = it;
+    it.started = true;
+    setBadge(it, priority.indexOf(it) >= 0 ? 'loading priority' : 'loading', priority.indexOf(it) >= 0 ? 'пріоритет' : 'вантажиться');
+    priority = priority.filter(function (p) { return p !== it; });
+    var el = createMedia(it);
+    it.timer = setTimeout(function () { finish(it); }, it.yt ? 8000 : 15000);
+    if (it.yt) el.addEventListener('load', function () { finish(it); }, { once: true });
+    else {
+      el.addEventListener('canplaythrough', function () { finish(it); }, { once: true });
+      el.addEventListener('error', function () { finish(it); }, { once: true });
+      el.load();
+    }
+    info();
+  }
+
+  function pump() {
+    if (loading) return;
+    var next = priority.filter(function (p) { return !p.started; })[0];
+    if (!next) {
+      var focus = Object.keys(visible).map(Number).sort(function (a, b) { return a - b; })[0];
+      var order = items.filter(function (x) { return x.loadable && !x.started; });
+      if (focus !== undefined) order.sort(function (a, b) { return (a.i < focus) - (b.i < focus) || a.i - b.i; });
+      next = order[0];
+    }
+    if (next) startLoad(next);
+    info();
+  }
+
+  function prioritize(it) {
+    if (!it.loadable || it.started) return;
+    priority = priority.filter(function (p) { return p !== it; });
+    priority.unshift(it);
+    setBadge(it, 'priority', 'наступне');
+    pump();
+  }
+
+  function info() {
+    var done = items.filter(function (x) { return x.ready; }).length, total = items.filter(function (x) { return x.loadable; }).length;
+    queueInfo.textContent = 'завантажено ' + done + ' / ' + total;
+  }
+
+  function syncPlayback() {
+    items.forEach(function (it) {
+      if (!it.el || it.el.tagName !== 'VIDEO' || !it.ready) return;
+      if (visible[it.i] && !it.userPaused) { var p = it.el.play(); if (p && p.catch) p.catch(function () {}); }
+      else it.el.pause();
+    });
+  }
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      var i = +e.target.dataset.i;
+      if (e.intersectionRatio >= .6) {
+        visible[i] = true;
+        prioritize(items[i]);
+      } else delete visible[i];
+    });
+    syncPlayback();
+    updateChrome();
+  }, { threshold: [0, .6, 1] });
+  cards.forEach(function (c) { io.observe(c); });
+
+  cards.forEach(function (c) {
+    c.addEventListener('click', function (e) {
+      if (e.target.closest('a')) return;
+      var it = items[+c.dataset.i];
+      if (!it.loadable) return;
+      if (!it.started) { prioritize(it); return; }
+      if (it.el && it.el.tagName === 'VIDEO' && it.ready) {
+        it.userPaused = !it.userPaused;
+        c.classList.toggle('paused', it.userPaused);
+        syncPlayback();
+      }
+    });
+  });
+
+  function updateChrome() {
+    var first = Object.keys(visible).map(Number)[0];
+    var top = document.getElementById('feedTop');
+    if (top && first !== undefined) {
+      var it = items[first], inBlock = items.filter(function (x) { return x.b === it.b; });
+      top.textContent = 'REEL 0' + (it.b + 1) + ' · ' + (inBlock.indexOf(it) + 1) + '/' + inBlock.length;
+    }
+    document.querySelectorAll('.blk').forEach(function (blk) {
+      var strip = blk.querySelector('.strip'), dots = blk.querySelectorAll('.dots i');
+      var idx = Math.round(strip.scrollLeft / (strip.querySelector('.card').offsetWidth + 10));
+      dots.forEach(function (d, k) { d.classList.toggle('on', k === idx); });
+    });
+  }
+  document.querySelectorAll('.strip').forEach(function (s) { s.addEventListener('scroll', updateChrome, { passive: true }); });
+
+  info();
+  pump();
+  updateChrome();
+})();
+</script>
+</body>
+</html>

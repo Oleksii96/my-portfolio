@@ -8,9 +8,6 @@
     <meta name="keywords" content="Відеомонтажер, Монтаж відео, VFX, Кольорокорекція, Портфоліо">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Пісочниця · галерея з заставками</title>
 
     <!-- Open Graph / Facebook / Telegram -->
@@ -36,10 +33,8 @@
     <link rel="stylesheet" href="../css/bootstrap.min.css?v=24" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" type="text/css">
     <link rel="stylesheet" href="../css/font-awesome.min.css?v=24" type="text/css">
-    <link rel="stylesheet" href="../css/elegant-icons.css?v=24" type="text/css">
     <link rel="stylesheet" href="../css/owl.carousel.min.css?v=24" type="text/css">
     <link rel="stylesheet" href="../css/magnific-popup.css?v=24" type="text/css">
-    <link rel="stylesheet" href="../css/slicknav.min.css?v=24" type="text/css">
     <link rel="stylesheet" href="../css/style.css?v=24" type="text/css">
     <style>
 
@@ -500,10 +495,8 @@ iframe.is-loaded { opacity: 1; }
 
     <!-- Js Plugins -->
     <script src="../js/jquery-3.3.1.min.js?v=24"></script>
-    <script src="../js/bootstrap.min.js?v=24"></script>
     <script src="../js/jquery.magnific-popup.min.js?v=24"></script>
     <script src="../js/masonry.pkgd.min.js?v=24"></script>
-    <script src="../js/jquery.slicknav.js?v=24"></script>
     <script src="../js/owl.carousel.min.js?v=24"></script>
     <script>
 'use strict';
@@ -713,14 +706,6 @@ iframe.is-loaded { opacity: 1; }
     });
 
     /*------------------
-		Navigation
-	--------------------*/
-    $(".mobile-menu").slicknav({
-        prependTo: '#mobile-menu-wrap',
-        allowParentLinks: true
-    });
-
-    /*------------------
 		Hero Slider
 	--------------------*/
     $('.hero__slider').owlCarousel({
@@ -743,83 +728,6 @@ iframe.is-loaded { opacity: 1; }
             $(this).html('0').append(index);
         } else {
             $(this).html(index);
-        }
-    });
-
-    /*------------------
-        Testimonial Slider
-    --------------------*/
-    $(".testimonial__slider").owlCarousel({
-        loop: true,
-        margin: 0,
-        items: 3,
-        dots: true,
-        dotsEach: 2,
-        smartSpeed: 1200,
-        autoHeight: false,
-        autoplay: true,
-        responsive: {
-            992: {
-                items: 3
-            },
-            768: {
-                items: 2
-            },
-            320: {
-                items: 1
-            }
-        }
-    });
-
-    /*------------------
-        Latest Slider
-    --------------------*/
-    $(".latest__slider").owlCarousel({
-        loop: true,
-        margin: 0,
-        items: 3,
-        dots: true,
-        dotsEach: 2,
-        smartSpeed: 1200,
-        autoHeight: false,
-        autoplay: true,
-        responsive: {
-            992: {
-                items: 3
-            },
-            768: {
-                items: 2
-            },
-            320: {
-                items: 1
-            }
-        }
-    });
-
-    /*------------------
-        Logo Slider
-    --------------------*/
-    $(".logo__carousel").owlCarousel({
-        loop: true,
-        margin: 100,
-        items: 6,
-        dots: false,
-        smartSpeed: 1200,
-        autoHeight: false,
-        autoplay: true,
-        responsive: {
-            992: {
-                items: 5
-            },
-            768: {
-                items: 4
-            },
-            480: {
-                items: 3
-            },
-            320: {
-                items: 2
-            }
         }
     });
 
@@ -1035,6 +943,46 @@ iframe.is-loaded { opacity: 1; }
     });
     raf = requestAnimationFrame(tick);
   });
+})();
+</script>
+
+<style>
+.lab { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 9000; background: #ccf042; color: #14161a; padding: 10px 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font: 600 14px/1.2 'Josefin Sans', sans-serif; box-shadow: 0 8px 30px rgba(0,0,0,.5); max-width: 980px; margin: 0 auto; }
+.lab b { margin-right: 4px; }
+.lab button { background: #fff; border: 1px solid #14161a; color: #14161a; font: 600 14px/1 'Josefin Sans', sans-serif; padding: 8px 10px; cursor: pointer; }
+.lab button.on { background: #14161a; color: #ccf042; }
+.lab__x { margin-left: auto; }
+</style>
+<div class="lab" id="namesLab"><b>Назви блоків:</b></div>
+<script>
+(function () {
+  var sets = [
+    ['Ритм', 'Деталі', 'Атмосфера'],
+    ['Монтаж', 'Моушн', 'Колір'],
+    ['Motion', 'Story', 'Vibe'],
+    ['Добірка 01', 'Добірка 02', 'Добірка 03'],
+    ['Reel 01', 'Reel 02', 'Reel 03']
+  ];
+  var lab = document.getElementById('namesLab'), blocks = document.querySelectorAll('.vblock[data-cover]');
+  function apply(k) {
+    blocks.forEach(function (b, i) {
+      b.querySelectorAll('.section-title h2, .cover__title').forEach(function (el) { el.textContent = sets[k][i]; });
+    });
+    [].forEach.call(lab.querySelectorAll('button[data-k]'), function (btn) { btn.classList.toggle('on', +btn.dataset.k === k); });
+  }
+  sets.forEach(function (set, k) {
+    var btn = document.createElement('button');
+    btn.dataset.k = k;
+    btn.textContent = set.join(' / ');
+    btn.addEventListener('click', function () { apply(k); });
+    lab.appendChild(btn);
+  });
+  var close = document.createElement('button');
+  close.className = 'lab__x';
+  close.textContent = '✕';
+  close.addEventListener('click', function () { lab.remove(); });
+  lab.appendChild(close);
+  apply(0);
 })();
 </script>
 </body>
