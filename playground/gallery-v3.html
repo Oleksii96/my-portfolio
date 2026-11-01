@@ -93,8 +93,8 @@ iframe.is-loaded { opacity: 1; }
 .cover__bar i { position: absolute; left: 0; top: 0; bottom: 0; width: var(--p, 0%); background: #00bfe7; }
 .cover__pct { display: block; margin-top: 10px; color: #8a86a3; font-size: 14px; letter-spacing: 2px; }
 
-.cover--render { background: radial-gradient(70% 90% at 50% 50%, rgba(29,10,68,.93) 0%, rgba(16,0,40,.9) 70%); display: flex; align-items: center; justify-content: center; clip-path: inset(0 0 0 0); transition: clip-path .9s cubic-bezier(.7,0,.2,1); }
-.is-open .cover--render { clip-path: inset(0 0 100% 0); }
+.cover--render { inset: -4px; background: radial-gradient(70% 90% at 50% 50%, #1d0a44 0%, #100028 70%) #100028; display: flex; align-items: center; justify-content: center; transform: translateY(0); transition: transform .9s cubic-bezier(.7,0,.2,1); }
+.is-open .cover--render { transform: translateY(-102%); }
 
 .cover--clap { background: rgba(16,0,40,.86); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; transition: opacity .6s .45s; }
 .clap { width: min(340px, 30cqw, 80%); padding-top: 5cqw; transition: transform .6s .4s cubic-bezier(.6,0,.4,1), opacity .5s .45s; }
