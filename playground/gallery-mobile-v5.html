@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Пісочниця · мобільна галерея v5</title>
+<link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&family=Josefin+Sans:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #100028; --deep: #07000f; --line: rgba(255,255,255,.14); --muted: #a39fbf; --accent: #00bfe7; --hot: #ff2e63; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #05000c; color: #fff; font-family: 'Josefin Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+.phone { max-width: 430px; margin: 0 auto; background: var(--bg); position: relative; }
+.note { display: none; }
+@media (min-width: 700px) {
+  .phone { box-shadow: 0 0 0 1px var(--line), 0 30px 80px rgba(0,0,0,.6); }
+  .note { display: block; position: fixed; left: 24px; top: 30px; width: calc(50vw - 260px); color: var(--muted); font-size: 15px; line-height: 1.5; }
+  .note b { color: #fff; }
+}
+.spacer { height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--muted); text-align: center; padding: 0 24px; border-bottom: 1px solid var(--line); }
+.spacer b { color: #fff; font: 700 22px/1.2 'Play', sans-serif; text-transform: uppercase; }
+
+.blk { position: relative; padding: 36px 0 10px; }
+.pin { display: flex; flex-direction: column; }
+.head { display: flex; align-items: flex-end; justify-content: space-between; padding: 0 16px; margin-bottom: 16px; }
+.head span { position: relative; display: block; font-size: 17px; letter-spacing: 3px; text-transform: uppercase; padding-bottom: 14px; }
+.head span::after { content: ""; position: absolute; left: 0; bottom: 0; width: 60px; height: 4px; background: var(--accent); }
+.head em { font: 13px 'Share Tech Mono', monospace; color: var(--muted); font-style: normal; letter-spacing: 2px; }
+.viewport { position: relative; height: var(--ch); overflow: hidden; }
+.strip { display: flex; gap: 12px; padding: 0 16px; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 16px; scrollbar-width: none; overscroll-behavior-x: contain; }
+.strip::-webkit-scrollbar { display: none; }
+.strip .card { scroll-snap-align: start; }
+.strip.is-drag { scroll-snap-type: none; cursor: grabbing; }
+.strip { cursor: grab; }
+.strip.is-drag .card { pointer-events: none; }
+.strip::after { content: ""; flex: 0 0 4px; }
+.dots { display: flex; gap: 6px; padding: 14px 16px 0; }
+.dots { gap: 5px; }
+.dots i { position: relative; cursor: pointer; width: 14px; height: 16px; transition: width .3s; }
+.dots i::after { content: ""; position: absolute; left: 0; right: 0; top: 7px; height: 2px; background: rgba(255,255,255,.22); transition: background .3s; }
+.dots i.on { width: 26px; }
+.dots i.on::after { background: var(--accent); }
+
+.card { position: relative; flex: 0 0 auto; width: var(--cw); height: var(--ch); overflow: hidden; background: var(--deep); border-radius: 6px; }
+.card__bg { position: absolute; inset: -20px; background: center / cover no-repeat; filter: blur(20px) brightness(.45); }
+.card__media { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.card__frame { position: relative; width: 100%; max-height: 100%; aspect-ratio: var(--a); background: #000 center / cover no-repeat; }
+.card__frame video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s; }
+.card__frame video.is-ready { opacity: 1; }
+.card__info { position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 14px 14px; background: linear-gradient(transparent, rgba(0,0,0,.85)); z-index: 3; }
+.card__title { font: 700 17px/1.25 'Play', sans-serif; }
+.card__yt { display: inline-block; margin-top: 9px; padding: 8px 11px; border: 1px solid var(--accent); color: #fff; text-decoration: none; font: 600 12px/1 'Josefin Sans', sans-serif; letter-spacing: 1px; text-transform: uppercase; }
+.badge { position: absolute; top: 10px; right: 10px; z-index: 4; font: 11px 'Share Tech Mono', monospace; letter-spacing: 1px; padding: 5px 7px; background: rgba(0,0,0,.6); border: 1px solid var(--line); display: flex; align-items: center; gap: 6px; transition: opacity .3s; }
+.badge i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+.badge.loading i { background: var(--accent); animation: pulse .8s infinite; }
+.badge.priority { border-color: var(--accent); }
+.badge.done { opacity: 0; }
+@keyframes pulse { 50% { opacity: .2; } }
+.paused::after { content: "❚❚"; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 4; font-size: 24px; width: 60px; height: 60px; border-radius: 50%; background: rgba(0,0,0,.55); display: flex; align-items: center; justify-content: center; }
+
+.cover { position: absolute; inset: -2px; z-index: 10; touch-action: pan-y; }
+.is-open .cover { pointer-events: none; }
+.cover::before { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,191,231,.05) 0 1px, transparent 1px 3px); }
+.cover__box { position: relative; padding: 22px 26px 20px; text-align: center; }
+.cover__box::before, .cover__box::after { content: ""; position: absolute; width: 26px; height: 26px; }
+.cover__box::before { left: 0; top: 0; border-left: 2px solid var(--accent); border-top: 2px solid var(--accent); }
+.cover__box::after { right: 0; bottom: 0; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); }
+.cover__title { font: 700 24px/1.15 'Play', sans-serif; text-transform: uppercase; letter-spacing: 2px; white-space: nowrap; }
+.cover__bar { width: 70px; height: 5px; margin: 16px auto 0; background: rgba(255,255,255,.12); position: relative; overflow: hidden; }
+.cover__bar i { position: absolute; left: 0; top: 0; bottom: 0; width: var(--p, 0%); background: var(--accent); }
+.cover__pct { display: block; margin-top: 9px; color: var(--muted); font-size: 13px; letter-spacing: 2px; }
+.cover__hint { display: block; margin-top: 12px; color: var(--muted); font-size: 13px; }
+.cover.is-flicker { animation: flicker .32s steps(1) 1; }
+.cover.is-flicker .cover__title { transform: translateX(-3px); text-shadow: 3px 0 rgba(0,191,231,.9), -3px 0 rgba(255,46,99,.7); }
+@keyframes flicker { 0% { opacity: .35; } 20% { opacity: 1; } 40% { opacity: .15; } 55% { opacity: .85; } 75% { opacity: .45; } 100% { opacity: 1; } }
+
+.cover--render { background: radial-gradient(80% 70% at 50% 50%, #1d0a44 0%, #100028 75%) #100028; display: flex; align-items: center; justify-content: center; transition: transform .9s cubic-bezier(.7,0,.2,1); }
+.is-open .cover--render { transform: translateY(-103%); }
+
+.cover--clap { background: rgba(16,0,40,.9); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; transition: opacity .6s .45s; }
+.clap { width: 78%; transition: transform .6s .4s cubic-bezier(.6,0,.4,1), opacity .5s .45s; }
+.clap__stick, .clap__base { border: 2px solid var(--accent); background: repeating-linear-gradient(-55deg, rgba(0,191,231,.85) 0 16px, transparent 16px 32px); }
+.clap__stick { height: 28px; transform-origin: 0 100%; transform: rotate(-14deg); transition: transform .14s ease-in; }
+.clap__base { height: 14px; border-top: 0; background: repeating-linear-gradient(55deg, rgba(0,191,231,.85) 0 16px, transparent 16px 32px); }
+.clap__body { border: 2px solid var(--accent); border-top: 0; background: rgba(16,0,40,.9); padding: 16px 14px 14px; text-align: center; }
+.is-snap .clap__stick { transform: rotate(0); }
+.is-open .cover--clap { opacity: 0; pointer-events: none; }
+.is-open .clap { transform: translateY(30%); opacity: 0; }
+
+.cover--cut { pointer-events: none; }
+.cut { position: absolute; top: 0; bottom: 0; width: calc(50% + 1px); background: #100028; overflow: hidden; transition: transform .8s cubic-bezier(.7,0,.2,1); container-type: size; }
+.cut--l { left: 0; }
+.cut--r { right: 0; }
+.cut .cover__box { position: absolute; top: 50%; width: 200cqw; transform: translateY(-50%); padding: 22px 0 20px; }
+.cut .cover__box::before { left: calc(100cqw - 130px); }
+.cut .cover__box::after { right: calc(100cqw - 130px); }
+.cut--l .cover__box { left: 0; }
+.cut--r .cover__box { right: 0; }
+.cover--cut .seam { position: absolute; left: 50%; top: 0; width: 2px; margin-left: -1px; height: var(--p, 0%); background: var(--accent); box-shadow: 0 0 12px rgba(0,191,231,.8); transition: opacity .2s; z-index: 3; }
+.is-glitch .cut .cover__title { animation: glitch .3s steps(2) 1; }
+.is-open .cut--l { transform: translateX(-101%); }
+.is-open .cut--r { transform: translateX(101%); }
+.is-open .cover--cut .seam { opacity: 0; }
+@keyframes glitch { 0% { text-shadow: 3px 0 rgba(0,191,231,.9), -3px 0 rgba(255,255,255,.5); transform: translateX(-2px); } 50% { text-shadow: -4px 0 rgba(0,191,231,.9), 4px 0 rgba(255,255,255,.5); transform: translateX(3px); } 100% { text-shadow: none; transform: none; } }
+</style>
+</head>
+<body>
+<p class="note">Пісочниця для <b>телефона</b>. На ПК показана вузькою колонкою (свайп — тягніть мишкою або трекпадом вбік).<br><br>Відео в кожному блоці гортаються <b>свайпом вправо</b>. На телефоні спершу йдуть вертикальні відео, горизонтальні — в кінці блоку. Шторка закриває екран телефона, поки не завантажились перші відео блоку, і відкривається, коли блок на екрані. Поки шторка стоїть, гортати не можна; щойно вона відкрилась — свайп вправо (на ПК — тягніть мишкою).<br><br>Відео вантажаться <b>строго по одному</b>; те, до якого догорнули або на яке натиснули, стає першим у черзі.</p>
+<div class="phone" id="phone"></div>
+
+<script>
+(function () {
+  var CL = 'https://res.cloudinary.com/evdoyndv/video/upload/';
+  var COVERS = ['render', 'clap', 'cut'];
+  var items = [
+    { b: 0, t: 'Про китайські шини', r: 16 / 9, yt: 'fUTRHN1MBEY', poster: '../video/preview/kytayski-shini.jpg' },
+    { b: 0, t: 'Шини Ф1', r: 9 / 16, yt: '8_LSFVe5i5E', short: true, src: '../video/hero/f1-tires.mp4', poster: '../video/hero/f1-tires.jpg' },
+    { b: 0, t: 'Sailun Tires', r: 9 / 16, cl: 'sailun' },
+    { b: 0, t: 'NBA Stars', r: 9 / 16, cl: 'nba' },
+    { b: 0, t: 'Порівняння двох шин', r: 9 / 16, yt: 'vGC3vZwDooM', short: true },
+    { b: 1, t: 'Гоночний трек', r: 9 / 16, cl: 'track' },
+    { b: 1, t: 'Бар', r: 9 / 16, src: '../video/bar.mp4', poster: '../video/preview/bar.jpg' },
+    { b: 1, t: 'Tire Reviews Show', r: 16 / 9, yt: '0F07RLcIYx4', poster: '../video/preview/tyre-reviews-ferst%20test.jpg' },
+    { b: 1, t: 'Картинг телеметрія', r: 9 / 16, cl: 'karting' },
+    { b: 1, t: 'Серія відео (ролик 1)', r: 9 / 16, cl: 'me-1' },
+    { b: 2, t: 'Tire Reviews Show', r: 9 / 16, yt: '5Hl6TwF55oc', short: true, src: '../video/hero/tire-reviews-flex.mp4', poster: '../video/hero/tire-reviews-flex.jpg' },
+    { b: 2, t: 'Austone Tires', r: 3 / 4, cl: 'austone' },
+    { b: 2, t: 'Кава', r: 9 / 16, src: '../video/coffee.mp4', poster: '../video/preview/coffee.jpg' },
+    { b: 2, t: 'Грузинська кухня', r: 9 / 16, src: '../video/georgian-cuisine.mp4', poster: '../video/preview/georgian-cuisine.jpg' },
+    { b: 2, t: 'Особливості EV-шин', r: 16 / 9, yt: 'ksSgRNKBuvg', poster: '../video/preview/ev-tires.jpg' }
+  ];
+  items.sort(function (a, c) { return a.b - c.b || (a.r > 1) - (c.r > 1) || (a.r === .75) - (c.r === .75); });
+  items.forEach(function (it, i) {
+    it.i = i;
+    if (!it.poster) it.poster = it.cl ? CL + 'so_1,w_480,q_auto/' + it.cl + '.jpg' : 'https://img.youtube.com/vi/' + it.yt + '/hqdefault.jpg';
+    it.loadable = !!(it.cl || it.src);
+  });
+
+  function card(it) {
+    return '<div class="card" data-i="' + it.i + '">' +
+      '<div class="card__bg" style="background-image:url(\'' + it.poster + '\')"></div>' +
+      '<div class="card__media"><div class="card__frame" style="--a:' + it.r + ';background-image:url(\'' + it.poster + '\')"></div></div>' +
+      (it.loadable ? '<div class="badge"><i></i><span>в черзі</span></div>' : '') +
+      '<div class="card__info"><div class="card__title">' + it.t + '</div>' +
+      (it.yt ? '<a class="card__yt" href="https://www.youtube.com/' + (it.short ? 'shorts/' : 'watch?v=') + it.yt + '" target="_blank">Дивитись на YouTube ↗</a>' : '') +
+      '</div></div>';
+  }
+  function box(n) { return '<div class="cover__box"><div class="cover__title">Роботи · 0' + n + '</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div>'; }
+  function cover(type, n) {
+    if (type === 'render') return '<div class="cover cover--render">' + box(n) + '</div>';
+    if (type === 'clap') return '<div class="cover cover--clap"><div class="clap"><div class="clap__stick"></div><div class="clap__base"></div><div class="clap__body"><div class="cover__title">Роботи · 0' + n + '</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div></div>';
+    return '<div class="cover cover--cut"><div class="cut cut--l">' + box(n) + '</div><div class="cut cut--r">' + box(n) + '</div><span class="seam"></span></div>';
+  }
+
+  var html = '<div class="spacer"><b>Тут закінчується hero і «Що я роблю?»</b>Гортайте вниз ↓</div>';
+  [0, 1, 2].forEach(function (b) {
+    var list = items.filter(function (x) { return x.b === b; });
+    html += '<section class="blk" data-b="' + b + '"><div class="pin"><div class="head"><span>Роботи · 0' + (b + 1) + '</span><em class="count">1 / ' + list.length + '</em></div>' +
+      '<div class="viewport"><div class="strip">' + list.map(card).join('') + '</div>' + cover(COVERS[b], b + 1) + '</div>' +
+      '<div class="dots">' + list.map(function () { return '<i></i>'; }).join('') + '</div></div></section>';
+  });
+  html += '<div class="spacer"><b>Далі — лічильники й футер</b></div>';
+  document.getElementById('phone').innerHTML = html;
+
+  items.forEach(function (it) {
+    it.card = document.querySelector('.card[data-i="' + it.i + '"]');
+    it.frame = it.card.querySelector('.card__frame');
+    it.badge = it.card.querySelector('.badge');
+  });
+
+  var blocks = [].slice.call(document.querySelectorAll('.blk')).map(function (el) {
+    var b = +el.dataset.b;
+    return {
+      b: b, el: el, pin: el.querySelector('.pin'), viewport: el.querySelector('.viewport'), strip: el.querySelector('.strip'),
+      cover: el.querySelector('.cover'), type: COVERS[b], dots: el.querySelectorAll('.dots i'), count: el.querySelector('.count'),
+      list: items.filter(function (x) { return x.b === b; }), shift: 0, active: 0, opened: false, seenAt: 0, shown: 0
+    };
+  });
+
+  function layout() {
+    var phoneW = document.getElementById('phone').clientWidth;
+    var cw = Math.min(phoneW - 64, (innerHeight - 170) * 9 / 16), ch = cw * 16 / 9;
+    blocks.forEach(function (bl) {
+      bl.el.style.setProperty('--cw', cw + 'px');
+      bl.el.style.setProperty('--ch', ch + 'px');
+      bl.step = cw + 12;
+    });
+    onScroll();
+  }
+
+  function onScroll() {
+    blocks.forEach(function (bl) {
+      var r = bl.viewport.getBoundingClientRect();
+      var active = Math.min(bl.list.length - 1, Math.round(bl.strip.scrollLeft / bl.step));
+      bl.active = active;
+      bl.dots.forEach(function (d, k) { d.classList.toggle('on', k === active); });
+      bl.count.textContent = (active + 1) + ' / ' + bl.list.length;
+      var seen = Math.min(r.bottom, innerHeight) - Math.max(r.top, 0);
+      bl.inView = seen >= r.height * .6;
+      if (bl.inView) { prioritize(bl.list[active]); prioritize(bl.list[active + 1]); }
+    });
+    syncPlayback();
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  document.addEventListener('scroll', function (e) { if (e.target.classList && e.target.classList.contains('strip')) onScroll(); }, { passive: true, capture: true });
+  addEventListener('resize', layout);
+
+  var loading = null, priority = [];
+  function setBadge(it, cls, text) { if (!it.badge) return; it.badge.className = 'badge ' + cls; it.badge.querySelector('span').textContent = text; }
+  function finish(it) {
+    if (it.ready) return;
+    it.ready = true;
+    clearTimeout(it.timer);
+    it.el.classList.add('is-ready');
+    setBadge(it, 'done', 'готово');
+    if (loading === it) loading = null;
+    syncPlayback();
+    pump();
+  }
+  function start(it) {
+    loading = it; it.started = true;
+    var pri = priority.indexOf(it) >= 0;
+    priority = priority.filter(function (p) { return p !== it; });
+    setBadge(it, pri ? 'loading priority' : 'loading', pri ? 'пріоритет' : 'вантажиться');
+    var v = document.createElement('video');
+    v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
+    v.src = it.src || CL + 'f_auto,q_auto,w_480/' + it.cl + '.mp4';
+    it.el = v; it.frame.appendChild(v);
+    it.timer = setTimeout(function () { finish(it); }, 20000);
+    v.addEventListener('canplaythrough', function () { finish(it); }, { once: true });
+    v.addEventListener('error', function () { finish(it); }, { once: true });
+    v.load();
+  }
+  function pump() {
+    if (loading) return;
+    var next = priority.filter(function (p) { return !p.started; })[0] || items.filter(function (x) { return x.loadable && !x.started; })[0];
+    if (next) start(next);
+  }
+  function prioritize(it) {
+    if (!it || !it.loadable || it.started || priority.indexOf(it) >= 0) return;
+    priority.push(it);
+    setBadge(it, 'priority', 'наступне');
+    pump();
+  }
+  function syncPlayback() {
+    blocks.forEach(function (bl) {
+      bl.list.forEach(function (it, k) {
+        if (!it.el || !it.ready) return;
+        if (bl.inView && bl.opened && k === bl.active && !it.userPaused) { var p = it.el.play(); if (p && p.catch) p.catch(function () {}); }
+        else it.el.pause();
+      });
+    });
+  }
+
+  items.forEach(function (it) {
+    it.card.addEventListener('click', function (e) {
+      if (e.target.closest('a') || !it.loadable) return;
+      if (!it.started) { priority = priority.filter(function (p) { return p !== it; }); priority.unshift(it); setBadge(it, 'priority', 'наступне'); pump(); return; }
+      if (it.ready) { it.userPaused = !it.userPaused; it.card.classList.toggle('paused', it.userPaused); syncPlayback(); }
+    });
+  });
+
+  var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  blocks.forEach(function (bl) {
+    var need = bl.list.filter(function (x) { return x.loadable; }).slice(0, 2), started = performance.now();
+    function paint(p) {
+      bl.el.querySelectorAll('.cover__bar i, .seam').forEach(function (el) { el.style.setProperty('--p', p + '%'); });
+      bl.el.querySelectorAll('.pct').forEach(function (el) { el.textContent = Math.round(p) + '%'; });
+    }
+    bl.open = function () { open(); };
+    function open() {
+      if (bl.opened) return;
+      bl.opened = true;
+      bl.cover.classList.remove('is-flicker');
+      if (bl.type === 'clap') { bl.el.classList.add('is-snap'); setTimeout(function () { bl.el.classList.add('is-open'); }, 160); }
+      else if (bl.type === 'cut') { bl.el.classList.add('is-glitch'); setTimeout(function () { bl.el.classList.add('is-open'); }, 380); }
+      else bl.el.classList.add('is-open');
+      setTimeout(syncPlayback, 300);
+    }
+    (function flicker() {
+      if (bl.opened || still) return;
+      setTimeout(function () {
+        if (bl.opened || need.every(function (x) { return x.ready; })) return;
+        bl.cover.classList.add('is-flicker');
+        setTimeout(function () { bl.cover.classList.remove('is-flicker'); flicker(); }, 330);
+      }, 900 + Math.random() * 2200);
+    })();
+    (function tick(now) {
+      var done = need.filter(function (x) { return x.ready; }).length, ready = done >= need.length;
+      if (bl.inView && !bl.seenAt) bl.seenAt = now;
+      if (!bl.inView) bl.seenAt = 0;
+      var settled = bl.seenAt && now - bl.seenAt > 800;
+      var target = ready ? 100 : (done + Math.min(.85, (now - started) / 9000)) / need.length * 100;
+      bl.shown += (target - bl.shown) * (ready && settled ? .12 : .05);
+      if (bl.opened) return;
+      if (ready && settled && bl.shown > 99.3) { paint(100); setTimeout(open, 200); return; }
+      paint(Math.min(ready && settled ? 100 : 99, bl.shown));
+      requestAnimationFrame(tick);
+    })(performance.now());
+  });
+
+  blocks.forEach(function (bl) {
+    bl.dots.forEach(function (d, k) {
+      d.addEventListener('click', function () { if (!bl.opened) return; bl.strip.scrollTo({ left: k * bl.step, behavior: 'smooth' }); });
+    });
+    var startX = 0, startLeft = 0, down = false, moved = false;
+    bl.strip.addEventListener('pointerdown', function (e) {
+      if (!bl.opened) return;
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      down = true; moved = false; startX = e.clientX; startLeft = bl.strip.scrollLeft;
+    });
+    addEventListener('pointermove', function (e) {
+      if (!down) return;
+      var dx = e.clientX - startX;
+      if (!moved && Math.abs(dx) > 5) { moved = true; bl.strip.classList.add('is-drag'); }
+      if (moved) bl.strip.scrollLeft = startLeft - dx;
+    });
+    addEventListener('pointerup', function (e) {
+      if (!down) return;
+      down = false;
+      if (!moved) return;
+      var dx = e.clientX - startX, k = Math.round(bl.strip.scrollLeft / bl.step);
+      if (Math.abs(dx) > 40) k = Math.round(startLeft / bl.step) + (dx < 0 ? 1 : -1);
+      k = Math.max(0, Math.min(bl.list.length - 1, k));
+      bl.strip.classList.remove('is-drag');
+      bl.strip.scrollTo({ left: k * bl.step, behavior: 'smooth' });
+    });
+  });
+
+  layout();
+  pump();
+  setTimeout(layout, 300);
+})();
+</script>
+</body>
+</html>
