@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Пісочниця · блок «Що я роблю?»</title>
+<link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&family=Josefin+Sans:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #100028; --deep: #07000f; --panel: #170636; --line: rgba(255,255,255,.12); --muted: #a39fbf; --accent: #00bfe7; --hot: #ff2e63; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: #fff; font: 16px/1.6 'Josefin Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+.divider { min-height: 90px; background: #2a2340; display: flex; align-items: center; justify-content: center; font: 600 15px/1.4 'Josefin Sans', sans-serif; letter-spacing: 2px; text-transform: uppercase; color: #cfc9ea; text-align: center; padding: 16px; }
+.wrap { max-width: 1170px; margin: 0 auto; padding: 0 15px; }
+.sec { padding: 90px 0; }
+.section-title { margin-bottom: 44px; }
+.section-title span { display: block; font-size: 16px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+.section-title h2 { font: 700 36px/1.15 'Play', sans-serif; text-transform: uppercase; position: relative; padding-bottom: 25px; }
+.section-title h2::after { content: ""; position: absolute; left: 0; bottom: 0; width: 70px; height: 5px; background: var(--accent); }
+.mono { font-family: 'Share Tech Mono', monospace; }
+
+/* 1 · Tracks */
+.tracks { position: relative; border: 1px solid var(--line); background: var(--deep); padding: 18px 20px 22px; }
+.tracks__ruler { display: flex; justify-content: space-between; margin-left: 76px; font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 6px; margin-bottom: 14px; }
+.track { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; align-items: stretch; }
+.track + .track { margin-top: 10px; }
+.track__name { font-size: 13px; color: var(--muted); display: flex; align-items: center; }
+.track__clip { position: relative; padding: 14px 18px; border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.03); color: var(--muted); transition: background .5s, border-color .5s, color .5s; }
+.track__clip h4 { font: 700 20px/1.2 'Play', sans-serif; color: #fff; opacity: .45; transition: opacity .5s; }
+.track__clip p { font-size: 15px; line-height: 1.45; margin-top: 4px; opacity: .55; transition: opacity .5s; }
+.track:nth-child(2) .track__clip { margin-left: 0; margin-right: 22%; }
+.track:nth-child(3) .track__clip { margin-left: 14%; margin-right: 8%; }
+.track:nth-child(4) .track__clip { margin-left: 30%; }
+.track:nth-child(5) .track__clip { margin-left: 6%; margin-right: 12%; }
+.track.on .track__clip { color: #d9d5ee; }
+.track.on .track__clip h4, .track.on .track__clip p { opacity: 1; }
+.track.on:nth-child(2) .track__clip { background: rgba(44,110,138,.45); border-color: #2c6e8a; }
+.track.on:nth-child(3) .track__clip { background: rgba(123,63,209,.4); border-color: #7b3fd1; }
+.track.on:nth-child(4) .track__clip { background: linear-gradient(90deg, rgba(209,75,63,.35), rgba(209,161,63,.35), rgba(63,209,122,.35), rgba(63,138,209,.35)); border-color: #d1a13f; }
+.track.on:nth-child(5) .track__clip { background: rgba(31,122,79,.45); border-color: #1f7a4f; }
+.tracks__head { position: absolute; top: 10px; bottom: 10px; left: 96px; width: 2px; background: var(--hot); z-index: 3; pointer-events: none; transform: translateX(var(--x, 0)); }
+.tracks__head::before { content: ""; position: absolute; top: -2px; left: -6px; border: 7px solid transparent; border-top: 9px solid var(--hot); }
+
+/* 2 · Big list */
+.list { border-top: 1px solid var(--line); }
+.row { position: relative; display: grid; grid-template-columns: 90px minmax(0, 1fr) minmax(0, 340px); gap: 24px; align-items: center; padding: 30px 0; border-bottom: 1px solid var(--line); cursor: default; transition: padding .4s; }
+.row__num { font: 700 18px/1 'Play', sans-serif; color: var(--accent); letter-spacing: 2px; }
+.row h3 { font: 700 clamp(28px, 3.6vw, 48px)/1 'Play', sans-serif; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,.35); transition: color .35s, transform .35s; }
+.row p { color: var(--muted); font-size: 16px; line-height: 1.5; }
+.row:hover h3 { color: #fff; transform: translateX(10px); }
+.peek { position: fixed; left: 0; top: 0; width: 200px; aspect-ratio: 9 / 16; z-index: 20; pointer-events: none; opacity: 0; transform: translate(-50%, -50%) scale(.85) rotate(-4deg); transition: opacity .3s, transform .3s; background: #000 center / cover; box-shadow: 0 20px 60px rgba(0,0,0,.6); }
+.peek video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.peek.on { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(-4deg); }
+
+/* 3 · Minimal columns */
+.cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--line); }
+.col { padding: 34px 26px 10px 0; }
+.col + .col { padding-left: 26px; border-left: 1px solid var(--line); }
+.col__num { font: 700 56px/1 'Play', sans-serif; color: transparent; -webkit-text-stroke: 1px rgba(0,191,231,.8); }
+.col h4 { font: 700 21px/1.2 'Play', sans-serif; margin: 20px 0 10px; }
+.col p { color: var(--muted); font-size: 15px; line-height: 1.5; }
+
+/* 4 · Process */
+.steps { position: relative; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px; padding-top: 34px; }
+.steps__line { position: absolute; top: 9px; left: 10px; right: 10px; height: 2px; background: rgba(255,255,255,.12); }
+.steps__line i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--accent); transition: width 2.4s cubic-bezier(.4,0,.2,1); }
+.steps.in .steps__line i { width: 100%; }
+.step { position: relative; opacity: .25; transform: translateY(12px); transition: opacity .5s, transform .5s; }
+.step::before { content: ""; position: absolute; top: -34px; left: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--bg); border: 2px solid var(--accent); }
+.steps.in .step { opacity: 1; transform: none; }
+.steps.in .step:nth-child(3) { transition-delay: .5s; }
+.steps.in .step:nth-child(4) { transition-delay: 1s; }
+.steps.in .step:nth-child(5) { transition-delay: 1.5s; }
+.steps.in .step:nth-child(6) { transition-delay: 2s; }
+.step__num { font: 13px 'Share Tech Mono', monospace; color: var(--accent); letter-spacing: 2px; }
+.step h4 { font: 700 20px/1.2 'Play', sans-serif; margin: 8px 0; }
+.step p { color: var(--muted); font-size: 15px; line-height: 1.5; }
+
+/* 5 · None */
+.none { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.none__box { border: 1px dashed var(--line); padding: 26px; color: var(--muted); }
+.none__box b { display: block; font: 700 22px/1.2 'Play', sans-serif; color: #fff; margin-bottom: 8px; text-transform: uppercase; }
+
+@media (max-width: 860px) {
+  .sec { padding: 60px 0; }
+  .section-title h2 { font-size: 28px; }
+  .tracks { padding: 14px 12px 16px; }
+  .tracks__ruler { margin-left: 46px; }
+  .track { grid-template-columns: 34px minmax(0, 1fr); gap: 10px; }
+  .track__clip { margin-left: 0 !important; margin-right: 0 !important; padding: 12px 14px; }
+  .track__clip h4 { font-size: 18px; }
+  .tracks__head { left: 58px; }
+  .row { grid-template-columns: 40px minmax(0, 1fr); gap: 6px 14px; padding: 22px 0; }
+  .row p { grid-column: 2; font-size: 15px; }
+  .row h3 { font-size: 25px; color: #fff; }
+  .peek { display: none; }
+  .cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .col { padding: 26px 16px 18px 0 !important; border-left: 0 !important; }
+  .col:nth-child(even) { padding-left: 16px !important; border-left: 1px solid var(--line) !important; }
+  .col:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .col__num { font-size: 42px; }
+  .col h4 { font-size: 17px; }
+  .steps { grid-template-columns: minmax(0, 1fr); gap: 26px; padding: 0 0 0 36px; }
+  .steps__line { top: 0; bottom: 0; left: 9px; right: auto; width: 2px; height: auto; }
+  .steps__line i { width: 100% !important; height: 0; transition: height 2.4s cubic-bezier(.4,0,.2,1); }
+  .steps.in .steps__line i { height: 100%; }
+  .step::before { top: 4px; left: -36px; }
+  .none { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="divider">Варіант 1 · Доріжки монтажки — коли блок на екрані, по доріжках проїжджає лінія й «вмикає» послуги</div>
+<section class="sec" id="v1">
+  <div class="wrap">
+    <div class="section-title"><span>Мої послуги</span><h2>Що я роблю?</h2></div>
+    <div class="tracks" id="tracks">
+      <div class="tracks__ruler mono"><span>00:00</span><span>00:04</span><span>00:08</span><span>00:12</span><span>00:16</span></div>
+      <div class="track"><span class="track__name mono">V1</span><div class="track__clip"><h4>Монтаж</h4><p>Ритм, склейки й історія, яку дивляться до кінця.</p></div></div>
+      <div class="track"><span class="track__name mono">V2</span><div class="track__clip"><h4>Motion &amp; VFX</h4><p>Анімована графіка, титри й ефекти поверх знятого.</p></div></div>
+      <div class="track"><span class="track__name mono">CC</span><div class="track__clip"><h4>Кольорокорекція</h4><p>Єдиний кінематографічний вигляд для всього проєкту.</p></div></div>
+      <div class="track"><span class="track__name mono">A1</span><div class="track__clip"><h4>Саунд-дизайн</h4><p>Зведення звуку й шуми, щоб глядач був усередині кадру.</p></div></div>
+      <span class="tracks__head" id="tracksHead"></span>
+    </div>
+  </div>
+</section>
+
+<div class="divider">Варіант 2 · Великий список — на ПК при наведенні біля курсора спливає прев'ю відео</div>
+<section class="sec" id="v2">
+  <div class="wrap">
+    <div class="section-title"><span>Мої послуги</span><h2>Що я роблю?</h2></div>
+    <div class="list">
+      <div class="row" data-clip="me-1"><span class="row__num">01</span><h3>Монтаж</h3><p>Ритм, склейки й історія, яку дивляться до кінця.</p></div>
+      <div class="row" data-clip="nba"><span class="row__num">02</span><h3>Motion &amp; VFX</h3><p>Анімована графіка, титри й ефекти поверх знятого.</p></div>
+      <div class="row" data-clip="sailun"><span class="row__num">03</span><h3>Кольорокорекція</h3><p>Єдиний кінематографічний вигляд для всього проєкту.</p></div>
+      <div class="row" data-clip="karting"><span class="row__num">04</span><h3>Саунд-дизайн</h3><p>Зведення звуку й шуми, щоб глядач був усередині кадру.</p></div>
+    </div>
+  </div>
+  <div class="peek" id="peek"><video muted loop playsinline></video></div>
+</section>
+
+<div class="divider">Варіант 3 · Мінімалізм — номери, назва й одне речення, без іконок і відео</div>
+<section class="sec" id="v3">
+  <div class="wrap">
+    <div class="section-title"><span>Мої послуги</span><h2>Що я роблю?</h2></div>
+    <div class="cols">
+      <div class="col"><div class="col__num">01</div><h4>Монтаж</h4><p>Ритм, склейки й історія, яку дивляться до кінця.</p></div>
+      <div class="col"><div class="col__num">02</div><h4>Motion &amp; VFX</h4><p>Анімована графіка, титри й ефекти поверх знятого.</p></div>
+      <div class="col"><div class="col__num">03</div><h4>Кольорокорекція</h4><p>Єдиний кінематографічний вигляд для всього проєкту.</p></div>
+      <div class="col"><div class="col__num">04</div><h4>Саунд-дизайн</h4><p>Зведення звуку й шуми, щоб глядач був усередині кадру.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider">Варіант 4 · Процес роботи — кроки з'являються по черзі, коли блок на екрані</div>
+<section class="sec" id="v4">
+  <div class="wrap">
+    <div class="section-title"><span>Як я працюю</span><h2>Від матеріалу до ролика</h2></div>
+    <div class="steps" id="steps">
+      <div class="steps__line"><i></i></div>
+      <div class="step"><div class="step__num">01</div><h4>Бриф</h4><p>Розбираємо задачу, формат і де буде показ.</p></div>
+      <div class="step"><div class="step__num">02</div><h4>Монтаж</h4><p>Збираю історію й ритм з вашого матеріалу.</p></div>
+      <div class="step"><div class="step__num">03</div><h4>Графіка й VFX</h4><p>Титри, анімація, ефекти там, де вони працюють.</p></div>
+      <div class="step"><div class="step__num">04</div><h4>Звук і колір</h4><p>Зведення звуку й кольорокорекція.</p></div>
+      <div class="step"><div class="step__num">05</div><h4>Готовий ролик</h4><p>Версії під усі потрібні платформи.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider">Варіант 5 · Без блоку — після hero одразу галерея</div>
+<section class="sec" id="v5">
+  <div class="wrap none">
+    <div class="none__box"><b>Hero</b>«Монтаж. Моушн. VFX.» — вже каже, чим ви займаєтесь, а таймлайн показує це наживо.</div>
+    <div class="none__box"><b>Галерея</b>Роботи · 01 / 02 / 03 — йдуть одразу після hero. Сторінка коротша, особливо на телефоні.</div>
+  </div>
+</section>
+
+<div class="divider">Кінець пісочниці</div>
+
+<script>
+(function () {
+  var CL = 'https://res.cloudinary.com/evdoyndv/video/upload/';
+
+  var tracks = document.getElementById('tracks'), head = document.getElementById('tracksHead'), rows = tracks.querySelectorAll('.track'), played = false;
+  new IntersectionObserver(function (e) {
+    if (!e[0].isIntersecting || played) return;
+    played = true;
+    var start = performance.now(), dur = 3200;
+    (function step(now) {
+      var k = Math.min(1, (now - start) / dur), lane = tracks.querySelector('.track__clip').parentNode.getBoundingClientRect(), box = tracks.getBoundingClientRect();
+      var laneLeft = rows[0].querySelector('.track__clip').getBoundingClientRect().left - box.left, width = box.width - laneLeft - 20;
+      head.style.left = laneLeft + 'px';
+      head.style.setProperty('--x', (k * width) + 'px');
+      rows.forEach(function (r) {
+        var c = r.querySelector('.track__clip').getBoundingClientRect();
+        if (box.left + laneLeft + k * width >= c.left + 10) r.classList.add('on');
+      });
+      if (k < 1) requestAnimationFrame(step);
+    })(start);
+  }, { threshold: .5 }).observe(tracks);
+
+  var peek = document.getElementById('peek'), pv = peek.querySelector('video');
+  if (matchMedia('(hover: hover)').matches) {
+    document.querySelectorAll('.row').forEach(function (r) {
+      r.addEventListener('mouseenter', function () {
+        var id = r.dataset.clip;
+        peek.style.backgroundImage = 'url(' + CL + 'so_1,w_360,q_auto/' + id + '.jpg)';
+        pv.src = CL + 'so_1,eo_5,f_auto,q_auto,w_360/' + id + '.mp4';
+        var p = pv.play(); if (p && p.catch) p.catch(function () {});
+        peek.classList.add('on');
+      });
+      r.addEventListener('mouseleave', function () { peek.classList.remove('on'); pv.pause(); });
+      r.addEventListener('mousemove', function (e) { peek.style.left = (e.clientX + 140) + 'px'; peek.style.top = e.clientY + 'px'; });
+    });
+  }
+
+  var steps = document.getElementById('steps');
+  new IntersectionObserver(function (e) { if (e[0].isIntersecting) steps.classList.add('in'); }, { threshold: .4 }).observe(steps);
+})();
+</script>
+</body>
+</html>
