@@ -74,7 +74,9 @@ iframe.is-loaded { opacity: 1; }
   .tile .work__item__hover ul { display: none; }
 }
 
-.vblock .section-title { margin-bottom: 26px; }
+.vblock .section-title { margin-bottom: 22px; }
+.section-title--small span { position: relative; padding-bottom: 16px; font-size: 18px; letter-spacing: 3px; }
+.section-title--small span::after { content: ""; position: absolute; left: 0; bottom: 0; width: 70px; height: 5px; background: #00bfe7; }
 .vblock .section-title h2 { color: #fff; }
 .stage { position: relative; container-type: inline-size; overflow: hidden; }
 .cover { position: absolute; inset: -2px; z-index: 6; }
@@ -292,7 +294,7 @@ iframe.is-loaded { opacity: 1; }
 
     <section class="work" id="portfolio">
 <div class="vblock" data-cover="render">
-<div class="section-title"><span>Роботи · 01</span><h2>Reel 01</h2></div>
+<div class="section-title section-title--small"><span>Роботи · 01</span></div>
 <div class="stage">
 <div class="vrow">
 <div class="tile r169" style="background-image: url(../video/preview/kytayski-shini.jpg);">
@@ -331,11 +333,11 @@ iframe.is-loaded { opacity: 1; }
 </div>
 </div>
 </div>
-<div class="cover cover--render"><div class="cover__box"><span class="cover__kicker">Роботи · 01</span><div class="cover__title">Reel 01</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div>
+<div class="cover cover--render"><div class="cover__box"><div class="cover__title">Роботи · 01</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div>
 </div>
 </div>
 <div class="vblock" data-cover="clap">
-<div class="section-title"><span>Роботи · 02</span><h2>Reel 02</h2></div>
+<div class="section-title section-title--small"><span>Роботи · 02</span></div>
 <div class="stage">
 <div class="vrow">
 <div class="tile r916">
@@ -374,11 +376,11 @@ iframe.is-loaded { opacity: 1; }
 </div>
 </div>
 </div>
-<div class="cover cover--clap"><div class="clap"><div class="clap__stick"></div><div class="clap__base"></div><div class="clap__body"><span class="cover__kicker">Роботи · 02</span><div class="cover__title">Reel 02</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div></div>
+<div class="cover cover--clap"><div class="clap"><div class="clap__stick"></div><div class="clap__base"></div><div class="clap__body"><div class="cover__title">Роботи · 02</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div></div>
 </div>
 </div>
 <div class="vblock" data-cover="cut">
-<div class="section-title"><span>Роботи · 03</span><h2>Reel 03</h2></div>
+<div class="section-title section-title--small"><span>Роботи · 03</span></div>
 <div class="stage">
 <div class="vrow">
 <div class="tile r916">
@@ -417,7 +419,7 @@ iframe.is-loaded { opacity: 1; }
 </div>
 </div>
 </div>
-<div class="cover cover--cut"><div class="cut cut--l"><div class="cover__box"><span class="cover__kicker">Роботи · 03</span><div class="cover__title">Reel 03</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div><div class="cut cut--r"><div class="cover__box"><span class="cover__kicker">Роботи · 03</span><div class="cover__title">Reel 03</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div><span class="seam"></span></div>
+<div class="cover cover--cut"><div class="cut cut--l"><div class="cover__box"><div class="cover__title">Роботи · 03</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div><div class="cut cut--r"><div class="cover__box"><div class="cover__title">Роботи · 03</div><div class="cover__bar"><i></i></div><span class="cover__pct pct">0%</span></div></div><span class="seam"></span></div>
 </div>
 </div>
     </section>
@@ -943,46 +945,6 @@ iframe.is-loaded { opacity: 1; }
     });
     raf = requestAnimationFrame(tick);
   });
-})();
-</script>
-
-<style>
-.lab { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 9000; background: #ccf042; color: #14161a; padding: 10px 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font: 600 14px/1.2 'Josefin Sans', sans-serif; box-shadow: 0 8px 30px rgba(0,0,0,.5); max-width: 980px; margin: 0 auto; }
-.lab b { margin-right: 4px; }
-.lab button { background: #fff; border: 1px solid #14161a; color: #14161a; font: 600 14px/1 'Josefin Sans', sans-serif; padding: 8px 10px; cursor: pointer; }
-.lab button.on { background: #14161a; color: #ccf042; }
-.lab__x { margin-left: auto; }
-</style>
-<div class="lab" id="namesLab"><b>Назви блоків:</b></div>
-<script>
-(function () {
-  var sets = [
-    ['Ритм', 'Деталі', 'Атмосфера'],
-    ['Монтаж', 'Моушн', 'Колір'],
-    ['Motion', 'Story', 'Vibe'],
-    ['Добірка 01', 'Добірка 02', 'Добірка 03'],
-    ['Reel 01', 'Reel 02', 'Reel 03']
-  ];
-  var lab = document.getElementById('namesLab'), blocks = document.querySelectorAll('.vblock[data-cover]');
-  function apply(k) {
-    blocks.forEach(function (b, i) {
-      b.querySelectorAll('.section-title h2, .cover__title').forEach(function (el) { el.textContent = sets[k][i]; });
-    });
-    [].forEach.call(lab.querySelectorAll('button[data-k]'), function (btn) { btn.classList.toggle('on', +btn.dataset.k === k); });
-  }
-  sets.forEach(function (set, k) {
-    var btn = document.createElement('button');
-    btn.dataset.k = k;
-    btn.textContent = set.join(' / ');
-    btn.addEventListener('click', function () { apply(k); });
-    lab.appendChild(btn);
-  });
-  var close = document.createElement('button');
-  close.className = 'lab__x';
-  close.textContent = '✕';
-  close.addEventListener('click', function () { lab.remove(); });
-  lab.appendChild(close);
-  apply(0);
 })();
 </script>
 </body>
