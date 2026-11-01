@@ -365,6 +365,7 @@ iframe.is-loaded { opacity: 1; }
 
 
 .counter__item { transition: box-shadow .5s, background .5s; }
+.counter__item::before { pointer-events: none; }
 .counter__item::after { content: ""; position: absolute; inset: -10px; border: 1px dashed rgba(0,191,231,.55); opacity: 0; z-index: -1; transition: opacity .4s, inset .4s; pointer-events: none; }
 .counter__item:hover, .counter__item.is-hover { background: #210a4d; box-shadow: 0 0 34px rgba(0,191,231,.35), inset 0 0 28px rgba(0,191,231,.18); }
 .counter__item:hover::after, .counter__item.is-hover::after { opacity: 1; inset: -18px; animation: cDash 1.6s ease-in-out infinite alternate; }
