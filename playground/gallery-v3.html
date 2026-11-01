@@ -82,7 +82,7 @@ iframe.is-loaded { opacity: 1; }
 .vblock .section-title { margin-bottom: 26px; }
 .vblock .section-title h2 { color: #fff; }
 .stage { position: relative; container-type: inline-size; overflow: hidden; }
-.cover { position: absolute; inset: 0; z-index: 6; }
+.cover { position: absolute; inset: -2px; z-index: 6; }
 .cover__box { position: relative; padding: 26px 34px 24px; text-align: center; }
 .cover__box::before, .cover__box::after { content: ""; position: absolute; width: 30px; height: 30px; }
 .cover__box::before { left: 0; top: 0; border-left: 2px solid #00bfe7; border-top: 2px solid #00bfe7; }
@@ -110,17 +110,17 @@ iframe.is-loaded { opacity: 1; }
 .cover--cut { pointer-events: none; }
 .cover::before { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,191,231,.05) 0 1px, transparent 1px 3px); }
 .cover.is-flicker { animation: flicker .32s steps(1) 1; }
-.cover.is-flicker .cover__title { text-shadow: 3px 0 rgba(0,191,231,.9), -3px 0 rgba(255,46,99,.7); }
+.cover.is-flicker .cover__title { transform: translateX(-3px); text-shadow: 3px 0 rgba(0,191,231,.9), -3px 0 rgba(255,46,99,.7); }
 .cover.is-flicker::after { content: ""; position: absolute; left: 0; right: 0; top: var(--band, 40%); height: 14%; z-index: 3; pointer-events: none; background: rgba(0,191,231,.08); -webkit-backdrop-filter: invert(.15) saturate(2); backdrop-filter: invert(.15) saturate(2); }
 @keyframes flicker {
-  0% { opacity: .35; transform: translateX(-4px); }
-  20% { opacity: 1; transform: none; }
-  40% { opacity: .15; transform: translateX(3px); }
-  55% { opacity: .85; transform: none; }
+  0% { opacity: .35; }
+  20% { opacity: 1; }
+  40% { opacity: .15; }
+  55% { opacity: .85; }
   75% { opacity: .45; }
   100% { opacity: 1; }
 }
-.cut { position: absolute; top: 0; bottom: 0; width: 50%; background: rgba(16,0,40,.9); overflow: hidden; transition: transform .8s cubic-bezier(.7,0,.2,1); }
+.cut { position: absolute; top: 0; bottom: 0; width: calc(50% + 1px); background: rgba(16,0,40,.9); overflow: hidden; transition: transform .8s cubic-bezier(.7,0,.2,1); }
 .cut--l { left: 0; }
 .cut--r { right: 0; }
 .cut .cover__box { position: absolute; top: 50%; width: 100cqw; transform: translateY(-50%); padding: 26px 0 24px; }
