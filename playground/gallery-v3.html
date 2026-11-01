@@ -969,6 +969,7 @@ iframe.is-loaded { opacity: 1; }
     function open() {
       if (opened) return;
       opened = true;
+      cover.classList.remove('is-flicker');
       if (type === 'clap') { blk.classList.add('is-snap'); setTimeout(function () { blk.classList.add('is-open'); }, 160); }
       else if (type === 'cut') { blk.classList.add('is-glitch'); setTimeout(function () { blk.classList.add('is-open'); }, 380); }
       else blk.classList.add('is-open');
@@ -988,7 +989,7 @@ iframe.is-loaded { opacity: 1; }
     (function flicker() {
       if (opened || still) return;
       setTimeout(function () {
-        if (opened) return;
+        if (opened || done >= total) return;
         cover.style.setProperty('--band', (10 + Math.random() * 70) + '%');
         cover.classList.add('is-flicker');
         setTimeout(function () { cover.classList.remove('is-flicker'); flicker(); }, 330);
